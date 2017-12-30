@@ -1,15 +1,19 @@
 package riff
 
 import (
-	"time"
+	"bytes"
+	"crypto/sha1"
+	"fmt"
+	"io"
 	"math/rand"
+	"strconv"
+	"time"
 )
 
-//todo 今晚任务 1，序列化问题，json序列化支持
-
 type Riff struct {
-	Services []Service
-	Nodes    []Node
+	Nodes
+	Services
+	SnapShort string
 }
 
 func init() {
@@ -17,5 +21,61 @@ func init() {
 }
 
 func Create() (*Riff, error) {
-	return nil, nil
+	riff := &Riff{
+		Nodes:    make(map[string]*Node),
+		Services: make(map[string]*Service),
+	}
+	return riff, nil
+}
+
+func (r *Riff) String() string {
+	buff := bytes.NewBuffer(nil)
+	io.WriteString(buff, "{")
+	sortedNodes := r.Nodes.sort()
+	for i, nk := range sortedNodes {
+		//write node name
+		io.WriteString(buff, r.Nodes[nk].Name+":{")
+		//write service name and version
+		sortedServices := r.Nodes[nk].Services.sort()
+		for j, sk := range sortedServices {
+			s := r.Nodes[nk].Services[sk]
+			io.WriteString(buff, s.Name+":{"+s.Address+","+strconv.FormatUint(s.Version, 10)+"}")
+			if j != len(sortedServices)-1 {
+				io.WriteString(buff, ",")
+			}
+		}
+		io.WriteString(buff, "}")
+		if i != len(sortedNodes)-1 {
+			io.WriteString(buff, ",")
+		}
+	}
+	io.WriteString(buff, "}")
+
+	return buff.String()
+}
+func (r *Riff) Shutter() {
+	h := sha1.New()
+	io.WriteString(h, r.String())
+	r.SnapShort = fmt.Sprintf("%x", h.Sum(nil))
+	fmt.Println("SnapShort", r.SnapShort)
+}
+
+//get a node if not exist then create one
+func (r *Riff) GetNode(key string) *Node {
+	if n := r.Nodes[key]; n != nil {
+		return n
+	}
+	return nil
+}
+func (r *Riff) AddNode(n *Node) *Node {
+	if nd := r.Nodes[n.Name]; nd != nil {
+		n = nd
+	} else {
+		r.Nodes[n.Name] = n
+	}
+	return n
+}
+
+func (r *Riff) Link(n *Node, s *Service) {
+	r.AddNode(n).AddService(s)
 }
