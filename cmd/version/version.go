@@ -25,4 +25,3 @@ func (c *cmd) Synopsis() string {
 func (c *cmd) Help() string {
 	return ""
 }
-

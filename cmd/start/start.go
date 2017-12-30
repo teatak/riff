@@ -3,12 +3,12 @@ package start
 import (
 	"flag"
 	"fmt"
+	"github.com/gimke/riff/common"
+	"github.com/gimke/riff/riff"
 	"net"
 	"net/rpc"
 	"strings"
 	"time"
-	"github.com/gimke/riff/common"
-	"github.com/gimke/riff/riff"
 )
 
 const synopsis = "Start a service"
@@ -93,7 +93,7 @@ func (c *cmd) Ping() {
 			break
 		}
 		fmt.Println(reply)
-		time.Sleep(5*time.Second)
+		time.Sleep(5 * time.Second)
 	}
 	<-exit
 	//cmd.Close()

@@ -1,10 +1,10 @@
 package riff
 
 import (
-	"net"
-	"log"
-	"io"
 	"github.com/gimke/riff/common"
+	"io"
+	"log"
+	"net"
 )
 
 type factory func(s *Server) interface{}
@@ -29,7 +29,7 @@ func (s *Server) listen() {
 			if s.shutdown {
 				return
 			}
-			log.Printf("[ERR] consul.rpc: failed to accept RPC conn: %v",err)
+			log.Printf("[ERR] consul.rpc: failed to accept RPC conn: %v", err)
 			continue
 		}
 		go s.handleConn(conn)

@@ -1,13 +1,13 @@
 package common
 
 import (
-	"io"
 	"bufio"
 	"encoding/gob"
-	"net/rpc"
-	"log"
-	"time"
 	"fmt"
+	"io"
+	"log"
+	"net/rpc"
+	"time"
 )
 
 func TimeoutCoder(f func(interface{}) error, e interface{}, msg string) error {
@@ -22,7 +22,7 @@ func TimeoutCoder(f func(interface{}) error, e interface{}, msg string) error {
 }
 
 //server
-func NewGobServerCodec(conn io.ReadWriteCloser) rpc.ServerCodec{
+func NewGobServerCodec(conn io.ReadWriteCloser) rpc.ServerCodec {
 	buf := bufio.NewWriter(conn)
 	codec := &gobServerCodec{
 		rwc:    conn,
@@ -77,7 +77,7 @@ func (c *gobServerCodec) Close() error {
 }
 
 //client
-func NewGobClientCodec(conn io.ReadWriteCloser) rpc.ClientCodec{
+func NewGobClientCodec(conn io.ReadWriteCloser) rpc.ClientCodec {
 	buf := bufio.NewWriter(conn)
 	codec := &gobClientCodec{
 		rwc:    conn,
