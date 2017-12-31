@@ -43,16 +43,6 @@ func TestRiff(t *testing.T) {
 	riff.Link(n4, s3)
 	riff.Link(n4, s4)
 
-	riff.Shutter()
-	fmt.Println(riff.String())
 	fmt.Println(riff.Nodes)
-	for _, n := range riff.Nodes {
-		fmt.Print(n.Name, " ")
-		for _, s := range riff.Nodes[n.Name].Services {
-			fmt.Print(s.Name, "[", s.Address, "]", " ")
-		}
-		fmt.Println()
-	}
-
 	//riff.AddService()
 }

@@ -66,4 +66,5 @@ func (r *Riff) AddNode(n *Node) *Node {
 
 func (r *Riff) Link(n *Node, s *Service) {
 	r.AddNode(n).AddService(s)
+	r.Shutter()
 }
