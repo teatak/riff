@@ -5,17 +5,38 @@ import (
 	"crypto/sha1"
 	"fmt"
 	"io"
+	"net"
 	"sort"
 	"strconv"
+	"sync"
+	"time"
 )
 
 type Nodes map[string]*Node
 
+type nodeStateType int
+
+const (
+	stateAlive nodeStateType = iota
+	stateSuspect
+	stateDead
+)
+
 type Node struct {
 	Services
-	Name       string
-	DataCenter string
-	SnapShort  string
+	Name        string
+	Addr        net.IP
+	Port        uint16
+	State       nodeStateType // Current state
+	StateChange time.Time     // Time last state change happened
+	DataCenter  string
+	SnapShort   string
+
+	nodeLock sync.RWMutex
+}
+
+func (n *Node) Address() string {
+	return net.JoinHostPort(n.Addr.String(), strconv.Itoa(int(n.Port)))
 }
 
 func (ns *Nodes) sort() []string {
@@ -34,7 +55,7 @@ func (n *Node) String() string {
 	sortedServices := n.Services.sort()
 	for i, sk := range sortedServices {
 		s := n.Services[sk]
-		io.WriteString(buff, s.Name+":{"+s.Address+","+strconv.FormatUint(s.Version, 10)+"}")
+		io.WriteString(buff, s.Name+":{"+s.Address()+","+strconv.FormatUint(s.Version, 10)+"}")
 		if i != len(sortedServices)-1 {
 			io.WriteString(buff, ",")
 		}
