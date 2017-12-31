@@ -7,16 +7,20 @@ import (
 
 func TestRiff(t *testing.T) {
 	n1 := &Node{
-		Name: "n1",
+		Name:       "n1",
+		DataCenter: "dc1",
 	}
 	n2 := &Node{
-		Name: "n2",
+		Name:       "n2",
+		DataCenter: "dc1",
 	}
 	n3 := &Node{
-		Name: "n3",
+		Name:       "n3",
+		DataCenter: "dc1",
 	}
 	n4 := &Node{
-		Name: "n4",
+		Name:       "n4",
+		DataCenter: "dc1",
 	}
 
 	riff, _ := Create()

@@ -13,8 +13,9 @@ type Nodes map[string]*Node
 
 type Node struct {
 	Services
-	Name      string
-	SnapShort string
+	Name       string
+	DataCenter string
+	SnapShort  string
 }
 
 func (ns *Nodes) sort() []string {
@@ -22,7 +23,6 @@ func (ns *Nodes) sort() []string {
 	for key, _ := range *ns {
 		keys = append(keys, key)
 	}
-
 	sort.Strings(keys)
 	return keys
 }
