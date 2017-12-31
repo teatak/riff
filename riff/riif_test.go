@@ -43,6 +43,12 @@ func TestRiff(t *testing.T) {
 	riff.Link(n4, s3)
 	riff.Link(n4, s4)
 
+	riff.Shutter()
+
+	if n,ok := riff.Nodes["n1"]; ok {
+		fmt.Println(n)
+	}
+
 	fmt.Println(riff.Nodes)
 	//riff.AddService()
 }

@@ -48,13 +48,6 @@ func (r *Riff) Shutter() {
 	fmt.Println("SnapShort", r.SnapShort)
 }
 
-//get a node if not exist then create one
-func (r *Riff) GetNode(key string) *Node {
-	if n := r.Nodes[key]; n != nil {
-		return n
-	}
-	return nil
-}
 func (r *Riff) AddNode(n *Node) *Node {
 	if nd := r.Nodes[n.Name]; nd != nil {
 		n = nd
@@ -66,5 +59,4 @@ func (r *Riff) AddNode(n *Node) *Node {
 
 func (r *Riff) Link(n *Node, s *Service) {
 	r.AddNode(n).AddService(s)
-	r.Shutter()
 }
