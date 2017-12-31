@@ -29,11 +29,11 @@ func (s *Server) listen() {
 			if s.shutdown {
 				return
 			}
-			log.Printf("[ERR] consul.rpc: failed to accept RPC conn: %v", err)
+			log.Printf("[ERR] riff.rpc: failed to accept RPC conn: %v", err)
 			continue
 		}
 		go s.handleConn(conn)
-		//metrics.IncrCounter([]string{"consul", "rpc", "accept_conn"}, 1)
+		//metrics.IncrCounter([]string{"riff", "rpc", "accept_conn"}, 1)
 		//metrics.IncrCounter([]string{"rpc", "accept_conn"}, 1)
 	}
 }
@@ -49,9 +49,9 @@ func (s *Server) handleConn(conn net.Conn) {
 		}
 		if err := s.rpcServer.ServeRequest(codec); err != nil {
 			if err == io.EOF {
-				log.Printf("[INFO] consul.rpc: end of %s", conn.RemoteAddr().String())
+				log.Printf("[INFO] riff.rpc: end of %s", conn.RemoteAddr().String())
 			} else {
-				log.Printf("[ERR] consul.rpc: %v %s", err, conn.RemoteAddr().String())
+				log.Printf("[ERR] riff.rpc: %v %s", err, conn.RemoteAddr().String())
 			}
 			return
 		}
