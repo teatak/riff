@@ -45,7 +45,7 @@ func TestRiff(t *testing.T) {
 
 	riff.Shutter()
 
-	if n,ok := riff.Nodes["n1"]; ok {
+	if n, ok := riff.Nodes["n1"]; ok {
 		fmt.Println(n)
 	}
 
