@@ -11,10 +11,10 @@ import (
 )
 
 func TimeoutCoder(f func(interface{}) error, e interface{}, msg string) error {
-	echan := make(chan error, 1)
-	go func() { echan <- f(e) }()
+	endChan := make(chan error, 1)
+	go func() { endChan <- f(e) }()
 	select {
-	case e := <-echan:
+	case e := <-endChan:
 		return e
 	case <-time.After(time.Minute):
 		return fmt.Errorf("Timeout %s", msg)
