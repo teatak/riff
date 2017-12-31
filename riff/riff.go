@@ -10,7 +10,8 @@ import (
 )
 
 type Riff struct {
-	Name string
+	Name       string
+	DataCenter string
 	Nodes
 	Services
 	SnapShort string
@@ -20,11 +21,12 @@ func init() {
 	rand.Seed(time.Now().UnixNano())
 }
 
-func Create(name string) (*Riff, error) {
+func Create(config *Config) (*Riff, error) {
 	riff := &Riff{
-		Name:     name,
-		Nodes:    make(map[string]*Node),
-		Services: make(map[string]*Service),
+		Name:       config.Name,
+		DataCenter: config.DataCenter,
+		Nodes:      make(map[string]*Node),
+		Services:   make(map[string]*Service),
 	}
 	return riff, nil
 }

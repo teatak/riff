@@ -23,7 +23,7 @@ type Server struct {
 func NewServer(config *Config) (*Server, error) {
 	shutdownCh := make(chan struct{})
 
-	riff, err := Create(config.Name)
+	riff, err := Create(config)
 	if err != nil {
 		return nil, fmt.Errorf(errorServerPrefix+"%v", err)
 	}
@@ -34,6 +34,7 @@ func NewServer(config *Config) (*Server, error) {
 		Name:  config.Name,
 		IP:    config.IP,
 		Port:  config.Port,
+		DataCenter: config.DataCenter,
 		State: stateAlive,
 	}
 	riff.AddNode(self)

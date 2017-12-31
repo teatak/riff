@@ -97,7 +97,7 @@ func BasicHelpFunc(name string) HelpFunc {
 		buf.WriteString(fmt.Sprintf(
 			"Usage: %s [--version] <command> [<args>]\n\n",
 			name))
-		buf.WriteString("Available commands are:\n")
+		buf.WriteString("Available commands are:\n\n")
 
 		// Get the list of keys so we can sort them, and also get the maximum
 		// key length so they can be aligned properly.

@@ -61,10 +61,11 @@ func (s *Server) handleConn(conn net.Conn) {
 
 func (s *Server) print() {
 	fmt.Printf(`
-    Riff Infomation
+    Riff running!
 
-    Name  |  %v
-    RPC   |  %v
+      Node Name:  '%v'
+    Data Center:  '%v'
+    RPC Address:  %v
 
-`, s.riff.Name, s.Listener.Addr())
+`, s.riff.Name, s.riff.DataCenter, s.Listener.Addr())
 }
