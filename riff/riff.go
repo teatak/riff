@@ -41,6 +41,7 @@ func (r *Riff) String() string {
 
 	return buff.String()
 }
+
 func (r *Riff) Shutter() {
 	h := sha1.New()
 	io.WriteString(h, r.String())
