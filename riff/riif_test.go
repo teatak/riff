@@ -28,7 +28,7 @@ func TestRiff(t *testing.T) {
 
 	riff.Link(n1, s1)
 	riff.Link(n1, s2)
-	riff.Link(n1, s2)
+	riff.Link(n1, s3)
 	riff.Link(n2, s1)
 
 	s1 = &Service{Name: "s1", Address: "192.168.1.2:8080", Version: 4545}

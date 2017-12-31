@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"math/rand"
-	"strconv"
 	"time"
 )
 
@@ -33,18 +32,7 @@ func (r *Riff) String() string {
 	io.WriteString(buff, "{")
 	sortedNodes := r.Nodes.sort()
 	for i, nk := range sortedNodes {
-		//write node name
-		io.WriteString(buff, r.Nodes[nk].Name+":{")
-		//write service name and version
-		sortedServices := r.Nodes[nk].Services.sort()
-		for j, sk := range sortedServices {
-			s := r.Nodes[nk].Services[sk]
-			io.WriteString(buff, s.Name+":{"+s.Address+","+strconv.FormatUint(s.Version, 10)+"}")
-			if j != len(sortedServices)-1 {
-				io.WriteString(buff, ",")
-			}
-		}
-		io.WriteString(buff, "}")
+		io.WriteString(buff, r.Nodes[nk].String())
 		if i != len(sortedNodes)-1 {
 			io.WriteString(buff, ",")
 		}
