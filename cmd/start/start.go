@@ -7,28 +7,28 @@ import (
 	"github.com/gimke/riff/riff"
 	"net"
 	"net/rpc"
+	"os"
 	"strings"
 	"time"
 )
 
-const synopsis = "Start a service"
-const help = `Usage: serf info [options]
+const synopsis = "Start riff"
+const help = `Usage: start [options]
 
-  Provides debugging information for operators
+  Start riff service
 
 Options:
 
-  -format     If provided, output is returned in the specified
-              format. Valid formats are 'json', and 'text' (default)
-  -rpc-addr   RPC address of the Serf agent.
-  -rpc-auth   RPC auth token of the Serf agent.
+  -bind       RPC address of riff (-bind [::]:8530)
+  -name       Node name.
 `
 
 type cmd struct {
 	flags *flag.FlagSet
 	help  string
 	// flags
-	ping bool
+	bind string
+	name string
 }
 
 func New() *cmd {
@@ -38,9 +38,11 @@ func New() *cmd {
 }
 
 func (c *cmd) init() {
+	hostName, _ := os.Hostname()
 	c.flags = flag.NewFlagSet("start", flag.ContinueOnError)
-	c.flags.BoolVar(&c.ping, "ping", false,
-		"usage")
+	c.flags.StringVar(&c.bind, "bind", ":8530", "usage")
+	c.flags.StringVar(&c.name, "name", hostName, "usage")
+
 	c.flags.Usage = func() {
 		fmt.Println(c.Help())
 	}
@@ -50,14 +52,15 @@ func (c *cmd) Run(args []string) int {
 	if err := c.flags.Parse(args); err != nil {
 		return 1
 	}
-	if c.ping {
-		//call client
-		c.Ping()
-		return 0
+	config, err := riff.NewConfig(c.bind, c.name)
+	if err != nil {
+		fmt.Printf("riff.start error:%v\n", err)
+		return 1
 	}
-	s, err := riff.NewServer()
+	s, err := riff.NewServer(config)
 	if err != nil {
 		fmt.Println(err)
+		return 1
 	}
 	defer s.Shutdown()
 	<-exit

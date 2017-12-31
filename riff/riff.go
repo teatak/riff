@@ -10,6 +10,7 @@ import (
 )
 
 type Riff struct {
+	Name string
 	Nodes
 	Services
 	SnapShort string
@@ -19,8 +20,9 @@ func init() {
 	rand.Seed(time.Now().UnixNano())
 }
 
-func Create() (*Riff, error) {
+func Create(name string) (*Riff, error) {
 	riff := &Riff{
+		Name:     name,
 		Nodes:    make(map[string]*Node),
 		Services: make(map[string]*Service),
 	}

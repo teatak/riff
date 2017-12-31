@@ -1,6 +1,7 @@
 package riff
 
 import (
+	"fmt"
 	"github.com/gimke/riff/common"
 	"io"
 	"log"
@@ -22,6 +23,8 @@ func init() {
 }
 
 func (s *Server) listen() {
+	s.print()
+	log.Printf(infoRpcPrefix+"start to accept rpc conn: %v", s.Listener.Addr())
 	for {
 		// Accept a connection
 		conn, err := s.Listener.Accept()
@@ -29,12 +32,10 @@ func (s *Server) listen() {
 			if s.shutdown {
 				return
 			}
-			log.Printf("[ERR] riff.rpc: failed to accept RPC conn: %v", err)
+			log.Printf(errorRpcPrefix+"failed to accept RPC conn: %v", err)
 			continue
 		}
 		go s.handleConn(conn)
-		//metrics.IncrCounter([]string{"riff", "rpc", "accept_conn"}, 1)
-		//metrics.IncrCounter([]string{"rpc", "accept_conn"}, 1)
 	}
 }
 
@@ -49,11 +50,21 @@ func (s *Server) handleConn(conn net.Conn) {
 		}
 		if err := s.rpcServer.ServeRequest(codec); err != nil {
 			if err == io.EOF {
-				log.Printf("[INFO] riff.rpc: end of %s", conn.RemoteAddr().String())
+				log.Printf(infoRpcPrefix+"end of %s", conn.RemoteAddr().String())
 			} else {
-				log.Printf("[ERR] riff.rpc: %v %s", err, conn.RemoteAddr().String())
+				log.Printf(errorRpcPrefix+"%v %s", err, conn.RemoteAddr().String())
 			}
 			return
 		}
 	}
+}
+
+func (s *Server) print() {
+	fmt.Printf(`
+    Riff Infomation
+
+    Name  |  %v
+    RPC   |  %v
+
+`, s.riff.Name, s.Listener.Addr())
 }

@@ -11,7 +11,7 @@ type Services map[string]*Service
 
 type Service struct {
 	Name        string
-	Addr        net.IP
+	IP          net.IP
 	Port        uint16
 	Version     uint64
 	State       stateType // Current state
@@ -19,7 +19,7 @@ type Service struct {
 }
 
 func (n *Service) Address() string {
-	return net.JoinHostPort(n.Addr.String(), strconv.Itoa(int(n.Port)))
+	return net.JoinHostPort(n.IP.String(), strconv.Itoa(int(n.Port)))
 }
 
 func (ss *Services) sort() []string {

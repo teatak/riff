@@ -25,8 +25,8 @@ const (
 type Node struct {
 	Services
 	Name        string
-	Addr        net.IP
-	Port        uint16
+	IP          net.IP
+	Port        int
 	State       stateType // Current state
 	StateChange time.Time // Time last state change happened
 	DataCenter  string
@@ -36,7 +36,7 @@ type Node struct {
 }
 
 func (n *Node) Address() string {
-	return net.JoinHostPort(n.Addr.String(), strconv.Itoa(int(n.Port)))
+	return net.JoinHostPort(n.IP.String(), strconv.Itoa(int(n.Port)))
 }
 
 func (ns *Nodes) sort() []string {
