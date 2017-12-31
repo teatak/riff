@@ -46,7 +46,6 @@ func (r *Riff) Shutter() {
 	h := sha1.New()
 	io.WriteString(h, r.String())
 	r.SnapShort = fmt.Sprintf("%x", h.Sum(nil))
-	fmt.Println("SnapShort", r.SnapShort)
 }
 
 func (r *Riff) AddNode(n *Node) *Node {

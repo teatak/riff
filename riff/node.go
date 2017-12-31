@@ -14,10 +14,10 @@ import (
 
 type Nodes map[string]*Node
 
-type nodeStateType int
+type stateType int
 
 const (
-	stateAlive nodeStateType = iota
+	stateAlive stateType = iota
 	stateSuspect
 	stateDead
 )
@@ -27,8 +27,8 @@ type Node struct {
 	Name        string
 	Addr        net.IP
 	Port        uint16
-	State       nodeStateType // Current state
-	StateChange time.Time     // Time last state change happened
+	State       stateType // Current state
+	StateChange time.Time // Time last state change happened
 	DataCenter  string
 	SnapShort   string
 

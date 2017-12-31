@@ -10,6 +10,10 @@ import (
 func main() {
 	args := os.Args[1:]
 	for _, arg := range args {
+		if arg == "cheers" {
+			fmt.Println(cheers)
+			return
+		}
 		if arg == "--" {
 			break
 		}
@@ -20,7 +24,7 @@ func main() {
 		}
 	}
 
-	c := cli.NewCLI("dim", common.Version)
+	c := cli.NewCLI("riff", common.Version)
 	c.Args = args
 	c.Commands = Commands
 	exitCode, err := c.Run()
