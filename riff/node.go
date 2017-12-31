@@ -68,7 +68,6 @@ func (n *Node) Shutter() {
 	h := sha1.New()
 	io.WriteString(h, n.String())
 	n.SnapShort = fmt.Sprintf("%x", h.Sum(nil))
-	fmt.Println(n.Name, "SnapShort", n.SnapShort)
 }
 
 func (n *Node) AddService(s *Service) {
