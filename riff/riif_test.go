@@ -32,7 +32,8 @@ func TestRiff(t *testing.T) {
 		Port:       8530,
 	}
 
-	riff, _ := Create("node")
+	config, _ := NewConfig("192.168.1.220", "node1", "dc1")
+	riff, _ := Create(config)
 
 	s1 := &Service{Name: "s1", IP: net.ParseIP("192.168.1.1"), Port: 8080}
 	s2 := &Service{Name: "s2", IP: net.ParseIP("192.168.1.2"), Port: 8080}
