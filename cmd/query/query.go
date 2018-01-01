@@ -15,20 +15,20 @@ const help = `Usage: riff query <command> [options]
 
   Query riff service
 
-Subcommands:
+Available subcommands are:
 
   nodes       Get nodes list
   snap        Get snap short.
 
 Options:
 
-  -rpc-addr   RPC address of riff (-bind [::]:8530)
+  -addr   RPC address of riff (-addr 127.0.0.1:8530)
 `
 
 type cmd struct {
 	flags *flag.FlagSet
 	// flags
-	rpcAddr  string
+	addr  string
 }
 
 func New() *cmd {
@@ -38,7 +38,7 @@ func New() *cmd {
 }
 func (c *cmd) init() {
 	c.flags = flag.NewFlagSet("query", flag.ContinueOnError)
-	c.flags.StringVar(&c.rpcAddr, "rpc-addr", "127.0.0.1:8530", "usage")
+	c.flags.StringVar(&c.addr, "addr", "127.0.0.1:8530", "usage")
 
 	c.flags.Usage = func() {
 		fmt.Println(c.Help())
@@ -75,7 +75,7 @@ func (c *cmd) Run(args []string) int {
 }
 
 func (c *cmd) SnapShort() {
-	conn, err := net.DialTimeout("tcp", c.rpcAddr, time.Second*10)
+	conn, err := net.DialTimeout("tcp", c.addr, time.Second*10)
 	if err != nil {
 		fmt.Println("error", err)
 		return
@@ -93,7 +93,7 @@ func (c *cmd) SnapShort() {
 }
 
 func (c *cmd) Nodes() {
-	conn, err := net.DialTimeout("tcp", c.rpcAddr, time.Second*10)
+	conn, err := net.DialTimeout("tcp", c.addr, time.Second*10)
 	if err != nil {
 		fmt.Println("error", err)
 		return
@@ -125,5 +125,5 @@ func (c *cmd) Synopsis() string {
 }
 
 func (c *cmd) Help() string {
-	return ""
+	return help
 }
