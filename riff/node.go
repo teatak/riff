@@ -25,11 +25,11 @@ const (
 type Node struct {
 	Services
 	Name        string
+	DataCenter  string
 	IP          net.IP
 	Port        int
 	State       stateType // Current state
 	StateChange time.Time // Time last state change happened
-	DataCenter  string
 	SnapShort   string
 
 	nodeLock sync.RWMutex
