@@ -22,8 +22,8 @@ const (
 	stateDead
 )
 
-func GetState(state stateType) string {
-	switch state {
+func (s stateType) String() string {
+	switch s {
 	case stateAlive:
 		return "Alive"
 		break
@@ -34,7 +34,7 @@ func GetState(state stateType) string {
 		return "Dead"
 		break
 	}
-	return ""
+	return "Unknow"
 }
 
 type Node struct {

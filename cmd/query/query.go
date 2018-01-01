@@ -11,11 +11,24 @@ import (
 	"time"
 )
 
+const help = `Usage: riff query <command> [options]
+
+  Query riff service
+
+Subcommands:
+
+  nodes       Get nodes list
+  snap        Get snap short.
+
+Options:
+
+  -rpc-addr   RPC address of riff (-bind [::]:8530)
+`
+
 type cmd struct {
 	flags *flag.FlagSet
 	// flags
-	snap  bool
-	nodes bool
+	rpcAddr  string
 }
 
 func New() *cmd {
@@ -25,31 +38,44 @@ func New() *cmd {
 }
 func (c *cmd) init() {
 	c.flags = flag.NewFlagSet("query", flag.ContinueOnError)
-	c.flags.BoolVar(&c.snap, "snap", false, "usage")
-	c.flags.BoolVar(&c.nodes, "nodes", false, "usage")
+	c.flags.StringVar(&c.rpcAddr, "rpc-addr", "127.0.0.1:8530", "usage")
 
 	c.flags.Usage = func() {
 		fmt.Println(c.Help())
 	}
 }
 func (c *cmd) Run(args []string) int {
-	if err := c.flags.Parse(args); err != nil {
-		return 1
+	if len(args) > 1 {
+		if err := c.flags.Parse(args[1:]); err != nil {
+			return 1
+		}
 	}
-	if c.snap {
-		//call client
+	//get args 0
+	command := args[0]
+	switch command {
+	case "snap":
 		c.SnapShort()
 		return 0
-	}
-	if c.nodes {
+		break
+	case "nodes":
 		c.Nodes()
 		return 0
+		break
 	}
+	//if c.snap {
+	//	//call client
+	//	c.SnapShort()
+	//	return 0
+	//}
+	//if c.nodes {
+	//	c.Nodes()
+	//	return 0
+	//}
 	return 0
 }
 
 func (c *cmd) SnapShort() {
-	conn, err := net.DialTimeout("tcp", "192.168.1.220:8530", time.Second*10)
+	conn, err := net.DialTimeout("tcp", c.rpcAddr, time.Second*10)
 	if err != nil {
 		fmt.Println("error", err)
 		return
@@ -67,7 +93,7 @@ func (c *cmd) SnapShort() {
 }
 
 func (c *cmd) Nodes() {
-	conn, err := net.DialTimeout("tcp", "192.168.1.220:8530", time.Second*10)
+	conn, err := net.DialTimeout("tcp", c.rpcAddr, time.Second*10)
 	if err != nil {
 		fmt.Println("error", err)
 		return
@@ -82,15 +108,16 @@ func (c *cmd) Nodes() {
 		fmt.Println("error", err)
 		return
 	}
-	fmt.Printf("%-16s %-16s %-24s %-8v %-48s\n", "Node", "DC", "Address", "Status", "SnapShort")
+	fmt.Printf("%-16s %-10s %-24s %-8v %-48s\n", "Node", "DC", "Address", "Status", "SnapShort")
 	for _, n := range nodes {
-		fmt.Printf("%-16s %-16s %-24s %-8v %-48s\n",
+		fmt.Printf("%-16s %-10s %-24s %-8v %-48s\n",
 			n.Name,
 			n.DataCenter,
 			net.JoinHostPort(n.IP.String(), strconv.Itoa(n.Port)),
-			riff.GetState(n.State),
-			n.SnapShort)
+			n.State.String(),
+			n.SnapShort[0:10]+"...")
 	}
+
 }
 
 func (c *cmd) Synopsis() string {
