@@ -5,6 +5,7 @@ import (
 	"github.com/gimke/riff/cmd/start"
 	"github.com/gimke/riff/cmd/version"
 	"github.com/gimke/riff/common"
+	"github.com/gimke/riff/cmd/query"
 )
 
 var Commands cli.Commands
@@ -13,44 +14,11 @@ func init() {
 	Commands = cli.Commands{
 		"version": version.New(common.Version),
 		"start":   start.New(),
+		"query":   query.New(),
 	}
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-const cheers  = `
+const cheers = `
  222222222222222         000000000       1111111        888888888
 2:::::::::::::::22     00:::::::::00    1::::::1      88:::::::::88
 2::::::222222:::::2  00:::::::::::::00 1:::::::1    88:::::::::::::88

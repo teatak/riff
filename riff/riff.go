@@ -9,34 +9,19 @@ import (
 	"time"
 )
 
-type Riff struct {
-	Name       string
-	DataCenter string
-	Nodes
-	Services
-	SnapShort string
-}
-
 func init() {
 	rand.Seed(time.Now().UnixNano())
 }
 
-func Create(config *Config) (*Riff, error) {
-	riff := &Riff{
-		Name:       config.Name,
-		DataCenter: config.DataCenter,
-		Nodes:      make(map[string]*Node),
-		Services:   make(map[string]*Service),
-	}
-	return riff, nil
-}
 
-func (r *Riff) String() string {
+func (s *Server) toString() string {
 	buff := bytes.NewBuffer(nil)
 	io.WriteString(buff, "{")
-	sortedNodes := r.Nodes.sort()
+	sortedNodes := s.Nodes.sort()
 	for i, nk := range sortedNodes {
-		io.WriteString(buff, r.Nodes[nk].String())
+		//shutter the node
+		s.Nodes[nk].Shutter()
+		io.WriteString(buff, s.Nodes[nk].toString())
 		if i != len(sortedNodes)-1 {
 			io.WriteString(buff, ",")
 		}
@@ -46,21 +31,23 @@ func (r *Riff) String() string {
 	return buff.String()
 }
 
-func (r *Riff) Shutter() {
+func (s *Server) Shutter() {
 	h := sha1.New()
-	io.WriteString(h, r.String())
-	r.SnapShort = fmt.Sprintf("%x", h.Sum(nil))
+	io.WriteString(h, s.toString())
+	s.SnapShort = fmt.Sprintf("%x", h.Sum(nil))
 }
 
-func (r *Riff) AddNode(n *Node) *Node {
-	if nd := r.Nodes[n.Name]; nd != nil {
-		n = nd
+func (s *Server) AddNode(node *Node) *Node {
+	if nd := s.Nodes[node.Name]; nd != nil {
+		node = nd
 	} else {
-		r.Nodes[n.Name] = n
+		s.Nodes[node.Name] = node
 	}
-	return n
+	s.Shutter()
+	return node
 }
 
-func (r *Riff) Link(n *Node, s *Service) {
-	r.AddNode(n).AddService(s)
+func (s *Server) Link(node *Node, service *Service) {
+	s.Shutter()
+	s.AddNode(node).AddService(service)
 }

@@ -22,6 +22,21 @@ const (
 	stateDead
 )
 
+func GetState(state stateType) string {
+	switch state {
+	case stateAlive:
+		return "Alive"
+		break
+	case stateSuspect:
+		return "Suspect"
+		break
+	case stateDead:
+		return "Dead"
+		break
+	}
+	return ""
+}
+
 type Node struct {
 	Services
 	Name        string
@@ -48,7 +63,7 @@ func (ns *Nodes) sort() []string {
 	return keys
 }
 
-func (n *Node) String() string {
+func (n *Node) toString() string {
 	buff := bytes.NewBuffer(nil)
 	io.WriteString(buff, n.Name+":{")
 	//write service name and version
@@ -66,7 +81,7 @@ func (n *Node) String() string {
 
 func (n *Node) Shutter() {
 	h := sha1.New()
-	io.WriteString(h, n.String())
+	io.WriteString(h, n.toString())
 	n.SnapShort = fmt.Sprintf("%x", h.Sum(nil))
 }
 

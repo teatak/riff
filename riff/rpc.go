@@ -20,6 +20,7 @@ func registerEndpoint(fn factory) {
 
 func init() {
 	registerEndpoint(func(s *Server) interface{} { return &Status{s} })
+	registerEndpoint(func(s *Server) interface{} { return &Query{s} })
 }
 
 func (s *Server) listen() {
@@ -67,5 +68,5 @@ func (s *Server) print() {
     Data Center:  '%v'
     RPC Address:  %v
 
-`, s.riff.Name, s.riff.DataCenter, s.Listener.Addr())
+`, s.Name, s.DataCenter, s.Listener.Addr())
 }
