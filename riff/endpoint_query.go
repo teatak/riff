@@ -7,9 +7,9 @@ type Query struct {
 }
 
 // Ping is used to just check for connectivity
-func (q *Query) SnapShort(_ struct{}, snap *string) error {
-	*snap = q.server.SnapShort
-	log.Printf(infoRpcPrefix+"client get snapshort: %s",*snap)
+func (q *Query) SnapShot(_ struct{}, snap *string) error {
+	*snap = q.server.SnapShot
+	log.Printf(infoRpcPrefix+"client get snapshot: %s",*snap)
 	return nil
 }
 

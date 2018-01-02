@@ -22,13 +22,13 @@ Available subcommands are:
 
 Options:
 
-  -addr   RPC address of riff (-addr 127.0.0.1:8530)
+  -rpc    RPC address of riff (-rpc 0.0.0.0:8630)
 `
 
 type cmd struct {
 	flags *flag.FlagSet
 	// flags
-	addr  string
+	rpc  string
 }
 
 func New() *cmd {
@@ -38,7 +38,7 @@ func New() *cmd {
 }
 func (c *cmd) init() {
 	c.flags = flag.NewFlagSet("query", flag.ContinueOnError)
-	c.flags.StringVar(&c.addr, "addr", "127.0.0.1:8530", "usage")
+	c.flags.StringVar(&c.rpc, "rpc", "0.0.0.0:8630", "usage")
 
 	c.flags.Usage = func() {
 		fmt.Println(c.Help())
@@ -54,7 +54,7 @@ func (c *cmd) Run(args []string) int {
 	command := args[0]
 	switch command {
 	case "snap":
-		c.SnapShort()
+		c.SnapShot()
 		return 0
 		break
 	case "nodes":
@@ -64,7 +64,7 @@ func (c *cmd) Run(args []string) int {
 	}
 	//if c.snap {
 	//	//call client
-	//	c.SnapShort()
+	//	c.SnapShot()
 	//	return 0
 	//}
 	//if c.nodes {
@@ -74,8 +74,8 @@ func (c *cmd) Run(args []string) int {
 	return 0
 }
 
-func (c *cmd) SnapShort() {
-	conn, err := net.DialTimeout("tcp", c.addr, time.Second*10)
+func (c *cmd) SnapShot() {
+	conn, err := net.DialTimeout("tcp", c.rpc, time.Second*10)
 	if err != nil {
 		fmt.Println("error", err)
 		return
@@ -84,16 +84,16 @@ func (c *cmd) SnapShort() {
 	codec := common.NewGobClientCodec(conn)
 	//codec := jsonrpc.NewClientCodec(conn)
 	cmd := rpc.NewClientWithCodec(codec)
-	var snapshort string
-	err = cmd.Call("Query.SnapShort", struct{}{}, &snapshort)
+	var snapshot string
+	err = cmd.Call("Query.SnapShot", struct{}{}, &snapshot)
 	if err != nil {
 		fmt.Println("error", err)
 	}
-	fmt.Println(snapshort)
+	fmt.Println(snapshot)
 }
 
 func (c *cmd) Nodes() {
-	conn, err := net.DialTimeout("tcp", c.addr, time.Second*10)
+	conn, err := net.DialTimeout("tcp", c.rpc, time.Second*10)
 	if err != nil {
 		fmt.Println("error", err)
 		return
@@ -108,14 +108,15 @@ func (c *cmd) Nodes() {
 		fmt.Println("error", err)
 		return
 	}
-	fmt.Printf("%-16s %-10s %-24s %-8v %-48s\n", "Node", "DC", "Address", "Status", "SnapShort")
+	fmt.Printf("%-12s %-24s %-10s %-24s %-8v %-48s\n", "Id","Node", "DC", "Address", "Status", "SnapShot")
 	for _, n := range nodes {
-		fmt.Printf("%-16s %-10s %-24s %-8v %-48s\n",
+		fmt.Printf("%-12s %-24s %-10s %-24s %-8v %-48s\n",
+			n.Id,
 			n.Name,
 			n.DataCenter,
-			net.JoinHostPort(n.IP.String(), strconv.Itoa(n.Port)),
+			net.JoinHostPort(n.IP, strconv.Itoa(n.Port)),
 			n.State.String(),
-			n.SnapShort[0:10]+"...")
+			n.SnapShot[0:10]+"...")
 	}
 
 }

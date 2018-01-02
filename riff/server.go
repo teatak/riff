@@ -5,20 +5,22 @@ import (
 	"net"
 	"net/rpc"
 	"sync"
+	"time"
 )
 
 const errorServerPrefix = "riff.server error: "
-const errorRpcPrefix = "[ERR]  riff.rpc error: "
+const errorRpcPrefix = "[ERR]  riff.rpc: "
 const infoRpcPrefix = "[INFO] riff.rpc: "
 
 type Server struct {
 	Listener   net.Listener
 	rpcServer  *rpc.Server
+	Id         string
 	Name       string
 	DataCenter string
 	Nodes
 	Services
-	SnapShort    string
+	SnapShot    string
 	config       *Config
 	shutdown     bool
 	shutdownCh   chan struct{}
@@ -44,12 +46,15 @@ func NewServer(config *Config) (*Server, error) {
 }
 func (s *Server) setupServer() error {
 	self := &Node{
-		Name:       s.config.Name,
-		IP:         s.config.IP,
-		Port:       s.config.Port,
-		DataCenter: s.config.DataCenter,
-		State:      stateAlive,
+		Id:          s.config.Id,
+		Name:        s.config.Name,
+		IP:          s.config.Addresses.Rpc,
+		Port:        s.config.Ports.Rpc,
+		DataCenter:  s.config.DataCenter,
+		State:       stateAlive,
+		StateChange: time.Now(),
 	}
+	s.Id = s.config.Id
 	s.Name = s.config.Name
 	s.DataCenter = s.config.DataCenter
 	s.Nodes = make(map[string]*Node)
@@ -63,8 +68,8 @@ func (s *Server) setupRPC() error {
 		s.rpcServer.Register(fn(s))
 	}
 	addr := &net.TCPAddr{
-		IP:   s.config.IP,
-		Port: s.config.Port,
+		IP:   net.ParseIP(s.config.Addresses.Rpc),
+		Port: s.config.Ports.Rpc,
 	}
 	ln, err := net.ListenTCP("tcp", addr)
 	if err != nil {

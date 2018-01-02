@@ -26,6 +26,7 @@ func init() {
 func (s *Server) listen() {
 	s.print()
 	log.Printf(infoRpcPrefix+"start to accept rpc conn: %v", s.Listener.Addr())
+	log.Printf(infoRpcPrefix+"snapshot now is:%s",s.SnapShot)
 	for {
 		// Accept a connection
 		conn, err := s.Listener.Accept()
@@ -64,9 +65,10 @@ func (s *Server) print() {
 	fmt.Printf(`
     Riff running!
 
-      Node Name:  '%v'
-    Data Center:  '%v'
+        Node Id:  %v
+           Name:  %v
+             DC:  %v
     RPC Address:  %v
 
-`, s.Name, s.DataCenter, s.Listener.Addr())
+`,s.Id, s.Name, s.DataCenter, s.Listener.Addr())
 }

@@ -8,3 +8,4 @@ const (
 	Success = Green + "[  OK  ]" + Reset
 	Failed  = Red + "[FAILED]" + Reset
 )
+

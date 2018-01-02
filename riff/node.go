@@ -14,6 +14,15 @@ import (
 
 type Nodes map[string]*Node
 
+func (ns *Nodes) sort() []string {
+	var keys = make([]string, 0, 0)
+	for key, _ := range *ns {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+	return keys
+}
+
 type stateType int
 
 const (
@@ -39,33 +48,25 @@ func (s stateType) String() string {
 
 type Node struct {
 	Services
+	Id          string
 	Name        string
 	DataCenter  string
-	IP          net.IP
+	IP          string
 	Port        int
 	State       stateType // Current state
 	StateChange time.Time // Time last state change happened
-	SnapShort   string
+	SnapShot   string
 
 	nodeLock sync.RWMutex
 }
 
 func (n *Node) Address() string {
-	return net.JoinHostPort(n.IP.String(), strconv.Itoa(int(n.Port)))
+	return net.JoinHostPort(n.IP, strconv.Itoa(int(n.Port)))
 }
 
-func (ns *Nodes) sort() []string {
-	var keys = make([]string, 0, 0)
-	for key, _ := range *ns {
-		keys = append(keys, key)
-	}
-	sort.Strings(keys)
-	return keys
-}
-
-func (n *Node) toString() string {
+func (n *Node) String() string {
 	buff := bytes.NewBuffer(nil)
-	io.WriteString(buff, n.Name+":{")
+	io.WriteString(buff, n.Id+strconv.Itoa(n.StateChange.Nanosecond())+":{")
 	//write service name and version
 	sortedServices := n.Services.sort()
 	for i, sk := range sortedServices {
@@ -81,8 +82,8 @@ func (n *Node) toString() string {
 
 func (n *Node) Shutter() {
 	h := sha1.New()
-	io.WriteString(h, n.toString())
-	n.SnapShort = fmt.Sprintf("%x", h.Sum(nil))
+	io.WriteString(h, n.String())
+	n.SnapShot = fmt.Sprintf("%x", h.Sum(nil))
 }
 
 func (n *Node) AddService(s *Service) {

@@ -5,23 +5,16 @@ import (
 	"crypto/sha1"
 	"fmt"
 	"io"
-	"math/rand"
-	"time"
 )
 
-func init() {
-	rand.Seed(time.Now().UnixNano())
-}
-
-
-func (s *Server) toString() string {
+func (s *Server) String() string {
 	buff := bytes.NewBuffer(nil)
 	io.WriteString(buff, "{")
 	sortedNodes := s.Nodes.sort()
 	for i, nk := range sortedNodes {
 		//shutter the node
 		s.Nodes[nk].Shutter()
-		io.WriteString(buff, s.Nodes[nk].toString())
+		io.WriteString(buff, s.Nodes[nk].String())
 		if i != len(sortedNodes)-1 {
 			io.WriteString(buff, ",")
 		}
@@ -31,10 +24,20 @@ func (s *Server) toString() string {
 	return buff.String()
 }
 
+func (s *Server) MakeDigest() (digest Nodes){
+	digest = make(map[string]*Node)
+	for _,n := range s.Nodes {
+		digest[n.Name] = n
+		//remove services
+		digest[n.Name].Services = nil
+	}
+	return
+}
+
 func (s *Server) Shutter() {
 	h := sha1.New()
-	io.WriteString(h, s.toString())
-	s.SnapShort = fmt.Sprintf("%x", h.Sum(nil))
+	io.WriteString(h, s.String())
+	s.SnapShot = fmt.Sprintf("%x", h.Sum(nil))
 }
 
 func (s *Server) AddNode(node *Node) *Node {

@@ -3,7 +3,9 @@ package start
 import (
 	"flag"
 	"fmt"
+	"github.com/gimke/riff/common"
 	"github.com/gimke/riff/riff"
+	"net"
 	"os"
 	"strings"
 )
@@ -15,7 +17,9 @@ const help = `Usage: start [options]
 
 Options:
 
-  -bind       RPC address of riff (-bind [::]:8530)
+  -http       Http address of riff (-http 127.0.0.1)
+  -dns        Dns address of riff (-dns 127.0.0.1)
+  -rpc        RPC address of riff (-rpc 0.0.0.0)
   -name       Node name.
   -dc         DataCenter name.
 `
@@ -24,9 +28,11 @@ type cmd struct {
 	flags *flag.FlagSet
 	help  string
 	// flags
-	bind string
 	name string
 	dc   string
+	http string
+	dns  string
+	rpc  string
 }
 
 func New() *cmd {
@@ -38,7 +44,9 @@ func New() *cmd {
 func (c *cmd) init() {
 	hostName, _ := os.Hostname()
 	c.flags = flag.NewFlagSet("start", flag.ContinueOnError)
-	c.flags.StringVar(&c.bind, "bind", ":8530", "usage")
+	c.flags.StringVar(&c.http, "http", "127.0.0.1", "usage")
+	c.flags.StringVar(&c.dns, "dns", "127.0.0.1", "usage")
+	c.flags.StringVar(&c.rpc, "rpc", "0.0.0.0", "usage")
 	c.flags.StringVar(&c.name, "name", hostName, "usage")
 	c.flags.StringVar(&c.dc, "dc", "dc1", "usage")
 
@@ -51,10 +59,39 @@ func (c *cmd) Run(args []string) int {
 	if err := c.flags.Parse(args); err != nil {
 		return 1
 	}
-	config, err := riff.NewConfig(c.bind, c.name, c.dc)
+	config, err := loadConfig()
 	if err != nil {
-		fmt.Printf("riff.start error:%v\n", err)
+		fmt.Printf("riff.start error: %v\n", err)
 		return 1
+	}
+
+	var addviseRpc string
+	if common.IsAny(c.rpc) {
+		var addrs []*net.IPAddr
+		//detect ip
+		var addrtyp string
+
+		switch {
+		case common.IsAnyV4(c.rpc):
+			addrtyp = "private IPv4"
+			addrs, err = common.GetPrivateIPv4()
+			if err != nil {
+				fmt.Println("Error detecting %s address: %s", addrtyp, err)
+			}
+			break
+		case common.IsAnyV6(c.rpc):
+			addrtyp = "public IPv6"
+			addrs, err = common.GetPublicIPv6()
+			if err != nil {
+				fmt.Println("Error detecting %s address: %s", addrtyp, err)
+			}
+			break
+		}
+		addviseRpc = addrs[0].String()
+	}
+	if (config.Addresses.Rpc == "") {
+		config.IP = addviseRpc
+		config.Addresses.Rpc = addviseRpc
 	}
 	s, err := riff.NewServer(config)
 	if err != nil {
