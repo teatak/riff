@@ -1,8 +1,6 @@
 package riff
 
-import (
-
-)
+import ()
 
 type Config struct {
 	Id         string     `yaml:"id"`

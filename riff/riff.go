@@ -24,9 +24,9 @@ func (s *Server) String() string {
 	return buff.String()
 }
 
-func (s *Server) MakeDigest() (digest Nodes){
+func (s *Server) MakeDigest() (digest Nodes) {
 	digest = make(map[string]*Node)
-	for _,n := range s.Nodes {
+	for _, n := range s.Nodes {
 		digest[n.Name] = n
 		//remove services
 		digest[n.Name].Services = nil

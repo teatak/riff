@@ -28,7 +28,7 @@ Options:
 type cmd struct {
 	flags *flag.FlagSet
 	// flags
-	rpc  string
+	rpc string
 }
 
 func New() *cmd {
@@ -108,7 +108,7 @@ func (c *cmd) Nodes() {
 		fmt.Println("error", err)
 		return
 	}
-	fmt.Printf("%-12s %-24s %-10s %-24s %-8v %-48s\n", "Id","Node", "DC", "Address", "Status", "SnapShot")
+	fmt.Printf("%-12s %-24s %-10s %-24s %-8v %-48s\n", "Id", "Node", "DC", "Address", "Status", "SnapShot")
 	for _, n := range nodes {
 		fmt.Printf("%-12s %-24s %-10s %-24s %-8v %-48s\n",
 			n.Id,

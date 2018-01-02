@@ -2,10 +2,10 @@ package main
 
 import (
 	"github.com/gimke/riff/cli"
+	"github.com/gimke/riff/cmd/query"
 	"github.com/gimke/riff/cmd/start"
 	"github.com/gimke/riff/cmd/version"
 	"github.com/gimke/riff/common"
-	"github.com/gimke/riff/cmd/query"
 )
 
 var Commands cli.Commands

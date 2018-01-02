@@ -1,10 +1,10 @@
 package common
 
 import (
+	"math/rand"
 	"os"
 	"path/filepath"
 	"time"
-	"math/rand"
 )
 
 var BinDir string

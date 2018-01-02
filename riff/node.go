@@ -55,7 +55,7 @@ type Node struct {
 	Port        int
 	State       stateType // Current state
 	StateChange time.Time // Time last state change happened
-	SnapShot   string
+	SnapShot    string
 
 	nodeLock sync.RWMutex
 }

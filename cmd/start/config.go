@@ -1,12 +1,12 @@
 package start
 
 import (
+	"fmt"
 	"github.com/gimke/riff/common"
+	"github.com/gimke/riff/riff"
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
-	"gopkg.in/yaml.v2"
-	"github.com/gimke/riff/riff"
-	"fmt"
 )
 
 var configText = ""
@@ -36,10 +36,10 @@ func initConfig() {
 	}
 }
 
-func loadConfig() (*riff.Config,error) {
+func loadConfig() (*riff.Config, error) {
 	file := common.BinDir + "/config/" + common.Name + ".yml"
 	if !isExist(file) {
-		return nil, fmt.Errorf("file not exist %s",file)
+		return nil, fmt.Errorf("file not exist %s", file)
 	}
 	content, _ := ioutil.ReadFile(file)
 	var c = &riff.Config{}
@@ -68,5 +68,5 @@ func loadConfig() (*riff.Config,error) {
 		}
 	}
 
-	return c,nil
+	return c, nil
 }

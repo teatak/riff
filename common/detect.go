@@ -1,8 +1,8 @@
 package common
 
 import (
-	"net"
 	"fmt"
+	"net"
 	"reflect"
 )
 

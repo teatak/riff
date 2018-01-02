@@ -89,7 +89,7 @@ func (c *cmd) Run(args []string) int {
 		}
 		addviseRpc = addrs[0].String()
 	}
-	if (config.Addresses.Rpc == "") {
+	if config.Addresses.Rpc == "" {
 		config.IP = addviseRpc
 		config.Addresses.Rpc = addviseRpc
 	}

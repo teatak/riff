@@ -19,7 +19,7 @@ func (r *Riff) Pull(snap string, digest *Nodes) error {
 }
 
 //push changes
-func (r *Riff) PushDiff(diff Nodes,remoteDiff *Nodes) error {
-	log.Printf(infoRpcPrefix+"riff push diff: %v",diff)
+func (r *Riff) PushDiff(diff Nodes, remoteDiff *Nodes) error {
+	log.Printf(infoRpcPrefix+"riff push diff: %v", diff)
 	return nil
 }

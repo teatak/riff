@@ -20,7 +20,7 @@ type Server struct {
 	DataCenter string
 	Nodes
 	Services
-	SnapShot    string
+	SnapShot     string
 	config       *Config
 	shutdown     bool
 	shutdownCh   chan struct{}
