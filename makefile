@@ -22,7 +22,7 @@ test: dev
 	@go list ./... | grep -v -E '^github.com/gimke/riff/(vendor|cmd/serf/vendor)' | xargs -n1 go test
 
 static-assets:
-	@go-bindata-assetfs -pkg riff -prefix aaa ./static/...
+	@go-bindata-assetfs -pkg riff ./static/...
 	@mv bindata_assetfs.go riff/
 	$(MAKE) fmt
 

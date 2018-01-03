@@ -3,6 +3,7 @@ package riff
 import (
 	"fmt"
 	"github.com/gimke/cart"
+	"log"
 	"net"
 	"net/http"
 	"net/rpc"
@@ -76,6 +77,10 @@ func (s *Server) setupServer() error {
 func assetServer() cart.Handler {
 	return func(c *cart.Context, next cart.Next) {
 		http.StripPrefix("/console/", http.FileServer(assetFS())).ServeHTTP(c.Response, c.Request)
+		if c.Response.Status() == 404 {
+			c.Response.WriteHeader(200) //reset status
+			next()
+		}
 	}
 }
 
@@ -86,7 +91,24 @@ func (s *Server) setupCart() error {
 	//
 	r := cart.New()
 	r.Use("/", Logger(), cart.RecoveryRender(cart.DefaultErrorWriter))
-	r.Use("/console/*file", assetServer())
+	r.Use("/console/*file", func(c *cart.Context, next cart.Next) {
+		b, err := assetFS().Asset("static/index.html")
+		if err != nil {
+			log.Printf(errorRpcPrefix+"error: %v\n", err)
+			next()
+		} else {
+			c.Response.WriteHeader(200)
+			c.Response.Write(b)
+		}
+	})
+	r.Use("/static/*file", func(c *cart.Context, next cart.Next) {
+		http.StripPrefix("/static/", http.FileServer(assetFS())).ServeHTTP(c.Response, c.Request)
+		if c.Response.Status() == 404 {
+			c.Response.WriteHeader(200) //reset status
+			next()
+		}
+	})
+
 	a := Api{
 		server: s,
 	}
