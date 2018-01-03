@@ -29,9 +29,6 @@ type Server struct {
 	shutdownLock sync.Mutex
 }
 
-//private server
-var riffServer *Server
-
 func NewServer(config *Config) (*Server, error) {
 	shutdownCh := make(chan struct{})
 
@@ -54,7 +51,6 @@ func NewServer(config *Config) (*Server, error) {
 		s.Shutdown()
 		return nil, fmt.Errorf(errorServerPrefix+"%v", err)
 	}
-	riffServer = s
 	s.print()
 	go s.listenRpc()
 	go s.listenHttp()
@@ -81,8 +77,11 @@ func (s *Server) setupCart() error {
 	cart.SetMode(cart.ReleaseMode)
 	r := cart.New()
 	r.Use("/", Logger(), cart.RecoveryRender(cart.DefaultErrorWriter))
-	r.Route("/", Index)
-	r.Route("/api", ApiIndex)
+	a:= Api{
+		server:s,
+	}
+	r.Route("/", a.Index)
+	r.Route("/api", a.ApiIndex)
 	s.httpServer = r.Server("127.0.0.1:" + strconv.Itoa(s.config.Ports.Http))
 	return nil
 }
