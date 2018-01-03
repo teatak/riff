@@ -24,7 +24,6 @@ func (a *Api) ApiIndex(r *cart.Router) {
 }
 
 func (a Api) version(c *cart.Context) {
-
 	version := fmt.Sprintf("Cart version %s Riff version %s, build %s-%s", cart.Version, common.Version, common.GitBranch, common.GitSha)
 	c.JSON(200, cart.H{"version": version})
 }
