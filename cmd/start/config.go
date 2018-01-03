@@ -14,7 +14,21 @@ var configText = ""
 func init() {
 	hostName, _ := os.Hostname()
 	id := common.GenerateID(12)
-	configText = `id: ` + id + `
+	configText = `#id: auto generated id
+#name: node name
+#data_center: data center
+
+#addresses:
+#  http: 172.0.0.1
+#  dns: 172.0.0.1
+#  rpc: 192.169.1.2
+
+#ports:
+#  http: 8610
+#  dns: 8620
+#  rpc: 8630
+
+id: ` + id + `
 name: ` + hostName + `
 data_center: dc1
 `
