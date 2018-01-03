@@ -73,10 +73,20 @@ func (s *Server) setupServer() error {
 	return nil
 }
 
+func assetServer() cart.Handler {
+	return func(c *cart.Context, next cart.Next) {
+		http.StripPrefix("/console/", http.FileServer(assetFS())).ServeHTTP(c.Response, c.Request)
+	}
+}
+
 func (s *Server) setupCart() error {
 	cart.SetMode(cart.ReleaseMode)
+	//http.Handle("/", http.FileServer(assetFS()))
+	//http.ListenAndServe(s.config.Addresses.Http + ":" + strconv.Itoa(s.config.Ports.Http),nil)
+	//
 	r := cart.New()
 	r.Use("/", Logger(), cart.RecoveryRender(cart.DefaultErrorWriter))
+	r.Use("/console/*file", assetServer())
 	a := Api{
 		server: s,
 	}

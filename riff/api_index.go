@@ -12,9 +12,9 @@ type Api struct {
 
 func (a *Api) Index(r *cart.Router) {
 	r.Route("/").GET(func(c *cart.Context) {
-		c.Redirect(302, "/api")
+		c.Redirect(302, "/console/")
 	})
-	r.Route("/api",a.apiIndex)
+	r.Route("/api", a.apiIndex)
 }
 
 func (a *Api) apiIndex(r *cart.Router) {
