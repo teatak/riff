@@ -2,8 +2,11 @@ package riff
 
 import (
 	"fmt"
+	"github.com/gimke/cart"
 	"net"
+	"net/http"
 	"net/rpc"
+	"strconv"
 	"sync"
 	"time"
 )
@@ -13,9 +16,10 @@ const errorRpcPrefix = "[ERR]  riff.rpc: "
 const infoRpcPrefix = "[INFO] riff.rpc: "
 
 type Server struct {
-	Listener  net.Listener
-	rpcServer *rpc.Server
-	Id        string
+	Listener   net.Listener
+	httpServer *http.Server
+	rpcServer  *rpc.Server
+	Id         string
 	Nodes
 	Services
 	SnapShot     string
@@ -24,6 +28,9 @@ type Server struct {
 	shutdownCh   chan struct{}
 	shutdownLock sync.Mutex
 }
+
+//private server
+var riffServer *Server
 
 func NewServer(config *Config) (*Server, error) {
 	shutdownCh := make(chan struct{})
@@ -34,12 +41,23 @@ func NewServer(config *Config) (*Server, error) {
 		shutdownCh: shutdownCh,
 	}
 
-	s.setupServer()
+	if err := s.setupServer(); err != nil {
+		s.Shutdown()
+		return nil, fmt.Errorf(errorServerPrefix+"%v", err)
+	}
+
 	if err := s.setupRPC(); err != nil {
 		s.Shutdown()
 		return nil, fmt.Errorf(errorServerPrefix+"%v", err)
 	}
-	go s.listen()
+	if err := s.setupCart(); err != nil {
+		s.Shutdown()
+		return nil, fmt.Errorf(errorServerPrefix+"%v", err)
+	}
+	riffServer = s
+	s.print()
+	go s.listenRpc()
+	go s.listenHttp()
 	return s, nil
 }
 func (s *Server) setupServer() error {
@@ -56,6 +74,16 @@ func (s *Server) setupServer() error {
 	s.Nodes = make(map[string]*Node)
 	s.Services = make(map[string]*Service)
 	s.AddNode(self)
+	return nil
+}
+
+func (s *Server) setupCart() error {
+	cart.SetMode(cart.ReleaseMode)
+	r := cart.New()
+	r.Use("/", Logger(), cart.RecoveryRender(cart.DefaultErrorWriter))
+	r.Route("/", Index)
+	r.Route("/api", ApiIndex)
+	s.httpServer = r.Server("127.0.0.1:" + strconv.Itoa(s.config.Ports.Http))
 	return nil
 }
 

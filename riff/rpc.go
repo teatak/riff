@@ -23,8 +23,11 @@ func init() {
 	registerEndpoint(func(s *Server) interface{} { return &Query{s} })
 }
 
-func (s *Server) listen() {
-	s.print()
+func (s *Server) listenHttp() {
+	log.Printf(infoRpcPrefix+"start to accept http conn: %v", s.httpServer.Addr)
+	s.httpServer.ListenAndServe()
+}
+func (s *Server) listenRpc() {
 	log.Printf(infoRpcPrefix+"start to accept rpc conn: %v", s.Listener.Addr())
 	log.Printf(infoRpcPrefix+"riff snapshot now is: %s", s.SnapShot)
 	for {
@@ -68,7 +71,8 @@ func (s *Server) print() {
         Node Id:  %v
            Name:  %v
              DC:  %v
+   HTTP Address:  %v
     RPC Address:  %v
 
-`, s.Id, s.Nodes[s.Id].Name, s.Nodes[s.Id].DataCenter, s.Listener.Addr())
+`, s.Id, s.Nodes[s.Id].Name, s.Nodes[s.Id].DataCenter, s.httpServer.Addr, s.Listener.Addr())
 }
