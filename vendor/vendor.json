@@ -1,0 +1,31 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "HflN2AhBNdr2zpJ1VidEGW2+vQo=",
+			"path": "github.com/gimke/cart",
+			"revision": "7a7e5163933e61caea9193fa6befcc107edade95",
+			"revisionTime": "2018-01-03T08:19:49Z"
+		},
+		{
+			"checksumSHA1": "KOkqh6MqRxYFhZ8sMq/doJkvUMg=",
+			"path": "github.com/gimke/cart/render",
+			"revision": "7a7e5163933e61caea9193fa6befcc107edade95",
+			"revisionTime": "2018-01-03T08:19:49Z"
+		},
+		{
+			"checksumSHA1": "M57Rrfc8Z966p+IBtQ91QOcUtcg=",
+			"path": "github.com/ryanuber/columnize",
+			"revision": "abc90934186a77966e2beeac62ed966aac0561d5",
+			"revisionTime": "2017-07-03T20:58:27Z"
+		},
+		{
+			"checksumSHA1": "CIddteXz3KcImR2K3ljWh3HtxV4=",
+			"path": "gopkg.in/yaml.v2",
+			"revision": "25c4ec802a7d637f88d584ab26798e94ad14c13b",
+			"revisionTime": "2017-07-21T12:20:51Z"
+		}
+	],
+	"rootPath": "github.com/gimke/riff"
+}

@@ -9,6 +9,7 @@ import (
 	"net/rpc"
 	"strconv"
 	"time"
+	"github.com/ryanuber/columnize"
 )
 
 const help = `Usage: riff query <command> [options]
@@ -108,17 +109,22 @@ func (c *cmd) Nodes() {
 		fmt.Println("error", err)
 		return
 	}
-	fmt.Printf("%-12s %-24s %-10s %-24s %-8v %-12s\n", "Id", "Node", "DC", "Address", "Status", "SnapShot")
+	//fmt.Printf("%-24s %-24s %-8v %-10s %-12s\n", "Node", "Address", "Status", "DC", "SnapShot")
+	results := make([]string, 0, len(nodes)+1)
+	header := "Node|Address|Status|DC|SnapShot"
+	results = append(results, header)
 	for _, n := range nodes {
-		fmt.Printf("%-12s %-24s %-10s %-24s %-8v %-12s\n",
-			n.Id,
+		line := fmt.Sprintf("%s|%s|%s|%s|%s",
 			n.Name,
-			n.DataCenter,
 			net.JoinHostPort(n.IP, strconv.Itoa(n.Port)),
 			n.State.String(),
+			n.DataCenter,
 			n.SnapShot[0:9]+"...")
+		results = append(results, line)
 	}
 
+	output := columnize.SimpleFormat(results)
+	fmt.Println(output)
 }
 
 func (c *cmd) Synopsis() string {
