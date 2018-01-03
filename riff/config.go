@@ -22,24 +22,24 @@ type Ports struct {
 	Rpc  int `yaml:"rpc"`
 }
 
-func NewConfig(rpc, name, dataCenter string) (*Config, error) {
-	//make default config
-	addresses := &Addresses{
-		Http: "127.0.0.1",
-		Dns:  "127.0.0.1",
-		Rpc:  rpc,
-	}
-	ports := &Ports{
-		Http: 8610,
-		Dns:  8620,
-		Rpc:  8630,
-	}
-	return &Config{
-		Id:         "",
-		IP:         "",
-		Addresses:  addresses,
-		Ports:      ports,
-		Name:       name,
-		DataCenter: dataCenter,
-	}, nil
-}
+//func NewConfig(rpc, name, dataCenter string) (*Config, error) {
+//	//make default config
+//	addresses := &Addresses{
+//		Http: "127.0.0.1",
+//		Dns:  "127.0.0.1",
+//		Rpc:  rpc,
+//	}
+//	ports := &Ports{
+//		Http: 8610,
+//		Dns:  8620,
+//		Rpc:  8630,
+//	}
+//	return &Config{
+//		Id:         "",
+//		IP:         "",
+//		Addresses:  addresses,
+//		Ports:      ports,
+//		Name:       name,
+//		DataCenter: dataCenter,
+//	}, nil
+//}

@@ -108,15 +108,15 @@ func (c *cmd) Nodes() {
 		fmt.Println("error", err)
 		return
 	}
-	fmt.Printf("%-12s %-24s %-10s %-24s %-8v %-48s\n", "Id", "Node", "DC", "Address", "Status", "SnapShot")
+	fmt.Printf("%-12s %-24s %-10s %-24s %-8v %-12s\n", "Id", "Node", "DC", "Address", "Status", "SnapShot")
 	for _, n := range nodes {
-		fmt.Printf("%-12s %-24s %-10s %-24s %-8v %-48s\n",
+		fmt.Printf("%-12s %-24s %-10s %-24s %-8v %-12s\n",
 			n.Id,
 			n.Name,
 			n.DataCenter,
 			net.JoinHostPort(n.IP, strconv.Itoa(n.Port)),
 			n.State.String(),
-			n.SnapShot[0:10]+"...")
+			n.SnapShot[0:9]+"...")
 	}
 
 }

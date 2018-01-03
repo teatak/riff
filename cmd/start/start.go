@@ -65,7 +65,7 @@ func (c *cmd) Run(args []string) int {
 		return 1
 	}
 
-	var addviseRpc string
+	var adviseRpc string
 	if common.IsAny(c.rpc) {
 		var addrs []*net.IPAddr
 		//detect ip
@@ -87,11 +87,11 @@ func (c *cmd) Run(args []string) int {
 			}
 			break
 		}
-		addviseRpc = addrs[0].String()
+		adviseRpc = addrs[0].String()
 	}
 	if config.Addresses.Rpc == "" {
-		config.IP = addviseRpc
-		config.Addresses.Rpc = addviseRpc
+		config.IP = adviseRpc
+		config.Addresses.Rpc = adviseRpc
 	}
 	s, err := riff.NewServer(config)
 	if err != nil {
