@@ -13,9 +13,9 @@ const errorRpcPrefix = "[ERR]  riff.rpc: "
 const infoRpcPrefix = "[INFO] riff.rpc: "
 
 type Server struct {
-	Listener   net.Listener
-	rpcServer  *rpc.Server
-	Id         string
+	Listener  net.Listener
+	rpcServer *rpc.Server
+	Id        string
 	Nodes
 	Services
 	SnapShot     string
