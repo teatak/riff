@@ -16,8 +16,6 @@ type Server struct {
 	Listener   net.Listener
 	rpcServer  *rpc.Server
 	Id         string
-	Name       string
-	DataCenter string
 	Nodes
 	Services
 	SnapShot     string
@@ -55,8 +53,6 @@ func (s *Server) setupServer() error {
 		StateChange: time.Now(),
 	}
 	s.Id = s.config.Id
-	s.Name = s.config.Name
-	s.DataCenter = s.config.DataCenter
 	s.Nodes = make(map[string]*Node)
 	s.Services = make(map[string]*Service)
 	s.AddNode(self)

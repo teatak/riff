@@ -27,9 +27,9 @@ func (s *Server) String() string {
 func (s *Server) MakeDigest() (digest Nodes) {
 	digest = make(map[string]*Node)
 	for _, n := range s.Nodes {
-		digest[n.Name] = n
+		digest[n.Id] = n
 		//remove services
-		digest[n.Name].Services = nil
+		digest[n.Id].Services = nil
 	}
 	return
 }
@@ -41,16 +41,16 @@ func (s *Server) Shutter() {
 }
 
 func (s *Server) AddNode(node *Node) *Node {
-	if nd := s.Nodes[node.Name]; nd != nil {
+	if nd := s.Nodes[node.Id]; nd != nil {
 		node = nd
 	} else {
-		s.Nodes[node.Name] = node
+		s.Nodes[node.Id] = node
 	}
 	s.Shutter()
 	return node
 }
 
-func (s *Server) Link(node *Node, service *Service) {
-	s.Shutter()
-	s.AddNode(node).AddService(service)
-}
+//func (s *Server) Link(node *Node, service *Service) {
+//	s.AddNode(node).AddService(service)
+//	s.Shutter()
+//}
