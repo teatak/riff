@@ -3,9 +3,7 @@ package start
 import (
 	"flag"
 	"fmt"
-	"github.com/gimke/riff/common"
 	"github.com/gimke/riff/riff"
-	"net"
 	"os"
 	"strings"
 )
@@ -44,8 +42,8 @@ func New() *cmd {
 func (c *cmd) init() {
 	hostName, _ := os.Hostname()
 	c.flags = flag.NewFlagSet("start", flag.ContinueOnError)
-	c.flags.StringVar(&c.http, "http", "127.0.0.1", "usage")
-	c.flags.StringVar(&c.dns, "dns", "127.0.0.1", "usage")
+	c.flags.StringVar(&c.http, "http", "[::]", "usage")
+	c.flags.StringVar(&c.dns, "dns", "[::]", "usage")
 	c.flags.StringVar(&c.rpc, "rpc", "0.0.0.0", "usage")
 	c.flags.StringVar(&c.name, "name", hostName, "usage")
 	c.flags.StringVar(&c.dc, "dc", "dc1", "usage")
@@ -59,39 +57,11 @@ func (c *cmd) Run(args []string) int {
 	if err := c.flags.Parse(args); err != nil {
 		return 1
 	}
-	config, err := loadConfig()
+
+	config, err := loadConfig(c)
 	if err != nil {
 		fmt.Printf("riff.start error: %v\n", err)
 		return 1
-	}
-
-	var adviseRpc string
-	if common.IsAny(c.rpc) {
-		var addrs []*net.IPAddr
-		//detect ip
-		var addrtyp string
-
-		switch {
-		case common.IsAnyV4(c.rpc):
-			addrtyp = "private IPv4"
-			addrs, err = common.GetPrivateIPv4()
-			if err != nil {
-				fmt.Println("Error detecting %s address: %s", addrtyp, err)
-			}
-			break
-		case common.IsAnyV6(c.rpc):
-			addrtyp = "public IPv6"
-			addrs, err = common.GetPublicIPv6()
-			if err != nil {
-				fmt.Println("Error detecting %s address: %s", addrtyp, err)
-			}
-			break
-		}
-		adviseRpc = addrs[0].String()
-	}
-	if config.Addresses.Rpc == "" {
-		config.IP = adviseRpc
-		config.Addresses.Rpc = adviseRpc
 	}
 	s, err := riff.NewServer(config)
 	if err != nil {

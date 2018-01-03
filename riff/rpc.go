@@ -25,7 +25,10 @@ func init() {
 
 func (s *Server) listenHttp() {
 	log.Printf(infoRpcPrefix+"start to accept http conn: %v", s.httpServer.Addr)
-	s.httpServer.ListenAndServe()
+	err := s.httpServer.ListenAndServe()
+	if err != nil {
+		log.Printf(errorRpcPrefix+"start http server error: %s", err)
+	}
 }
 func (s *Server) listenRpc() {
 	log.Printf(infoRpcPrefix+"start to accept rpc conn: %v", s.Listener.Addr())

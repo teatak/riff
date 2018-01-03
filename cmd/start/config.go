@@ -6,6 +6,7 @@ import (
 	"github.com/gimke/riff/riff"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"net"
 	"os"
 )
 
@@ -50,7 +51,7 @@ func initConfig() {
 	}
 }
 
-func loadConfig() (*riff.Config, error) {
+func loadConfig(cmd *cmd) (*riff.Config, error) {
 	file := common.BinDir + "/config/" + common.Name + ".yml"
 	if !isExist(file) {
 		return nil, fmt.Errorf("file not exist %s", file)
@@ -80,6 +81,39 @@ func loadConfig() (*riff.Config, error) {
 		if c.Ports.Rpc == 0 {
 			c.Ports.Rpc = 8630
 		}
+	}
+	var adviseRpc string
+	if common.IsAny(cmd.rpc) {
+		var addrs []*net.IPAddr
+		var err error
+		//detect ip
+		var addrtyp string
+
+		switch {
+		case common.IsAnyV4(cmd.rpc):
+			addrtyp = "private IPv4"
+			addrs, err = common.GetPrivateIPv4()
+			if err != nil {
+				fmt.Println("Error detecting %s address: %s", addrtyp, err)
+			}
+			break
+		case common.IsAnyV6(cmd.rpc):
+			addrtyp = "public IPv6"
+			addrs, err = common.GetPublicIPv6()
+			if err != nil {
+				fmt.Println("Error detecting %s address: %s", addrtyp, err)
+			}
+			break
+		}
+		adviseRpc = addrs[0].String()
+	}
+
+	if c.Addresses.Rpc == "" {
+		c.IP = adviseRpc
+		c.Addresses.Rpc = adviseRpc
+	}
+	if c.Addresses.Http == "" {
+		c.Addresses.Http = cmd.http
 	}
 
 	return c, nil

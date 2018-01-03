@@ -77,12 +77,12 @@ func (s *Server) setupCart() error {
 	cart.SetMode(cart.ReleaseMode)
 	r := cart.New()
 	r.Use("/", Logger(), cart.RecoveryRender(cart.DefaultErrorWriter))
-	a:= Api{
-		server:s,
+	a := Api{
+		server: s,
 	}
 	r.Route("/", a.Index)
 	r.Route("/api", a.ApiIndex)
-	s.httpServer = r.Server("127.0.0.1:" + strconv.Itoa(s.config.Ports.Http))
+	s.httpServer = r.Server(s.config.Addresses.Http + ":" + strconv.Itoa(s.config.Ports.Http))
 	return nil
 }
 

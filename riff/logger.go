@@ -2,8 +2,8 @@ package riff
 
 import (
 	"github.com/gimke/cart"
-	"time"
 	"log"
+	"time"
 )
 
 func Logger() cart.Handler {

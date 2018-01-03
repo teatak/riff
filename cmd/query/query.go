@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"github.com/gimke/riff/common"
 	"github.com/gimke/riff/riff"
+	"github.com/ryanuber/columnize"
 	"net"
 	"net/rpc"
 	"strconv"
 	"time"
-	"github.com/ryanuber/columnize"
 )
 
 const help = `Usage: riff query <command> [options]
