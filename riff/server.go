@@ -81,7 +81,6 @@ func (s *Server) setupCart() error {
 		server: s,
 	}
 	r.Route("/", a.Index)
-	r.Route("/api", a.ApiIndex)
 	s.httpServer = r.Server(s.config.Addresses.Http + ":" + strconv.Itoa(s.config.Ports.Http))
 	return nil
 }

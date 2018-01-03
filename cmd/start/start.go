@@ -42,8 +42,8 @@ func New() *cmd {
 func (c *cmd) init() {
 	hostName, _ := os.Hostname()
 	c.flags = flag.NewFlagSet("start", flag.ContinueOnError)
-	c.flags.StringVar(&c.http, "http", "[::]", "usage")
-	c.flags.StringVar(&c.dns, "dns", "[::]", "usage")
+	c.flags.StringVar(&c.http, "http", "127.0.0.1", "usage")
+	c.flags.StringVar(&c.dns, "dns", "127.0.0.1", "usage")
 	c.flags.StringVar(&c.rpc, "rpc", "0.0.0.0", "usage")
 	c.flags.StringVar(&c.name, "name", hostName, "usage")
 	c.flags.StringVar(&c.dc, "dc", "dc1", "usage")
