@@ -91,6 +91,16 @@ func (s *Server) setupCart() error {
 	//
 	r := cart.New()
 	r.Use("/", Logger(), cart.RecoveryRender(cart.DefaultErrorWriter))
+	r.Use("/favicon.ico", func(c *cart.Context, next cart.Next) {
+		b, err := assetFS().Asset("static/images/favicon.ico")
+		if err != nil {
+			log.Printf(errorRpcPrefix+"error: %v\n", err)
+			next()
+		} else {
+			c.Response.WriteHeader(200)
+			c.Response.Write(b)
+		}
+	})
 	r.Use("/console/*file", func(c *cart.Context, next cart.Next) {
 		b, err := assetFS().Asset("static/index.html")
 		if err != nil {
@@ -108,7 +118,6 @@ func (s *Server) setupCart() error {
 			next()
 		}
 	})
-
 	a := Api{
 		server: s,
 	}

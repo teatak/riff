@@ -7,10 +7,10 @@ GITSHA=$(shell git rev-parse HEAD)
 GITBRANCH=$(shell git rev-parse --abbrev-ref HEAD)
 
 # Build the project
-default: tools
+default: tools assets
 	@sh -c "$(CURDIR)/scripts/build.sh"
 
-dev:
+dev: tools assets
 	@DEV=1 sh -c "'$(CURDIR)/scripts/build.sh'"
 
 fmt:
@@ -21,7 +21,7 @@ test: dev
 	@echo "--> Running go test"
 	@go list ./... | grep -v -E '^github.com/gimke/riff/(vendor|cmd/serf/vendor)' | xargs -n1 go test
 
-static-assets:
+assets:
 	@go-bindata-assetfs -pkg riff ./static/...
 	@mv bindata_assetfs.go riff/
 	$(MAKE) fmt
