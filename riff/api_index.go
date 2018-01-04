@@ -3,6 +3,9 @@ package riff
 import (
 	"fmt"
 	"github.com/gimke/cart"
+	"time"
+	"net/http"
+	"log"
 	"github.com/gimke/riff/common"
 )
 
@@ -26,9 +29,34 @@ func (a *Api) apiIndex(r *cart.Router) {
 
 func (a Api) version(c *cart.Context) {
 	version := fmt.Sprintf("Cart version %s Riff version %s, build %s-%s", cart.Version, common.Version, common.GitBranch, common.GitSha)
-	c.JSON(200, cart.H{
-		"Version": version,
-	})
+	//c.JSON(200, cart.H{
+	//	"Version": version,
+	//})
+	resp := c.Response
+	resp.Header().Set("Content-Type", "text/event-stream")
+	resp.Header().Set("Cache-Control", "no-cache")
+	resp.Header().Set("Connection", "keep-alive")
+	notify := resp.(http.CloseNotifier).CloseNotify()
+	logCh := make(chan string,255)
+	go func() {
+		for i:=1;i<1000;i++ {
+			time.Sleep(1*time.Second) //not real code
+			logCh <- version
+		}
+	}()
+	flusher, ok := resp.(http.Flusher)
+	if !ok {
+		log.Println("Streaming not supported")
+	}
+	for {
+		select {
+		case <-notify:
+			return
+		case logs := <-logCh:
+			fmt.Fprintln(resp, logs)
+			flusher.Flush()
+		}
+	}
 }
 
 func (a Api) snap(c *cart.Context) {
