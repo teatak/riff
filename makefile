@@ -19,7 +19,7 @@ fmt:
 
 test: tools dev
 	@echo "--> Running go test"
-	go list ./... | grep -v -E '^github.com/gimke/riff/(vendor|cmd/serf/vendor)' | xargs -n1 go test
+	go list ./... | grep -v -E '^github.com/gimke/riff/(vendor|cmd/riff/vendor)' | xargs -n1 go test
 
 assets:
 	@go-bindata-assetfs -ignore .DS_Store -pkg riff ./static/...
@@ -28,6 +28,6 @@ assets:
 	go fmt $$(go list ./... | grep -v /vendor/)
 
 tools:
-	go get -u -v $(GOTOOLS)
+	@go get -u -v $(GOTOOLS)
 
 .PHONY: default fmt
