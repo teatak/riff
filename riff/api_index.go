@@ -3,7 +3,6 @@ package riff
 import (
 	"fmt"
 	"github.com/gimke/cart"
-	"time"
 	"net/http"
 	"log"
 	"github.com/gimke/riff/common"
@@ -25,38 +24,14 @@ func (a *Api) apiIndex(r *cart.Router) {
 	r.Route("/version").GET(a.version)
 	r.Route("/snap").GET(a.snap)
 	r.Route("/nodes").GET(a.nodes)
+	r.Route("/logs").GET(a.logs)
 }
 
 func (a Api) version(c *cart.Context) {
 	version := fmt.Sprintf("Cart version %s Riff version %s, build %s-%s", cart.Version, common.Version, common.GitBranch, common.GitSha)
-	//c.JSON(200, cart.H{
-	//	"Version": version,
-	//})
-	resp := c.Response
-	resp.Header().Set("Content-Type", "text/event-stream")
-	resp.Header().Set("Cache-Control", "no-cache")
-	resp.Header().Set("Connection", "keep-alive")
-	notify := resp.(http.CloseNotifier).CloseNotify()
-	logCh := make(chan string,255)
-	go func() {
-		for i:=1;i<1000;i++ {
-			time.Sleep(1*time.Second) //not real code
-			logCh <- version
-		}
-	}()
-	flusher, ok := resp.(http.Flusher)
-	if !ok {
-		log.Println("Streaming not supported")
-	}
-	for {
-		select {
-		case <-notify:
-			return
-		case logs := <-logCh:
-			fmt.Fprintln(resp, logs)
-			flusher.Flush()
-		}
-	}
+	c.JSON(200, cart.H{
+		"Version": version,
+	})
 }
 
 func (a Api) snap(c *cart.Context) {
@@ -69,4 +44,49 @@ func (a Api) nodes(c *cart.Context) {
 	c.JSON(200, cart.H{
 		"Nodes": a.server.Nodes,
 	})
+}
+
+type httpLogHandler struct {
+	logCh        chan string
+	logger       *log.Logger
+	droppedCount int
+}
+
+func (h *httpLogHandler) HandleLog(log string) {
+	// Do a non-blocking send
+	select {
+	case h.logCh <- log:
+	default:
+		// Just increment a counter for dropped logs to this handler; we can't log now
+		// because the lock is already held by the LogWriter invoking this
+		h.droppedCount++
+	}
+}
+
+func (a Api) logs(c *cart.Context) {
+	resp := c.Response
+	resp.Header().Set("Content-Type", "text/event-stream; charset=utf-8")
+	resp.Header().Set("Cache-Control", "no-cache")
+	resp.Header().Set("Connection", "keep-alive")
+	notify := resp.(http.CloseNotifier).CloseNotify()
+
+	handler := &httpLogHandler{
+		logCh:  make(chan string, 512),
+	}
+	a.server.LogWriter.RegisterHandler(handler)
+	defer a.server.LogWriter.DeregisterHandler(handler)
+
+	flusher, ok := resp.(http.Flusher)
+	if !ok {
+		log.Println("Streaming not supported")
+	}
+	for {
+		select {
+		case <-notify:
+			return
+		case logs := <-handler.logCh:
+			fmt.Fprintln(resp, logs)
+			flusher.Flush()
+		}
+	}
 }

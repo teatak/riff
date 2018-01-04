@@ -20,6 +20,7 @@ type Server struct {
 	Listener   net.Listener
 	httpServer *http.Server
 	rpcServer  *rpc.Server
+	LogWriter *LogWriter
 	Id         string
 	Nodes
 	Services
@@ -31,9 +32,12 @@ type Server struct {
 }
 
 func NewServer(config *Config) (*Server, error) {
+	logWriter := NewLogWriter(512)
+	log.SetOutput(logWriter)
 	shutdownCh := make(chan struct{})
 
 	s := &Server{
+		LogWriter: logWriter,
 		rpcServer:  rpc.NewServer(),
 		config:     config,
 		shutdownCh: shutdownCh,
@@ -122,7 +126,7 @@ func (s *Server) setupCart() error {
 		server: s,
 	}
 	r.Route("/", a.Index)
-	s.httpServer = r.Server(s.config.Addresses.Http + ":" + strconv.Itoa(s.config.Ports.Http))
+	s.httpServer = r.ServerKeepAlive(s.config.Addresses.Http + ":" + strconv.Itoa(s.config.Ports.Http))
 	return nil
 }
 

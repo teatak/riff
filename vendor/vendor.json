@@ -3,16 +3,16 @@
 	"ignore": "test",
 	"package": [
 		{
-			"checksumSHA1": "HflN2AhBNdr2zpJ1VidEGW2+vQo=",
+			"checksumSHA1": "8nds0AIRCluPyZjktsqz+qJmLRU=",
 			"path": "github.com/gimke/cart",
-			"revision": "7a7e5163933e61caea9193fa6befcc107edade95",
-			"revisionTime": "2018-01-03T08:19:49Z"
+			"revision": "096348e3f7e75e38700c92c47beca1d3a71e033e",
+			"revisionTime": "2018-01-04T19:05:50Z"
 		},
 		{
 			"checksumSHA1": "KOkqh6MqRxYFhZ8sMq/doJkvUMg=",
 			"path": "github.com/gimke/cart/render",
-			"revision": "7a7e5163933e61caea9193fa6befcc107edade95",
-			"revisionTime": "2018-01-03T08:19:49Z"
+			"revision": "096348e3f7e75e38700c92c47beca1d3a71e033e",
+			"revisionTime": "2018-01-04T19:05:50Z"
 		},
 		{
 			"checksumSHA1": "M57Rrfc8Z966p+IBtQ91QOcUtcg=",
