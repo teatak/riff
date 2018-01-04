@@ -27,18 +27,18 @@ func (a *Api) apiIndex(r *cart.Router) {
 func (a Api) version(c *cart.Context) {
 	version := fmt.Sprintf("Cart version %s Riff version %s, build %s-%s", cart.Version, common.Version, common.GitBranch, common.GitSha)
 	c.JSON(200, cart.H{
-		"version": version,
+		"Version": version,
 	})
 }
 
 func (a Api) snap(c *cart.Context) {
 	c.JSON(200, cart.H{
-		"snapshot": a.server.SnapShot,
+		"SnapShot": a.server.SnapShot,
 	})
 }
 
 func (a Api) nodes(c *cart.Context) {
 	c.JSON(200, cart.H{
-		"nodes": a.server.Nodes,
+		"Nodes": a.server.Nodes,
 	})
 }
