@@ -15,7 +15,7 @@ XC_ARCH=${XC_ARCH:-"386 amd64 arm"}
 LDFLAGS="-X github.com/gimke/riff/common.GitSha=${GITSHA} -X github.com/gimke/riff/common.GitBranch=${GITBRANCH} -X github.com/gimke/riff/common.Version=${VERSION}"
 
 # Delete the old dir
-rm -f bin/*
+rm -rf bin/*
 rm -rf pkg/*
 mkdir -p bin/
 

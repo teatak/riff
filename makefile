@@ -10,7 +10,7 @@ GITBRANCH=$(shell git rev-parse --abbrev-ref HEAD)
 default: tools assets
 	@sh -c "$(CURDIR)/scripts/build.sh"
 
-dev: tools assets
+dev: assets
 	@DEV=1 sh -c "'$(CURDIR)/scripts/build.sh'"
 
 fmt:
@@ -19,12 +19,13 @@ fmt:
 
 test: dev
 	@echo "--> Running go test"
-	@go list ./... | grep -v -E '^github.com/gimke/riff/(vendor|cmd/serf/vendor)' | xargs -n1 go test
+	go list ./... | grep -v -E '^github.com/gimke/riff/(vendor|cmd/serf/vendor)' | xargs -n1 go test
 
 assets:
 	@go-bindata-assetfs -pkg riff ./static/...
 	@mv bindata_assetfs.go riff/
-	$(MAKE) fmt
+	@cd $(CURDIR) ; \
+	go fmt $$(go list ./... | grep -v /vendor/)
 
 tools:
 	go get -u -v $(GOTOOLS)
