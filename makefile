@@ -22,7 +22,7 @@ test: dev
 	go list ./... | grep -v -E '^github.com/gimke/riff/(vendor|cmd/serf/vendor)' | xargs -n1 go test
 
 assets:
-	@go-bindata-assetfs -pkg riff ./static/...
+	@go-bindata-assetfs -ignore .DS_Store -pkg riff ./static/...
 	@mv bindata_assetfs.go riff/
 	@cd $(CURDIR) ; \
 	go fmt $$(go list ./... | grep -v /vendor/)
