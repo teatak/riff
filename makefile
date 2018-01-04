@@ -17,7 +17,7 @@ fmt:
 	@cd $(CURDIR) ; \
 	go fmt $$(go list ./... | grep -v /vendor/)
 
-test: dev
+test: tools dev
 	@echo "--> Running go test"
 	go list ./... | grep -v -E '^github.com/gimke/riff/(vendor|cmd/serf/vendor)' | xargs -n1 go test
 
