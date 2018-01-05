@@ -78,16 +78,6 @@ func (s *Server) setupServer() error {
 	return nil
 }
 
-func assetServer() cart.Handler {
-	return func(c *cart.Context, next cart.Next) {
-		http.StripPrefix("/console/", http.FileServer(assetFS())).ServeHTTP(c.Response, c.Request)
-		if c.Response.Status() == 404 {
-			c.Response.WriteHeader(200) //reset status
-			next()
-		}
-	}
-}
-
 func (s *Server) setupCart() error {
 	cart.SetMode(cart.ReleaseMode)
 	//http.Handle("/", http.FileServer(assetFS()))

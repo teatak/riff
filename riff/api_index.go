@@ -3,9 +3,9 @@ package riff
 import (
 	"fmt"
 	"github.com/gimke/cart"
-	"net/http"
 	"log"
 	"github.com/gimke/riff/common"
+	"net/http"
 )
 
 type Api struct {
@@ -65,10 +65,12 @@ func (h *httpLogHandler) HandleLog(log string) {
 
 func (a Api) logs(c *cart.Context) {
 	resp := c.Response
-	resp.Header().Set("Content-Type", "text/event-stream; charset=utf-8")
-	resp.Header().Set("Cache-Control", "no-cache")
-	resp.Header().Set("Connection", "keep-alive")
-	notify := resp.(http.CloseNotifier).CloseNotify()
+	clientGone := resp.(http.CloseNotifier).CloseNotify()
+
+	resp.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	resp.Header().Set("Connection", "Keep-Alive")
+	resp.Header().Set("Transfer-Encoding", "chunked")
+	resp.Header().Set("X-Content-Type-Options", "nosniff")
 
 	handler := &httpLogHandler{
 		logCh:  make(chan string, 512),
@@ -82,7 +84,7 @@ func (a Api) logs(c *cart.Context) {
 	}
 	for {
 		select {
-		case <-notify:
+		case <-clientGone:
 			return
 		case logs := <-handler.logCh:
 			fmt.Fprintln(resp, logs)
