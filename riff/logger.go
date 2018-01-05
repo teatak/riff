@@ -2,7 +2,6 @@ package riff
 
 import (
 	"sync"
-	"fmt"
 )
 
 // LogHandler interface is used for clients that want to subscribe
