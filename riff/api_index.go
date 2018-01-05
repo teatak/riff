@@ -75,8 +75,8 @@ func (a Api) logs(c *cart.Context) {
 	handler := &httpLogHandler{
 		logCh:  make(chan string, 512),
 	}
-	a.server.LogWriter.RegisterHandler(handler)
-	defer a.server.LogWriter.DeregisterHandler(handler)
+	a.server.logWriter.RegisterHandler(handler)
+	defer a.server.logWriter.DeregisterHandler(handler)
 
 	flusher, ok := resp.(http.Flusher)
 	if !ok {

@@ -1,11 +1,10 @@
 package riff
 
 import (
-	"fmt"
 	"github.com/gimke/riff/common"
 	"io"
-	"log"
 	"net"
+	"fmt"
 )
 
 type factory func(s *Server) interface{}
@@ -24,15 +23,15 @@ func init() {
 }
 
 func (s *Server) listenHttp() {
-	log.Printf(infoRpcPrefix+"start to accept http conn: %v", s.httpServer.Addr)
+	s.logger.Printf(infoRpcPrefix+"start to accept http conn: %v", s.httpServer.Addr)
 	err := s.httpServer.ListenAndServe()
 	if err != nil {
-		log.Printf(errorRpcPrefix+"start http server error: %s", err)
+		s.logger.Printf(errorRpcPrefix+"start http server error: %s", err)
 	}
 }
 func (s *Server) listenRpc() {
-	log.Printf(infoRpcPrefix+"start to accept rpc conn: %v", s.Listener.Addr())
-	log.Printf(infoRpcPrefix+"riff snapshot now is: %s", s.SnapShot)
+	s.logger.Printf(infoRpcPrefix+"start to accept rpc conn: %v", s.Listener.Addr())
+	s.logger.Printf(infoRpcPrefix+"riff snapshot now is: %s", s.SnapShot)
 	for {
 		// Accept a connection
 		conn, err := s.Listener.Accept()
@@ -40,7 +39,7 @@ func (s *Server) listenRpc() {
 			if s.shutdown {
 				return
 			}
-			log.Printf(errorRpcPrefix+"failed to accept RPC conn: %v", err)
+			s.logger.Printf(errorRpcPrefix+"failed to accept RPC conn: %v", err)
 			continue
 		}
 		go s.handleConn(conn)
@@ -58,9 +57,9 @@ func (s *Server) handleConn(conn net.Conn) {
 		}
 		if err := s.rpcServer.ServeRequest(codec); err != nil {
 			if err == io.EOF {
-				log.Printf(infoRpcPrefix+"end of %s", conn.RemoteAddr().String())
+				s.logger.Printf(infoRpcPrefix+"end of %s", conn.RemoteAddr().String())
 			} else {
-				log.Printf(errorRpcPrefix+"%v %s", err, conn.RemoteAddr().String())
+				s.logger.Printf(errorRpcPrefix+"%v %s", err, conn.RemoteAddr().String())
 			}
 			return
 		}

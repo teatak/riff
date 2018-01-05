@@ -7,9 +7,11 @@ import (
 	"net"
 	"net/http"
 	"net/rpc"
+	"os"
 	"strconv"
 	"sync"
 	"time"
+	"io"
 )
 
 const errorServerPrefix = "riff.server error: "
@@ -20,7 +22,8 @@ type Server struct {
 	Listener   net.Listener
 	httpServer *http.Server
 	rpcServer  *rpc.Server
-	LogWriter *LogWriter
+	logger     *log.Logger
+	logWriter  *LogWriter
 	Id         string
 	Nodes
 	Services
@@ -32,16 +35,18 @@ type Server struct {
 }
 
 func NewServer(config *Config) (*Server, error) {
-	logWriter := NewLogWriter(512)
-	log.SetOutput(logWriter)
+
 	shutdownCh := make(chan struct{})
 
 	s := &Server{
-		LogWriter: logWriter,
+		logWriter:   NewLogWriter(512),
 		rpcServer:  rpc.NewServer(),
 		config:     config,
 		shutdownCh: shutdownCh,
 	}
+
+	logOutput := io.MultiWriter(os.Stderr,s.logWriter)
+	s.logger = log.New(logOutput, "", log.LstdFlags)
 
 	if err := s.setupServer(); err != nil {
 		s.Shutdown()
@@ -78,17 +83,38 @@ func (s *Server) setupServer() error {
 	return nil
 }
 
+func (s *Server) httpLogger() cart.Handler {
+	return func(c *cart.Context, next cart.Next) {
+		start := time.Now()
+		path := c.Request.URL.Path
+		next()
+		end := time.Now()
+		latency := end.Sub(start)
+		method := c.Request.Method
+		clientIP := c.ClientIP()
+		statusCode := c.Response.Status()
+
+		s.logger.Printf("[INFO] cart: status:%d latency:%v ip:%s method:%s path:%s\n",
+			statusCode,
+			latency,
+			clientIP,
+			method,
+			path,
+		)
+	}
+}
+
 func (s *Server) setupCart() error {
 	cart.SetMode(cart.ReleaseMode)
 	//http.Handle("/", http.FileServer(assetFS()))
 	//http.ListenAndServe(s.config.Addresses.Http + ":" + strconv.Itoa(s.config.Ports.Http),nil)
 	//
 	r := cart.New()
-	r.Use("/", Logger(), cart.RecoveryRender(cart.DefaultErrorWriter))
+	r.Use("/", s.httpLogger(), cart.RecoveryRender(cart.DefaultErrorWriter))
 	r.Use("/favicon.ico", func(c *cart.Context, next cart.Next) {
 		b, err := assetFS().Asset("static/images/favicon.ico")
 		if err != nil {
-			log.Printf(errorRpcPrefix+"error: %v\n", err)
+			s.logger.Printf(errorRpcPrefix+"error: %v\n", err)
 			next()
 		} else {
 			c.Response.WriteHeader(200)
@@ -98,7 +124,7 @@ func (s *Server) setupCart() error {
 	r.Use("/console/*file", func(c *cart.Context, next cart.Next) {
 		b, err := assetFS().Asset("static/index.html")
 		if err != nil {
-			log.Printf(errorRpcPrefix+"error: %v\n", err)
+			s.logger.Printf(errorRpcPrefix+"error: %v\n", err)
 			next()
 		} else {
 			c.Response.WriteHeader(200)
