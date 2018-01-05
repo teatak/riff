@@ -3,6 +3,7 @@ package riff
 import (
 	"fmt"
 	"github.com/gimke/cart"
+	"io"
 	"log"
 	"net"
 	"net/http"
@@ -11,7 +12,6 @@ import (
 	"strconv"
 	"sync"
 	"time"
-	"io"
 )
 
 const errorServerPrefix = "riff.server error: "
@@ -39,13 +39,13 @@ func NewServer(config *Config) (*Server, error) {
 	shutdownCh := make(chan struct{})
 
 	s := &Server{
-		logWriter:   NewLogWriter(512),
+		logWriter:  NewLogWriter(512),
 		rpcServer:  rpc.NewServer(),
 		config:     config,
 		shutdownCh: shutdownCh,
 	}
 
-	logOutput := io.MultiWriter(os.Stderr,s.logWriter)
+	logOutput := io.MultiWriter(os.Stderr, s.logWriter)
 	s.logger = log.New(logOutput, "", log.LstdFlags)
 
 	if err := s.setupServer(); err != nil {

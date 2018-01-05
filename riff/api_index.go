@@ -3,8 +3,8 @@ package riff
 import (
 	"fmt"
 	"github.com/gimke/cart"
-	"log"
 	"github.com/gimke/riff/common"
+	"log"
 	"net/http"
 )
 
@@ -73,7 +73,7 @@ func (a Api) logs(c *cart.Context) {
 	resp.Header().Set("X-Content-Type-Options", "nosniff")
 
 	handler := &httpLogHandler{
-		logCh:  make(chan string, 512),
+		logCh: make(chan string, 512),
 	}
 	a.server.logWriter.RegisterHandler(handler)
 	defer a.server.logWriter.DeregisterHandler(handler)
