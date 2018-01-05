@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/gimke/cart"
 	"github.com/gimke/riff/common"
-	"log"
 	"net/http"
 )
 
@@ -48,18 +47,12 @@ func (a Api) nodes(c *cart.Context) {
 
 type httpLogHandler struct {
 	logCh        chan string
-	logger       *log.Logger
-	droppedCount int
 }
 
 func (h *httpLogHandler) HandleLog(log string) {
 	// Do a non-blocking send
 	select {
 	case h.logCh <- log:
-	default:
-		// Just increment a counter for dropped logs to this handler; we can't log now
-		// because the lock is already held by the LogWriter invoking this
-		h.droppedCount++
 	}
 }
 
@@ -80,7 +73,7 @@ func (a Api) logs(c *cart.Context) {
 
 	flusher, ok := resp.(http.Flusher)
 	if !ok {
-		log.Println("Streaming not supported")
+		a.server.logger.Println("Streaming not supported")
 	}
 	for {
 		select {
