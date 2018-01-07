@@ -46,7 +46,7 @@ func (a Api) nodes(c *cart.Context) {
 }
 
 type httpLogHandler struct {
-	logCh        chan string
+	logCh chan string
 }
 
 func (h *httpLogHandler) HandleLog(log string) {
