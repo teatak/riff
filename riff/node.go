@@ -53,6 +53,7 @@ type Node struct {
 	DataCenter  string
 	IP          string
 	Port        int
+	Version     uint64
 	State       stateType // Current state
 	StateChange time.Time // Time last state change happened
 	SnapShot    string

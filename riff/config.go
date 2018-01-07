@@ -1,23 +1,25 @@
 package riff
 
 type Config struct {
-	Id         string     `yaml:"id"`
-	IP         string     `yaml:"ip"`
-	Name       string     `yaml:"name"`
-	DataCenter string     `yaml:"data_center"`
+	Id         string     `yaml:"id"`          //id
+	IP         string     `yaml:"ip"`          //server ip
+	Name       string     `yaml:"name"`        //server random name
+	DataCenter string     `yaml:"data_center"` //server data center
+	Join       string     `yaml:"join"`        //join address
+	AutoPilot  bool       `yaml:"auto_pilot"`  //auto join node
 	Addresses  *Addresses `yaml:"addresses"`
 	Ports      *Ports     `yaml:"ports"`
 }
 type Addresses struct {
-	Http string `yaml:"http"`
-	Dns  string `yaml:"dns"`
-	Rpc  string `yaml:"rpc"`
+	Http string `yaml:"http"` //http address
+	Dns  string `yaml:"dns"`  //dns address
+	Rpc  string `yaml:"rpc"`  //rpc address
 }
 
 type Ports struct {
-	Http int `yaml:"http"`
-	Dns  int `yaml:"dns"`
-	Rpc  int `yaml:"rpc"`
+	Http int `yaml:"http"` //http port default 8610
+	Dns  int `yaml:"dns"`  //dns port default 8620
+	Rpc  int `yaml:"rpc"`  //rpc port defalut 8630
 }
 
 //func NewConfig(rpc, name, dataCenter string) (*Config, error) {

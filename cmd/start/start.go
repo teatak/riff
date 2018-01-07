@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"github.com/gimke/riff/riff"
-	"os"
 	"strings"
 )
 
@@ -15,11 +14,12 @@ const help = `Usage: start [options]
 
 Options:
 
-  -http       Http address of riff (-http 127.0.0.1)
-  -dns        Dns address of riff (-dns 127.0.0.1)
-  -rpc        RPC address of riff (-rpc 0.0.0.0)
-  -name       Node name.
-  -dc         DataCenter name.
+  -name       Node name
+  -dc         DataCenter name
+  -http       Http address of riff (-http 127.0.0.1:8610)
+  -dns        Dns address of riff (-dns 127.0.0.1:8620)
+  -rpc        RPC address of riff (-rpc [::]:8630)
+  -join       Join RPC address
 `
 
 type cmd struct {
@@ -31,6 +31,7 @@ type cmd struct {
 	http string
 	dns  string
 	rpc  string
+	join string
 }
 
 func New() *cmd {
@@ -40,24 +41,22 @@ func New() *cmd {
 }
 
 func (c *cmd) init() {
-	hostName, _ := os.Hostname()
 	c.flags = flag.NewFlagSet("start", flag.ContinueOnError)
-	c.flags.StringVar(&c.http, "http", "127.0.0.1", "usage")
-	c.flags.StringVar(&c.dns, "dns", "127.0.0.1", "usage")
-	c.flags.StringVar(&c.rpc, "rpc", "0.0.0.0", "usage")
-	c.flags.StringVar(&c.name, "name", hostName, "usage")
-	c.flags.StringVar(&c.dc, "dc", "dc1", "usage")
+	c.flags.StringVar(&c.http, "http", "", "usage")
+	c.flags.StringVar(&c.dns, "dns", "", "usage")
+	c.flags.StringVar(&c.rpc, "rpc", "", "usage")
+	c.flags.StringVar(&c.name, "name", "", "usage")
+	c.flags.StringVar(&c.join, "join", "", "usage")
+	c.flags.StringVar(&c.dc, "dc", "", "usage")
 
 	c.flags.Usage = func() {
 		fmt.Println(c.Help())
 	}
 }
 func (c *cmd) Run(args []string) int {
-	var exit = make(chan bool)
 	if err := c.flags.Parse(args); err != nil {
 		return 1
 	}
-
 	config, err := loadConfig(c)
 	if err != nil {
 		fmt.Printf("riff.start error: %v\n", err)
@@ -69,7 +68,7 @@ func (c *cmd) Run(args []string) int {
 		return 1
 	}
 	defer s.Shutdown()
-	<-exit
+	<-s.ShutdownCh
 	return 0
 }
 

@@ -24,13 +24,12 @@ type Server struct {
 	rpcServer  *rpc.Server
 	logger     *log.Logger
 	logWriter  *LogWriter
-	Id         string
+	Self       *Node
 	Nodes
-	Services
 	SnapShot     string
 	config       *Config
 	shutdown     bool
-	shutdownCh   chan struct{}
+	ShutdownCh   chan struct{}
 	shutdownLock sync.Mutex
 }
 
@@ -42,7 +41,7 @@ func NewServer(config *Config) (*Server, error) {
 		logWriter:  NewLogWriter(512),
 		rpcServer:  rpc.NewServer(),
 		config:     config,
-		shutdownCh: shutdownCh,
+		ShutdownCh: shutdownCh,
 	}
 
 	logOutput := io.MultiWriter(os.Stderr, s.logWriter)
@@ -76,9 +75,8 @@ func (s *Server) setupServer() error {
 		State:       stateAlive,
 		StateChange: time.Now(),
 	}
-	s.Id = s.config.Id
+	s.Self = self
 	s.Nodes = make(map[string]*Node)
-	s.Services = make(map[string]*Service)
 	s.AddNode(self)
 	return nil
 }
@@ -171,7 +169,7 @@ func (s *Server) Shutdown() error {
 	}
 
 	s.shutdown = true
-	close(s.shutdownCh)
+	close(s.ShutdownCh)
 	if s.Listener != nil {
 		s.Listener.Close()
 	}

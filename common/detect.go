@@ -52,20 +52,22 @@ func iptos(ip interface{}) string {
 
 // GetPrivateIPv4 returns the list of private network IPv4 addresses on
 // all active interfaces.
-func GetPrivateIPv4() ([]*net.IPAddr, error) {
+func GetPrivateIPv4() ([]*net.IPNet, error) {
 	addresses, err := activeInterfaceAddresses()
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get interface addresses: %v", err)
 	}
 
-	var addrs []*net.IPAddr
+	var addrs []*net.IPNet
 	for _, rawAddr := range addresses {
 		var ip net.IP
+		var mask net.IPMask
 		switch addr := rawAddr.(type) {
 		case *net.IPAddr:
 			ip = addr.IP
 		case *net.IPNet:
 			ip = addr.IP
+			mask = addr.Mask
 		default:
 			continue
 		}
@@ -75,27 +77,32 @@ func GetPrivateIPv4() ([]*net.IPAddr, error) {
 		if !isPrivate(ip) {
 			continue
 		}
-		addrs = append(addrs, &net.IPAddr{IP: ip})
+		addrs = append(addrs, &net.IPNet{
+			IP:   ip,
+			Mask: mask,
+		})
 	}
 	return addrs, nil
 }
 
 // GetPublicIPv6 returns the list of all public IPv6 addresses
 // on all active interfaces.
-func GetPublicIPv6() ([]*net.IPAddr, error) {
+func GetPublicIPv6() ([]*net.IPNet, error) {
 	addresses, err := net.InterfaceAddrs()
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get interface addresses: %v", err)
 	}
 
-	var addrs []*net.IPAddr
+	var addrs []*net.IPNet
 	for _, rawAddr := range addresses {
 		var ip net.IP
+		var mask net.IPMask
 		switch addr := rawAddr.(type) {
 		case *net.IPAddr:
 			ip = addr.IP
 		case *net.IPNet:
 			ip = addr.IP
+			mask = addr.Mask
 		default:
 			continue
 		}
@@ -105,7 +112,10 @@ func GetPublicIPv6() ([]*net.IPAddr, error) {
 		if isPrivate(ip) {
 			continue
 		}
-		addrs = append(addrs, &net.IPAddr{IP: ip})
+		addrs = append(addrs, &net.IPNet{
+			IP:   ip,
+			Mask: mask,
+		})
 	}
 	return addrs, nil
 }

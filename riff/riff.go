@@ -13,8 +13,8 @@ func (s *Server) String() string {
 	sortedNodes := s.Nodes.sort()
 	for i, nk := range sortedNodes {
 		//shutter the node
-		s.Nodes[nk].Shutter()
-		io.WriteString(buff, s.Nodes[nk].String())
+		//s.Nodes[nk].Shutter()
+		io.WriteString(buff, s.Nodes[nk].SnapShot)
 		if i != len(sortedNodes)-1 {
 			io.WriteString(buff, ",")
 		}
@@ -45,8 +45,8 @@ func (s *Server) AddNode(node *Node) *Node {
 		node = nd
 	} else {
 		s.Nodes[node.Id] = node
+		node.Shutter()
 	}
-	s.Shutter()
 	return node
 }
 

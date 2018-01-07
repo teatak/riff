@@ -26,6 +26,7 @@ func (s *Server) listenHttp() {
 	s.logger.Printf(infoRpcPrefix+"start to accept http conn: %v", s.httpServer.Addr)
 	err := s.httpServer.ListenAndServe()
 	if err != nil {
+		s.Shutdown()
 		s.logger.Printf(errorRpcPrefix+"start http server error: %s", err)
 	}
 }
@@ -51,7 +52,7 @@ func (s *Server) handleConn(conn net.Conn) {
 	codec := common.NewGobServerCodec(conn)
 	for {
 		select {
-		case <-s.shutdownCh:
+		case <-s.ShutdownCh:
 			return
 		default:
 		}
@@ -76,5 +77,5 @@ func (s *Server) print() {
    HTTP Address:  %v
     RPC Address:  %v
 
-`, s.Id, s.Nodes[s.Id].Name, s.Nodes[s.Id].DataCenter, s.httpServer.Addr, s.Listener.Addr())
+`, s.Self.Id, s.Self.Name, s.Self.DataCenter, s.httpServer.Addr, s.Listener.Addr())
 }
