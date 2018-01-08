@@ -20,6 +20,7 @@ func registerEndpoint(fn factory) {
 func init() {
 	registerEndpoint(func(s *Server) interface{} { return &Status{s} })
 	registerEndpoint(func(s *Server) interface{} { return &Query{s} })
+	registerEndpoint(func(s *Server) interface{} { return &Riff{s} })
 }
 
 func (s *Server) listenHttp() {

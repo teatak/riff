@@ -24,14 +24,52 @@ func (s *Server) String() string {
 	return buff.String()
 }
 
-func (s *Server) MakeDigest() (digest Nodes) {
-	digest = make(map[string]*Node)
+func (s *Server) MakeDigest() (digest []Node) {
+	digest = make([]Node, 0)
 	for _, n := range s.Nodes {
-		digest[n.Id] = n
-		//remove services
-		digest[n.Id].Services = nil
+		new := *n
+		new.Services = nil
+		digest = append(digest, new)
 	}
 	return
+}
+
+func (s *Server) MergeDiff(diff []Node) []Node {
+	nodes := make([]Node, 0)
+	s.logger.Printf(infoRpcPrefix+"merge nodes len: %d", len(diff))
+	for _, remote := range diff {
+		myNode := s.Nodes[remote.Id]
+		if myNode != nil {
+			//find node
+			if remote.IsSelf {
+				//overwrite if remote node is self node
+				//over write version
+				version := myNode.Version
+				*myNode = remote
+				myNode.IsSelf = false
+				myNode.Version = version
+				myNode.Shutter()
+				nodes = append(nodes, *myNode) //shot out new version
+			} else {
+				if remote.Version > myNode.Version {
+					if myNode.IsSelf {
+						//only update version
+						myNode.Version = remote.Version
+					} else {
+						*myNode = remote
+					}
+					myNode.Shutter()
+				} else {
+					nodes = append(nodes, *myNode)
+				}
+			}
+		} else {
+			//not find node
+			s.AddNode(&remote)
+			s.Shutter()
+		}
+	}
+	return nodes
 }
 
 func (s *Server) Shutter() {

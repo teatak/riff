@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/sha1"
 	"fmt"
+	"github.com/gimke/riff/common"
 	"io"
 	"net"
 	"sort"
@@ -21,6 +22,33 @@ func (ns *Nodes) sort() []string {
 	}
 	sort.Strings(keys)
 	return keys
+}
+
+func (ns *Nodes) randomNodes(fanout int, filterFn func(*Node) bool) []string {
+	nodes := ns.sort()
+	n := len(nodes)
+	kNodes := make([]*Node, 0, fanout)
+	KString := make([]string, 0, fanout)
+OUTER:
+	for i := 0; i < 3*n && len(kNodes) < fanout; i++ {
+		idx := common.RandomNumber(n)
+		node := (*ns)[nodes[idx]]
+		//filter nodes
+		if filterFn != nil && filterFn(node) {
+			continue OUTER
+		}
+		// Check if we have this node already
+		for j := 0; j < len(kNodes); j++ {
+			if node == kNodes[j] {
+				continue OUTER
+			}
+		}
+		kNodes = append(kNodes, node)
+	}
+	for i := 0; i < len(kNodes); i++ {
+		KString = append(KString, kNodes[i].Address())
+	}
+	return KString
 }
 
 type stateType int
@@ -57,8 +85,8 @@ type Node struct {
 	State       stateType // Current state
 	StateChange time.Time // Time last state change happened
 	SnapShot    string
-
-	nodeLock sync.RWMutex
+	IsSelf      bool
+	nodeLock    sync.RWMutex
 }
 
 func (n *Node) Address() string {

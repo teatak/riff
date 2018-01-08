@@ -61,8 +61,9 @@ func NewServer(config *Config) (*Server, error) {
 		return nil, fmt.Errorf(errorServerPrefix+"%v", err)
 	}
 	s.print()
-	go s.listenRpc()
-	go s.listenHttp()
+	go s.listenRpc()   //listen rpc
+	go s.listenHttp()  //listen http
+	go s.stateFanout() //fanout state
 	return s, nil
 }
 func (s *Server) setupServer() error {
@@ -72,6 +73,7 @@ func (s *Server) setupServer() error {
 		IP:          s.config.Addresses.Rpc,
 		Port:        s.config.Ports.Rpc,
 		DataCenter:  s.config.DataCenter,
+		IsSelf:      true,
 		State:       stateAlive,
 		StateChange: time.Now(),
 	}

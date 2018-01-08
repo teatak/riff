@@ -6,7 +6,7 @@ import (
 	"reflect"
 )
 
-func AdviseRpc(addr string) (string,error) {
+func AdviseRpc(addr string) (string, error) {
 	var advise string
 	var err error
 	if IsAny(addr) {
@@ -35,7 +35,7 @@ func AdviseRpc(addr string) (string,error) {
 			advise = addrs[0].String()
 		}
 	}
-	return advise,err
+	return advise, err
 }
 
 func IsAny(ip interface{}) bool {

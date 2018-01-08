@@ -35,6 +35,13 @@ func GenerateID(length int) string {
 	return string(b)
 }
 
+func RandomNumber(n int) int {
+	if n == 0 {
+		return 0
+	}
+	return int(rand.Uint32() % uint32(n))
+}
+
 func GetIpPort(ipPort string) (ip string, port int) {
 	var err error
 	index := strings.LastIndex(ipPort, ":")
