@@ -9,6 +9,7 @@ type Config struct {
 	AutoPilot  bool       `yaml:"auto_pilot"`  //auto join node
 	Addresses  *Addresses `yaml:"addresses"`
 	Ports      *Ports     `yaml:"ports"`
+	Fanout     int        `yaml:"fan_out"`
 }
 type Addresses struct {
 	Http string `yaml:"http"` //http address

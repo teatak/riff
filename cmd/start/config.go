@@ -24,6 +24,7 @@ func defaultConfig() *riff.Config {
 		Name:       hostName,
 		DataCenter: "dc1",
 		AutoPilot:  false,
+		Fanout:     3,
 		Addresses: &riff.Addresses{
 			Http: "127.0.0.1",
 			Dns:  "127.0.0.1",
