@@ -8,11 +8,7 @@ import (
 	"io/ioutil"
 	"net"
 	"os"
-	"strings"
-	"strconv"
 )
-
-var configText = ""
 
 func init() {
 	//	hostName, _ := os.Hostname()
@@ -145,34 +141,6 @@ func adviseRpc(addr string) string {
 	return advise
 }
 
-func getIpPort(ipPort string) (ip string, port int, err error) {
-	index := strings.LastIndex(ipPort,":")
-	if ipPort == "" {
-		err = fmt.Errorf("empty ip and port\n")
-		return
-	}
-	if index > -1 && index < len(ipPort) {
-		ip = ipPort[0:index]
-		port,err = strconv.Atoi(ipPort[index+1:])
-		if err != nil {
-			ip = ipPort
-			port = 0
-			err = nil
-		}
-	} else {
-		ip = ipPort
-		port = 0
-		err = nil
-	}
-	if ip != "" {
-		ipaddr := net.ParseIP(ip)
-		if ipaddr == nil {
-			err = fmt.Errorf("error ip and port\n")
-		}
-	}
-	return
-}
-
 func loadConfig(cmd *cmd) (*riff.Config, error) {
 	c := defaultConfig()
 	file := common.BinDir + "/config/" + common.Name + ".yml"
@@ -194,7 +162,7 @@ func loadConfig(cmd *cmd) (*riff.Config, error) {
 	var port int
 	var err error
 	//http
-	host,port,err = getIpPort(cmd.http)
+	host,port,err = common.GetIpPort(cmd.http)
 	if err == nil {
 		if host != "" {
 			c.Addresses.Http = host
@@ -203,7 +171,7 @@ func loadConfig(cmd *cmd) (*riff.Config, error) {
 			c.Ports.Http = port
 		}
 	}
-	host,port,err = getIpPort(cmd.dns)
+	host,port,err = common.GetIpPort(cmd.dns)
 	if err == nil {
 		if host != "" {
 			c.Addresses.Dns = host
@@ -212,7 +180,7 @@ func loadConfig(cmd *cmd) (*riff.Config, error) {
 			c.Ports.Dns = port
 		}
 	}
-	host,port,err = getIpPort(cmd.rpc)
+	host,port,err = common.GetIpPort(cmd.rpc)
 	if err == nil {
 		if host != "" {
 			c.Addresses.Rpc = host
@@ -224,6 +192,16 @@ func loadConfig(cmd *cmd) (*riff.Config, error) {
 	if c.Addresses.Rpc == "" {
 		ip,_,_ := net.ParseCIDR(advise)
 		c.Addresses.Rpc = ip.String()
+	}
+	if cmd.join != "" {
+		c.Join = cmd.join
+	}
+	if !isExist(file) {
+		os.MkdirAll(common.BinDir+"/config", 0755)
+		out, err := yaml.Marshal(c)
+		if err == nil {
+			ioutil.WriteFile(file, out, 0666)
+		}
 	}
 	return c, nil
 }

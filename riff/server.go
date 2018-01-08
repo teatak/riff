@@ -78,6 +78,7 @@ func (s *Server) setupServer() error {
 	s.Self = self
 	s.Nodes = make(map[string]*Node)
 	s.AddNode(self)
+	s.Shutter()	//make snap sort
 	return nil
 }
 
