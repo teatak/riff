@@ -39,7 +39,7 @@ func New() *cmd {
 }
 func (c *cmd) init() {
 	c.flags = flag.NewFlagSet("query", flag.ContinueOnError)
-	c.flags.StringVar(&c.rpc, "rpc", "0.0.0.0:8630", "usage")
+	c.flags.StringVar(&c.rpc, "rpc", "", "usage")
 
 	c.flags.Usage = func() {
 		fmt.Println(c.Help())
@@ -51,6 +51,18 @@ func (c *cmd) Run(args []string) int {
 			return 1
 		}
 	}
+	advise, _ := common.AdviseRpc("0.0.0.0")
+	host, port := common.GetIpPort(c.rpc)
+	if host == "" {
+		ip, _, _ := net.ParseCIDR(advise)
+		host = ip.String()
+	}
+	if port == 0 {
+		port = common.DefaultRpcPort
+	}
+	c.rpc = net.JoinHostPort(host, strconv.Itoa(port))
+
+	fmt.Println(host, port, advise, c.rpc)
 	//get args 0
 	command := args[0]
 	switch command {
@@ -63,15 +75,6 @@ func (c *cmd) Run(args []string) int {
 		return 0
 		break
 	}
-	//if c.snap {
-	//	//call client
-	//	c.SnapShot()
-	//	return 0
-	//}
-	//if c.nodes {
-	//	c.Nodes()
-	//	return 0
-	//}
 	return 0
 }
 
@@ -81,9 +84,7 @@ func (c *cmd) SnapShot() {
 		fmt.Println("error", err)
 		return
 	}
-	//encBuf := bufio.NewWriter(conn)
 	codec := common.NewGobClientCodec(conn)
-	//codec := jsonrpc.NewClientCodec(conn)
 	cmd := rpc.NewClientWithCodec(codec)
 	var snapshot string
 	err = cmd.Call("Query.SnapShot", struct{}{}, &snapshot)
@@ -99,9 +100,7 @@ func (c *cmd) Nodes() {
 		fmt.Println("error", err)
 		return
 	}
-	//encBuf := bufio.NewWriter(conn)
 	codec := common.NewGobClientCodec(conn)
-	//codec := jsonrpc.NewClientCodec(conn)
 	cmd := rpc.NewClientWithCodec(codec)
 	var nodes riff.Nodes
 	err = cmd.Call("Query.Nodes", struct{}{}, &nodes)
@@ -109,7 +108,6 @@ func (c *cmd) Nodes() {
 		fmt.Println("error", err)
 		return
 	}
-	//fmt.Printf("%-24s %-24s %-8v %-10s %-12s\n", "Node", "Address", "Status", "DC", "SnapShot")
 	results := make([]string, 0, len(nodes)+1)
 	header := "Node|Address|Status|DC|SnapShot"
 	results = append(results, header)

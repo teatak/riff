@@ -5,7 +5,7 @@ type Riff struct {
 }
 
 // push request a digest
-func (r *Riff) Pull(snap string, digest *Nodes) error {
+func (r *Riff) Request(snap string, digest *Nodes) error {
 	r.server.logger.Printf(infoRpcPrefix+"riff pull snapshot: %s", snap)
 	if snap == r.server.SnapShot {
 		digest = nil

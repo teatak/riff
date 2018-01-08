@@ -1,7 +1,6 @@
 package start
 
 import (
-	"fmt"
 	"github.com/gimke/riff/common"
 	"github.com/gimke/riff/riff"
 	"gopkg.in/yaml.v2"
@@ -78,38 +77,11 @@ func mergeConfig(src, dest *riff.Config) {
 	}
 }
 
-func adviseRpc(addr string) string {
-	var advise string
-	if common.IsAny(addr) {
-		var addrs []*net.IPNet
-		var err error
-		//detect ip
-		var addrtype string
-
-		switch {
-		case common.IsAnyV4(addr):
-			addrtype = "private IPv4"
-			addrs, err = common.GetPrivateIPv4()
-			if err != nil {
-				fmt.Println("Error detecting %s address: %s", addrtype, err)
-			}
-			break
-		case common.IsAnyV6(addr):
-			addrtype = "public IPv6"
-			addrs, err = common.GetPublicIPv6()
-			if err != nil {
-				fmt.Println("Error detecting %s address: %s", addrtype, err)
-			}
-			break
-		}
-		if len(addrs) > 0 {
-			advise = addrs[0].String()
-		}
-	}
-	return advise
-}
-
 func loadConfig(cmd *cmd) (*riff.Config, error) {
+	var host string
+	var port int
+	var err error
+
 	c := defaultConfig()
 	file := common.BinDir + "/config/" + common.Name + ".yml"
 	if isExist(file) {
@@ -122,41 +94,38 @@ func loadConfig(cmd *cmd) (*riff.Config, error) {
 		}
 		mergeConfig(file, c)
 	}
-	advise := adviseRpc("0.0.0.0")
+
+	advise, err := common.AdviseRpc("0.0.0.0")
+	if err != nil {
+		return nil, err
+	}
 	c.IP = advise
 
-	//if cmd.http != "" {
-	var host string
-	var port int
-	var err error
 	//http
-	host, port, err = common.GetIpPort(cmd.http)
-	if err == nil {
-		if host != "" {
-			c.Addresses.Http = host
-		}
-		if port != 0 {
-			c.Ports.Http = port
-		}
+	host, port = common.GetIpPort(cmd.http)
+	if host != "" {
+		c.Addresses.Http = host
 	}
-	host, port, err = common.GetIpPort(cmd.dns)
-	if err == nil {
-		if host != "" {
-			c.Addresses.Dns = host
-		}
-		if port != 0 {
-			c.Ports.Dns = port
-		}
+	if port != 0 {
+		c.Ports.Http = port
 	}
-	host, port, err = common.GetIpPort(cmd.rpc)
-	if err == nil {
-		if host != "" {
-			c.Addresses.Rpc = host
-		}
-		if port != 0 {
-			c.Ports.Rpc = port
-		}
+
+	host, port = common.GetIpPort(cmd.dns)
+	if host != "" {
+		c.Addresses.Dns = host
 	}
+	if port != 0 {
+		c.Ports.Dns = port
+	}
+
+	host, port = common.GetIpPort(cmd.rpc)
+	if host != "" {
+		c.Addresses.Rpc = host
+	}
+	if port != 0 {
+		c.Ports.Rpc = port
+	}
+
 	if c.Addresses.Rpc == "" {
 		ip, _, _ := net.ParseCIDR(advise)
 		c.Addresses.Rpc = ip.String()

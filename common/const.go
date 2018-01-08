@@ -7,4 +7,6 @@ const (
 	Green   = "\033[32;1m"
 	Success = Green + "[  OK  ]" + Reset
 	Failed  = Red + "[FAILED]" + Reset
+	DefaultHttpPort = 8610
+	DefaultRpcPort = 8630
 )

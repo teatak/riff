@@ -6,6 +6,38 @@ import (
 	"reflect"
 )
 
+func AdviseRpc(addr string) (string,error) {
+	var advise string
+	var err error
+	if IsAny(addr) {
+		var addrs []*net.IPNet
+		var err error
+		//detect ip
+		var addrtype string
+
+		switch {
+		case IsAnyV4(addr):
+			addrtype = "private IPv4"
+			addrs, err = GetPrivateIPv4()
+			if err != nil {
+				err = fmt.Errorf("Error detecting %s address: %s", addrtype, err)
+			}
+			break
+		case IsAnyV6(addr):
+			addrtype = "public IPv6"
+			addrs, err = GetPublicIPv6()
+			if err != nil {
+				err = fmt.Errorf("Error detecting %s address: %s", addrtype, err)
+			}
+			break
+		}
+		if len(addrs) > 0 {
+			advise = addrs[0].String()
+		}
+	}
+	return advise,err
+}
+
 func IsAny(ip interface{}) bool {
 	return IsAnyV4(ip) || IsAnyV6(ip)
 }
