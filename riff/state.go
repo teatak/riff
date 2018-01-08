@@ -26,7 +26,7 @@ func (s *Server) stateFanout() {
 				s.logger.Printf(errorRpcPrefix+"request peer error: %v", err)
 			}
 		}
-		time.Sleep(1 * time.Second)
+		time.Sleep(200 * time.Millisecond)
 	}
 }
 func (s *Server) requestPeer(peer string) error {
