@@ -10,43 +10,11 @@ import (
 	"os"
 )
 
-func init() {
-	//	hostName, _ := os.Hostname()
-	//	id := common.GenerateID(12)
-	//	configText = `#id: auto generated id
-	//#name: node name
-	//#data_center: data center
-	//
-	//#addresses:
-	//#  http: 172.0.0.1
-	//#  dns: 172.0.0.1
-	//#  rpc: 192.169.1.2
-	//
-	//#ports:
-	//#  http: 8610
-	//#  dns: 8620
-	//#  rpc: 8630
-	//
-	//id: ` + id + `
-	//name: ` + hostName + `
-	//data_center: dc1
-	//`
-	//	initConfig()
-}
-
 func isExist(file string) bool {
 	if _, err := os.Stat(file); os.IsNotExist(err) {
 		return false
 	}
 	return true
-}
-
-func initConfig() {
-	//file := common.BinDir + "/config/" + common.Name + ".yml"
-	//if !isExist(file) {
-	//	os.MkdirAll(common.BinDir+"/config", 0755)
-	//	ioutil.WriteFile(file, []byte(configText), 0666)
-	//}
 }
 
 func defaultConfig() *riff.Config {
