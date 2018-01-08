@@ -1,14 +1,14 @@
 package common
 
 import (
+	"fmt"
 	"math/rand"
+	"net"
 	"os"
 	"path/filepath"
-	"time"
-	"strings"
-	"fmt"
 	"strconv"
-	"net"
+	"strings"
+	"time"
 )
 
 var BinDir string
@@ -38,14 +38,14 @@ func GenerateID(length int) string {
 }
 
 func GetIpPort(ipPort string) (ip string, port int, err error) {
-	index := strings.LastIndex(ipPort,":")
+	index := strings.LastIndex(ipPort, ":")
 	if ipPort == "" {
 		err = fmt.Errorf("empty ip and port\n")
 		return
 	}
 	if index > -1 && index < len(ipPort) {
 		ip = ipPort[0:index]
-		port,err = strconv.Atoi(ipPort[index+1:])
+		port, err = strconv.Atoi(ipPort[index+1:])
 		if err != nil {
 			ip = ipPort
 			port = 0
@@ -64,4 +64,3 @@ func GetIpPort(ipPort string) (ip string, port int, err error) {
 	}
 	return
 }
-

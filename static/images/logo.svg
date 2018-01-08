@@ -1,8 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" style="background: none;">
-    <circle cx="500" cy="500" r="400" fill="none" stroke="#b65955" stroke-width="60">
+    <circle cx="500" cy="500" r="400" fill="none" stroke="#1392ec" stroke-width="60">
     </circle>
-    <circle cx="500" cy="500" r="240" fill="#a5b75c" stroke-width="0">
-    </circle>
-    <circle cx="500" cy="500" r="80" fill="#b65955" stroke-width="0">
+    <circle cx="500" cy="500" r="200" fill="none" stroke="#ec1313" stroke-width="60">
     </circle>
 </svg>

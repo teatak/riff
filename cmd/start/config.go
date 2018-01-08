@@ -162,7 +162,7 @@ func loadConfig(cmd *cmd) (*riff.Config, error) {
 	var port int
 	var err error
 	//http
-	host,port,err = common.GetIpPort(cmd.http)
+	host, port, err = common.GetIpPort(cmd.http)
 	if err == nil {
 		if host != "" {
 			c.Addresses.Http = host
@@ -171,7 +171,7 @@ func loadConfig(cmd *cmd) (*riff.Config, error) {
 			c.Ports.Http = port
 		}
 	}
-	host,port,err = common.GetIpPort(cmd.dns)
+	host, port, err = common.GetIpPort(cmd.dns)
 	if err == nil {
 		if host != "" {
 			c.Addresses.Dns = host
@@ -180,7 +180,7 @@ func loadConfig(cmd *cmd) (*riff.Config, error) {
 			c.Ports.Dns = port
 		}
 	}
-	host,port,err = common.GetIpPort(cmd.rpc)
+	host, port, err = common.GetIpPort(cmd.rpc)
 	if err == nil {
 		if host != "" {
 			c.Addresses.Rpc = host
@@ -190,7 +190,7 @@ func loadConfig(cmd *cmd) (*riff.Config, error) {
 		}
 	}
 	if c.Addresses.Rpc == "" {
-		ip,_,_ := net.ParseCIDR(advise)
+		ip, _, _ := net.ParseCIDR(advise)
 		c.Addresses.Rpc = ip.String()
 	}
 	if cmd.join != "" {
