@@ -5,19 +5,22 @@ type Riff struct {
 }
 
 // push request a digest
-func (r *Riff) Request(snap string, digest *[]Node) error {
-	r.server.logger.Printf(infoRpcPrefix+"riff request snapshot: %s", snap)
+func (r *Riff) Request(snap string, digests *Digests) error {
 	if snap == r.server.SnapShot {
-		*digest = nil
+		*digests = nil
 	} else {
 		//build digest
-		*digest = r.server.MakeDigest()
+		*digests = r.server.MakeDigest()
 	}
 	return nil
 }
 
 //push changes
-func (r *Riff) PushDiff(diff []Node, remoteDiff *[]Node) error {
-	*remoteDiff = r.server.MergeDiff(diff)
+func (r *Riff) PushDiff(diff Nodes, remoteDiff *Nodes) error {
+	if len(diff) == 0 {
+		*remoteDiff = nil
+	} else {
+		*remoteDiff = r.server.MergeDiff(diff)
+	}
 	return nil
 }

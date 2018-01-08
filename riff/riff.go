@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/sha1"
 	"fmt"
+	"github.com/gin-gonic/gin/json"
 	"io"
 )
 
@@ -24,52 +25,93 @@ func (s *Server) String() string {
 	return buff.String()
 }
 
-func (s *Server) MakeDigest() (digest []Node) {
-	digest = make([]Node, 0)
+func (s *Server) MakeDigest() (digests Digests) {
+	digests = make(map[string]*Digest)
 	for _, n := range s.Nodes {
-		new := *n
-		new.Services = nil
-		digest = append(digest, new)
+		digest := &Digest{
+			Id:       n.Id,
+			SnapShot: n.SnapShot,
+		}
+		digests[digest.Id] = digest
 	}
+	d, _ := json.Marshal(digests)
+	s.logger.Printf(infoRpcPrefix+"server %s send digests: %s\n", s.Self.Name, string(d))
 	return
 }
 
-func (s *Server) MergeDiff(diff []Node) []Node {
-	nodes := make([]Node, 0)
-	s.logger.Printf(infoRpcPrefix+"merge nodes len: %d", len(diff))
-	for _, remote := range diff {
-		myNode := s.Nodes[remote.Id]
-		if myNode != nil {
-			//find node
-			if remote.IsSelf {
-				//overwrite if remote node is self node
-				//over write version
-				version := myNode.Version
-				*myNode = remote
-				myNode.IsSelf = false
-				myNode.Version = version
-				myNode.Shutter()
-				nodes = append(nodes, *myNode) //shot out new version
-			} else {
-				if remote.Version > myNode.Version {
-					if myNode.IsSelf {
-						//only update version
-						myNode.Version = remote.Version
-					} else {
-						*myNode = remote
-					}
-					myNode.Shutter()
-				} else {
-					nodes = append(nodes, *myNode)
-				}
+func (s *Server) MakeDiffNodes(digests Digests) (diff Nodes) {
+	diff = make(map[string]*Node)
+	for _, d := range digests {
+		//find in server nodes
+		n := s.Nodes[d.Id]
+		if n == nil {
+			//make an empty node for remote diff snap is empty
+			empty := &Node{
+				Id:      d.Id,
+				Version: 0,
 			}
+			diff[d.Id] = empty
 		} else {
-			//not find node
-			s.AddNode(&remote)
-			s.Shutter()
+			if d.SnapShot != n.SnapShot {
+				diff[d.Id] = n
+			}
 		}
 	}
-	return nodes
+	for _, n := range s.Nodes {
+		if diff[n.Id] == nil && digests[n.Id] == nil {
+			//add this server nodes
+			diff[n.Id] = n
+		}
+	}
+	d, _ := json.Marshal(diff)
+	s.logger.Printf(infoRpcPrefix+"server %s send nodes: %s\n", s.Self.Name, string(d))
+	return
+}
+
+func (s *Server) MergeDiff(diff Nodes) (reDiff Nodes) {
+	reDiff = make(map[string]*Node)
+	for _, d := range diff {
+		n := s.Nodes[d.Id] //find in server nodes
+		if n == nil {
+			d.IsSelf = false //remove is self
+			s.AddNode(d)     //if not find then add node
+		} else {
+			if d.IsSelf {
+				//if remote node is self then overwrite server node
+				v := n.Version + 1
+				*n = *d
+				n.IsSelf = false
+				n.Version = v
+				n.Shutter()
+				reDiff[n.Id] = n //shot out new version
+			} else {
+				if d.SnapShot == "" {
+					//need update this
+					reDiff[n.Id] = n
+				} else {
+					if d.Version > n.Version {
+						if n.IsSelf {
+							//only update version
+							n.Version = d.Version
+							n.Shutter()
+						} else {
+							*n = *d
+						}
+					} else if d.Version != n.Version {
+						//take my
+						reDiff[n.Id] = n
+					}
+				}
+			}
+		}
+	}
+	d, _ := json.Marshal(diff)
+	r, _ := json.Marshal(reDiff)
+	s.logger.Printf(infoRpcPrefix+"merge nodes: %s \nreturn nodes: %s\n", string(d), string(r))
+	n, _ := json.Marshal(s.Nodes)
+	s.logger.Printf(infoRpcPrefix+"nodes now is %s\n", string(n))
+	s.Shutter()
+	return
 }
 
 func (s *Server) Shutter() {

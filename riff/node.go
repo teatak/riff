@@ -14,6 +14,11 @@ import (
 )
 
 type Nodes map[string]*Node
+type Digests map[string]*Digest
+type Digest struct {
+	Id       string
+	SnapShot string
+}
 
 func (ns *Nodes) sort() []string {
 	var keys = make([]string, 0, 0)

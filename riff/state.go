@@ -26,7 +26,7 @@ func (s *Server) stateFanout() {
 				s.logger.Printf(errorRpcPrefix+"request peer error: %v", err)
 			}
 		}
-		time.Sleep(3 * time.Second)
+		time.Sleep(1 * time.Second)
 	}
 }
 func (s *Server) requestPeer(peer string) error {
@@ -36,32 +36,23 @@ func (s *Server) requestPeer(peer string) error {
 	}
 	codec := common.NewGobClientCodec(conn)
 	cmd := rpc.NewClientWithCodec(codec)
-	var digest []Node
-	err = cmd.Call("Riff.Request", s.SnapShot, &digest)
+	defer cmd.Close()
+
+	var digests Digests
+	err = cmd.Call("Riff.Request", s.SnapShot, &digests)
 	if err != nil {
 		return fmt.Errorf("peer: %s error: %v", peer, err)
 	}
 	//push diff
-	var diff []Node
-	for _, n := range digest {
-		remote := n
-		my := s.Nodes[n.Id]
-		if my == nil {
-			empty := Node{
-				Id:      n.Id,
-				Version: 0,
-			}
-			diff = append(diff, empty)
-		} else {
-			if remote.SnapShot != my.SnapShot {
-				diff = append(diff, *my)
+	if len(digests) != 0 {
+		diff := s.MakeDiffNodes(digests)
+		if len(diff) != 0 {
+			var reDiff Nodes
+			err = cmd.Call("Riff.PushDiff", diff, &reDiff)
+			if len(reDiff) != 0 {
+				s.MergeDiff(reDiff)
 			}
 		}
 	}
-	var remoteDiff []Node
-	err = cmd.Call("Riff.PushDiff", diff, &remoteDiff)
-	s.MergeDiff(remoteDiff)
-	s.Shutter()
-	cmd.Close()
 	return nil
 }

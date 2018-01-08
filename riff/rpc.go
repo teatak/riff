@@ -59,7 +59,7 @@ func (s *Server) handleConn(conn net.Conn) {
 		}
 		if err := s.rpcServer.ServeRequest(codec); err != nil {
 			if err == io.EOF {
-				s.logger.Printf(infoRpcPrefix+"end of %s", conn.RemoteAddr().String())
+				//do nothing
 			} else {
 				s.logger.Printf(errorRpcPrefix+"%v %s", err, conn.RemoteAddr().String())
 			}
