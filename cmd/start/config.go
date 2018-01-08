@@ -196,6 +196,12 @@ func loadConfig(cmd *cmd) (*riff.Config, error) {
 	if cmd.join != "" {
 		c.Join = cmd.join
 	}
+	if cmd.name != "" {
+		c.Name = cmd.name
+	}
+	if cmd.dc != "" {
+		c.DataCenter = cmd.dc
+	}
 	if !isExist(file) {
 		os.MkdirAll(common.BinDir+"/config", 0755)
 		out, err := yaml.Marshal(c)
