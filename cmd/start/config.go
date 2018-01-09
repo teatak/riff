@@ -96,7 +96,7 @@ func loadConfig(cmd *cmd) (*riff.Config, error) {
 		mergeConfig(file, c)
 	}
 
-	advise, err := common.AdviseRpc("0.0.0.0")
+	advise, err := common.AdviseRpc()
 	if err != nil {
 		return nil, err
 	}

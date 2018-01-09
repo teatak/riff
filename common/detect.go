@@ -3,153 +3,37 @@ package common
 import (
 	"fmt"
 	"net"
-	"reflect"
 )
 
-func AdviseRpc(addr string) (string, error) {
-	var advise string
-	var err error
-	if IsAny(addr) {
-		var addrs []*net.IPNet
-		var err error
-		//detect ip
-		var addrtype string
-
-		switch {
-		case IsAnyV4(addr):
-			addrtype = "private IPv4"
-			addrs, err = GetPrivateIPv4()
-			if err != nil {
-				err = fmt.Errorf("Error detecting %s address: %s", addrtype, err)
-			}
-			break
-		case IsAnyV6(addr):
-			addrtype = "public IPv6"
-			addrs, err = GetPublicIPv6()
-			if err != nil {
-				err = fmt.Errorf("Error detecting %s address: %s", addrtype, err)
-			}
-			break
-		}
-		if len(addrs) > 0 {
-			advise = addrs[0].String()
-		}
+func AdviseRpc() (string, error) {
+	addrs, err := GetPrivateIPv4()
+	if err != nil {
+		return "", err
 	}
-	return advise, err
-}
-
-func IsAny(ip interface{}) bool {
-	return IsAnyV4(ip) || IsAnyV6(ip)
-}
-
-// IsAnyV4 checks if the given ip address is an IPv4 ANY address. ip
-// can be either a *net.IP or a string. It panics on another type.
-func IsAnyV4(ip interface{}) bool {
-	return iptos(ip) == "0.0.0.0"
-}
-
-// IsAnyV6 checks if the given ip address is an IPv6 ANY address. ip
-// can be either a *net.IP or a string. It panics on another type.
-func IsAnyV6(ip interface{}) bool {
-	ips := iptos(ip)
-	return ips == "::" || ips == "[::]"
-}
-
-func iptos(ip interface{}) string {
-	if ip == nil || reflect.TypeOf(ip).Kind() == reflect.Ptr && reflect.ValueOf(ip).IsNil() {
-		return ""
+	if len(addrs) > 0 {
+		return addrs[0].String(), nil
 	}
-	switch x := ip.(type) {
-	case string:
-		return x
-	case *string:
-		if x == nil {
-			return ""
-		}
-		return *x
-	case net.IP:
-		return x.String()
-	case *net.IP:
-		return x.String()
-	case *net.IPAddr:
-		return x.IP.String()
-	case *net.TCPAddr:
-		return x.IP.String()
-	case *net.UDPAddr:
-		return x.IP.String()
-	default:
-		panic(fmt.Sprintf("invalid type: %T", ip))
-	}
+	return "", err
 }
 
-// GetPrivateIPv4 returns the list of private network IPv4 addresses on
-// all active interfaces.
 func GetPrivateIPv4() ([]*net.IPNet, error) {
-	addresses, err := activeInterfaceAddresses()
+	addrs, err := net.InterfaceAddrs()
 	if err != nil {
-		return nil, fmt.Errorf("Failed to get interface addresses: %v", err)
+		return nil, fmt.Errorf("error: ", err)
 	}
-
-	var addrs []*net.IPNet
-	for _, rawAddr := range addresses {
-		var ip net.IP
-		var mask net.IPMask
-		switch addr := rawAddr.(type) {
-		case *net.IPAddr:
-			ip = addr.IP
-		case *net.IPNet:
-			ip = addr.IP
-			mask = addr.Mask
-		default:
-			continue
+	var ipNets []*net.IPNet
+	for _, address := range addrs {
+		// check the address type and if it is not a loopback
+		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			if ipnet.IP.To4() != nil {
+				if !isPrivate(ipnet.IP) {
+					continue
+				}
+				ipNets = append(ipNets, ipnet)
+			}
 		}
-		if ip.To4() == nil {
-			continue
-		}
-		if !isPrivate(ip) {
-			continue
-		}
-		addrs = append(addrs, &net.IPNet{
-			IP:   ip,
-			Mask: mask,
-		})
 	}
-	return addrs, nil
-}
-
-// GetPublicIPv6 returns the list of all public IPv6 addresses
-// on all active interfaces.
-func GetPublicIPv6() ([]*net.IPNet, error) {
-	addresses, err := net.InterfaceAddrs()
-	if err != nil {
-		return nil, fmt.Errorf("Failed to get interface addresses: %v", err)
-	}
-
-	var addrs []*net.IPNet
-	for _, rawAddr := range addresses {
-		var ip net.IP
-		var mask net.IPMask
-		switch addr := rawAddr.(type) {
-		case *net.IPAddr:
-			ip = addr.IP
-		case *net.IPNet:
-			ip = addr.IP
-			mask = addr.Mask
-		default:
-			continue
-		}
-		if ip.To4() != nil {
-			continue
-		}
-		if isPrivate(ip) {
-			continue
-		}
-		addrs = append(addrs, &net.IPNet{
-			IP:   ip,
-			Mask: mask,
-		})
-	}
-	return addrs, nil
+	return ipNets, nil
 }
 
 // privateBlocks contains non-forwardable address blocks which are used
@@ -186,40 +70,4 @@ func isPrivate(ip net.IP) bool {
 		}
 	}
 	return false
-}
-
-// Returns addresses from interfaces that is up
-func activeInterfaceAddresses() ([]net.Addr, error) {
-	var upAddrs []net.Addr
-	var loAddrs []net.Addr
-
-	interfaces, err := net.Interfaces()
-	if err != nil {
-		return nil, fmt.Errorf("Failed to get interfaces: %v", err)
-	}
-
-	for _, iface := range interfaces {
-		// Require interface to be up
-		if iface.Flags&net.FlagUp == 0 {
-			continue
-		}
-
-		addresses, err := iface.Addrs()
-		if err != nil {
-			return nil, fmt.Errorf("Failed to get interface addresses: %v", err)
-		}
-
-		if iface.Flags&net.FlagLoopback != 0 {
-			loAddrs = append(loAddrs, addresses...)
-			continue
-		}
-
-		upAddrs = append(upAddrs, addresses...)
-	}
-
-	if len(upAddrs) == 0 {
-		return loAddrs, nil
-	}
-
-	return upAddrs, nil
 }

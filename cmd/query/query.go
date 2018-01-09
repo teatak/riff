@@ -51,7 +51,7 @@ func (c *cmd) Run(args []string) int {
 			return 1
 		}
 	}
-	advise, _ := common.AdviseRpc("0.0.0.0")
+	advise, _ := common.AdviseRpc()
 	host, port := common.GetIpPort(c.rpc)
 	if host == "" {
 		ip, _, _ := net.ParseCIDR(advise)
