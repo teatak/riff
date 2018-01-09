@@ -17,10 +17,8 @@ func isExist(file string) bool {
 }
 
 func defaultConfig() *riff.Config {
-	id := common.GenerateID(12)
 	hostName, _ := os.Hostname()
 	c := &riff.Config{
-		Id:         id,
 		Name:       hostName,
 		DataCenter: "dc1",
 		AutoPilot:  false,
@@ -39,9 +37,6 @@ func defaultConfig() *riff.Config {
 	return c
 }
 func mergeConfig(src, dest *riff.Config) {
-	if src.Id != "" {
-		dest.Id = src.Id
-	}
 	if src.Name != "" {
 		dest.Name = src.Name
 	}

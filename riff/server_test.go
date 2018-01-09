@@ -16,8 +16,7 @@ func TestServer(t *testing.T) {
 	}
 	for i := 0; i < 100; i++ {
 		s.AddNode(&Node{
-			Id:   strconv.Itoa(i),
-			Name: "aaad",
+			Name: "node" + strconv.Itoa(i),
 		})
 	}
 	s.Shutter()

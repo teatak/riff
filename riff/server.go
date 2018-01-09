@@ -25,6 +25,7 @@ type Server struct {
 	logger     *log.Logger
 	logWriter  *LogWriter
 	Self       *Node
+	sync.Mutex
 	Nodes
 	SnapShot     string
 	config       *Config
@@ -68,7 +69,6 @@ func NewServer(config *Config) (*Server, error) {
 }
 func (s *Server) setupServer() error {
 	self := &Node{
-		Id:          s.config.Id,
 		Name:        s.config.Name,
 		IP:          s.config.Addresses.Rpc,
 		Port:        s.config.Ports.Rpc,

@@ -11,7 +11,7 @@ import (
 func (s *Server) stateFanout() {
 	for {
 		nodes := s.Nodes.randomNodes(s.config.Fanout, func(node *Node) bool {
-			return node.Id == s.Self.Id ||
+			return node.Name == s.Self.Name ||
 				node.State != stateAlive
 		})
 		if len(nodes) == 0 {

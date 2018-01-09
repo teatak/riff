@@ -16,7 +16,7 @@ import (
 type Nodes map[string]*Node
 type Digests map[string]*Digest
 type Digest struct {
-	Id       string
+	Name     string
 	SnapShot string
 }
 
@@ -50,6 +50,7 @@ OUTER:
 		}
 		kNodes = append(kNodes, node)
 	}
+
 	for i := 0; i < len(kNodes); i++ {
 		KString = append(KString, kNodes[i].Address())
 	}
@@ -81,7 +82,6 @@ func (s stateType) String() string {
 
 type Node struct {
 	Services
-	Id          string
 	Name        string
 	DataCenter  string
 	IP          string
@@ -100,7 +100,7 @@ func (n *Node) Address() string {
 
 func (n *Node) String() string {
 	buff := bytes.NewBuffer(nil)
-	io.WriteString(buff, n.Id+strconv.Itoa(n.StateChange.Nanosecond())+":{")
+	io.WriteString(buff, n.Name+":"+strconv.Itoa(n.StateChange.Nanosecond())+":{")
 	//write service name and version
 	sortedServices := n.Services.sort()
 	for i, sk := range sortedServices {

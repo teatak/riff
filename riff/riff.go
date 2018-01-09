@@ -29,10 +29,10 @@ func (s *Server) MakeDigest() (digests Digests) {
 	digests = make(map[string]*Digest)
 	for _, n := range s.Nodes {
 		digest := &Digest{
-			Id:       n.Id,
+			Name:     n.Name,
 			SnapShot: n.SnapShot,
 		}
-		digests[digest.Id] = digest
+		digests[digest.Name] = digest
 	}
 	d, _ := json.Marshal(digests)
 	s.logger.Printf(infoRpcPrefix+"server %s send digests: %s\n", s.Self.Name, string(d))
@@ -43,24 +43,24 @@ func (s *Server) MakeDiffNodes(digests Digests) (diff Nodes) {
 	diff = make(map[string]*Node)
 	for _, d := range digests {
 		//find in server nodes
-		n := s.Nodes[d.Id]
+		n := s.Nodes[d.Name]
 		if n == nil {
 			//make an empty node for remote diff snap is empty
 			empty := &Node{
-				Id:      d.Id,
+				Name:    d.Name,
 				Version: 0,
 			}
-			diff[d.Id] = empty
+			diff[d.Name] = empty
 		} else {
 			if d.SnapShot != n.SnapShot {
-				diff[d.Id] = n
+				diff[d.Name] = n
 			}
 		}
 	}
 	for _, n := range s.Nodes {
-		if diff[n.Id] == nil && digests[n.Id] == nil {
+		if diff[n.Name] == nil && digests[n.Name] == nil {
 			//add this server nodes
-			diff[n.Id] = n
+			diff[n.Name] = n
 		}
 	}
 	d, _ := json.Marshal(diff)
@@ -70,8 +70,10 @@ func (s *Server) MakeDiffNodes(digests Digests) (diff Nodes) {
 
 func (s *Server) MergeDiff(diff Nodes) (reDiff Nodes) {
 	reDiff = make(map[string]*Node)
+	s.Lock()
+	defer s.Unlock()
 	for _, d := range diff {
-		n := s.Nodes[d.Id] //find in server nodes
+		n := s.Nodes[d.Name] //find in server nodes
 		if n == nil {
 			d.IsSelf = false //remove is self
 			s.AddNode(d)     //if not find then add node
@@ -83,11 +85,11 @@ func (s *Server) MergeDiff(diff Nodes) (reDiff Nodes) {
 				n.IsSelf = false
 				n.Version = v
 				n.Shutter()
-				reDiff[n.Id] = n //shot out new version
+				reDiff[n.Name] = n //shot out new version
 			} else {
 				if d.SnapShot == "" {
 					//need update this
-					reDiff[n.Id] = n
+					reDiff[n.Name] = n
 				} else {
 					if d.Version > n.Version {
 						if n.IsSelf {
@@ -99,7 +101,7 @@ func (s *Server) MergeDiff(diff Nodes) (reDiff Nodes) {
 						}
 					} else if d.Version != n.Version {
 						//take my
-						reDiff[n.Id] = n
+						reDiff[n.Name] = n
 					}
 				}
 			}
@@ -120,10 +122,10 @@ func (s *Server) Shutter() {
 }
 
 func (s *Server) AddNode(node *Node) *Node {
-	if nd := s.Nodes[node.Id]; nd != nil {
+	if nd := s.Nodes[node.Name]; nd != nil {
 		node = nd
 	} else {
-		s.Nodes[node.Id] = node
+		s.Nodes[node.Name] = node
 		node.Shutter()
 	}
 	return node

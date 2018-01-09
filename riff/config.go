@@ -1,7 +1,6 @@
 package riff
 
 type Config struct {
-	Id         string     `yaml:"id"`          //id
 	IP         string     `yaml:"ip"`          //server ip
 	Name       string     `yaml:"name"`        //server random name
 	DataCenter string     `yaml:"data_center"` //server data center

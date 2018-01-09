@@ -71,11 +71,10 @@ func (s *Server) print() {
 	fmt.Printf(`
     Riff running!
 
-        Node Id:  %v
            Name:  %v
              DC:  %v
    HTTP Address:  %v
     RPC Address:  %v
 
-`, s.Self.Id, s.Self.Name, s.Self.DataCenter, s.httpServer.Addr, s.Listener.Addr())
+`, s.Self.Name, s.Self.DataCenter, s.httpServer.Addr, s.Listener.Addr())
 }
