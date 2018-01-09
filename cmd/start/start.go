@@ -19,7 +19,7 @@ Options:
   -http       Http address of riff (-http 127.0.0.1:8610)
   -dns        Dns address of riff (-dns 127.0.0.1:8620)
   -rpc        RPC address of riff (-rpc [::]:8630)
-  -join       Join RPC address
+  -join       Join RPC address (-join 192.168.1.1:8630,192.168.1.2:8630,192.168.1.3:8630)
 `
 
 type cmd struct {
