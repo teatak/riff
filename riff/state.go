@@ -5,6 +5,7 @@ import (
 	"github.com/gimke/riff/common"
 	"net"
 	"net/rpc"
+	"strings"
 	"time"
 )
 
@@ -15,9 +16,12 @@ func (s *Server) fanoutNodes() {
 				node.State != stateAlive
 		})
 		if len(nodes) == 0 {
-			if s.config.Join != "" {
-				if err := s.requestPeer(s.config.Join); err != nil {
-					s.logger.Printf(errorRpcPrefix+"request peer error: %v\n", err)
+			addrs := strings.Split(s.config.Join, ",")
+			for _, addr := range addrs {
+				if addr != "" && addr != s.Self.Address() {
+					if err := s.requestPeer(addr); err != nil {
+						s.logger.Printf(errorRpcPrefix+"request peer error: %v\n", err)
+					}
 				}
 			}
 		} else {
