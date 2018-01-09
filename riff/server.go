@@ -25,7 +25,7 @@ type Server struct {
 	logger     *log.Logger
 	logWriter  *LogWriter
 	Self       *Node
-	sync.Mutex
+	sync.RWMutex
 	Nodes
 	SnapShot     string
 	config       *Config
@@ -62,9 +62,10 @@ func NewServer(config *Config) (*Server, error) {
 		return nil, fmt.Errorf(errorServerPrefix+"%v", err)
 	}
 	s.print()
-	go s.listenRpc()   //listen rpc
-	go s.listenHttp()  //listen http
-	go s.stateFanout() //fanout state
+	go s.listenRpc()       //listen rpc
+	go s.listenHttp()      //listen http
+	go s.fanoutNodes()     //fanout state
+	go s.fanoutDeadNodes() //fanout dead state
 	return s, nil
 }
 func (s *Server) setupServer() error {

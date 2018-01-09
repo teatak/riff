@@ -20,7 +20,7 @@ type Digest struct {
 	SnapShot string
 }
 
-func (ns *Nodes) sort() []string {
+func (ns *Nodes) Sort() []string {
 	var keys = make([]string, 0, 0)
 	for key, _ := range *ns {
 		keys = append(keys, key)
@@ -29,13 +29,12 @@ func (ns *Nodes) sort() []string {
 	return keys
 }
 
-func (ns *Nodes) randomNodes(fanout int, filterFn func(*Node) bool) []string {
-	nodes := ns.sort()
+func (ns *Nodes) randomNodes(fanout int, filterFn func(*Node) bool) []*Node {
+	nodes := ns.Sort()
 	n := len(nodes)
-	kNodes := make([]*Node, 0, fanout)
-	KString := make([]string, 0, fanout)
+	RNodes := make([]*Node, 0, fanout)
 OUTER:
-	for i := 0; i < 3*n && len(kNodes) < fanout; i++ {
+	for i := 0; i < 3*n && len(RNodes) < fanout; i++ {
 		idx := common.RandomNumber(n)
 		node := (*ns)[nodes[idx]]
 		//filter nodes
@@ -43,18 +42,15 @@ OUTER:
 			continue OUTER
 		}
 		// Check if we have this node already
-		for j := 0; j < len(kNodes); j++ {
-			if node == kNodes[j] {
+		for j := 0; j < len(RNodes); j++ {
+			if node == RNodes[j] {
 				continue OUTER
 			}
 		}
-		kNodes = append(kNodes, node)
+		RNodes = append(RNodes, node)
 	}
 
-	for i := 0; i < len(kNodes); i++ {
-		KString = append(KString, kNodes[i].Address())
-	}
-	return KString
+	return RNodes
 }
 
 type stateType int
@@ -100,7 +96,7 @@ func (n *Node) Address() string {
 
 func (n *Node) String() string {
 	buff := bytes.NewBuffer(nil)
-	io.WriteString(buff, n.Name+":"+strconv.Itoa(n.StateChange.Nanosecond())+":{")
+	io.WriteString(buff, n.Name+":"+strconv.Itoa(int(n.Version))+":{")
 	//write service name and version
 	sortedServices := n.Services.sort()
 	for i, sk := range sortedServices {

@@ -8,25 +8,58 @@ import (
 	"time"
 )
 
-func (s *Server) stateFanout() {
+func (s *Server) fanoutNodes() {
 	for {
 		nodes := s.Nodes.randomNodes(s.config.Fanout, func(node *Node) bool {
 			return node.Name == s.Self.Name ||
 				node.State != stateAlive
 		})
 		if len(nodes) == 0 {
-			//append join
 			if s.config.Join != "" {
-				nodes = append(nodes, s.config.Join)
+				if err := s.requestPeer(s.config.Join); err != nil {
+					s.logger.Printf(errorRpcPrefix+"request peer error: %v\n", err)
+				}
+			}
+		} else {
+			for _, peer := range nodes {
+				if err := s.requestPeer(peer.Address()); err != nil {
+					peer.State = stateSuspect
+					peer.Version++
+					peer.Shutter()
+					s.Shutter()
+					s.logger.Printf(errorRpcPrefix+"request peer error: %v\n", err)
+				}
 			}
 		}
 
+		time.Sleep(500 * time.Millisecond)
+	}
+}
+func (s *Server) fanoutDeadNodes() {
+	for {
+		nodes := s.Nodes.randomNodes(1, func(node *Node) bool {
+			return node.Name == s.Self.Name ||
+				node.State == stateAlive
+		})
+
 		for _, peer := range nodes {
-			if err := s.requestPeer(peer); err != nil {
-				s.logger.Printf(errorRpcPrefix+"request peer error: %v\n", err)
+			if err := s.requestPeer(peer.Address()); err != nil {
+				if peer.State == stateSuspect {
+					peer.State = stateDead
+					peer.Version++
+					peer.Shutter()
+					s.Shutter()
+				}
+				s.logger.Printf(errorRpcPrefix+"request dead peer error: %v\n", err)
+			} else {
+				peer.State = stateAlive
+				peer.Version++
+				peer.Shutter()
+				s.Shutter()
 			}
 		}
-		time.Sleep(200 * time.Millisecond)
+
+		time.Sleep(2 * time.Second)
 	}
 }
 func (s *Server) requestPeer(peer string) error {

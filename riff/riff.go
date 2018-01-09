@@ -3,7 +3,6 @@ package riff
 import (
 	"bytes"
 	"crypto/sha1"
-	"encoding/json"
 	"fmt"
 	"io"
 )
@@ -11,7 +10,7 @@ import (
 func (s *Server) String() string {
 	buff := bytes.NewBuffer(nil)
 	io.WriteString(buff, "{")
-	sortedNodes := s.Nodes.sort()
+	sortedNodes := s.Nodes.Sort()
 	for i, nk := range sortedNodes {
 		//shutter the node
 		//s.Nodes[nk].Shutter()
@@ -26,6 +25,8 @@ func (s *Server) String() string {
 }
 
 func (s *Server) MakeDigest() (digests Digests) {
+	s.RLock()
+	defer s.RUnlock()
 	digests = make(map[string]*Digest)
 	for _, n := range s.Nodes {
 		digest := &Digest{
@@ -34,12 +35,13 @@ func (s *Server) MakeDigest() (digests Digests) {
 		}
 		digests[digest.Name] = digest
 	}
-	d, _ := json.Marshal(digests)
-	s.logger.Printf(infoRpcPrefix+"server %s send digests: %s\n", s.Self.Name, string(d))
+	s.logger.Printf(infoRpcPrefix+"server %s send digests count: %d\n", s.Self.Name, len(digests))
 	return
 }
 
 func (s *Server) MakeDiffNodes(digests Digests) (diff Nodes) {
+	s.RLock()
+	defer s.RUnlock()
 	diff = make(map[string]*Node)
 	for _, d := range digests {
 		//find in server nodes
@@ -63,15 +65,12 @@ func (s *Server) MakeDiffNodes(digests Digests) (diff Nodes) {
 			diff[n.Name] = n
 		}
 	}
-	d, _ := json.Marshal(diff)
-	s.logger.Printf(infoRpcPrefix+"server %s send nodes: %s\n", s.Self.Name, string(d))
+	s.logger.Printf(infoRpcPrefix+"server %s send nodes count: %d\n", s.Self.Name, len(diff))
 	return
 }
 
 func (s *Server) MergeDiff(diff Nodes) (reDiff Nodes) {
 	reDiff = make(map[string]*Node)
-	s.Lock()
-	defer s.Unlock()
 	for _, d := range diff {
 		n := s.Nodes[d.Name] //find in server nodes
 		if n == nil {
@@ -107,21 +106,21 @@ func (s *Server) MergeDiff(diff Nodes) (reDiff Nodes) {
 			}
 		}
 	}
-	d, _ := json.Marshal(diff)
-	r, _ := json.Marshal(reDiff)
-	s.logger.Printf(infoRpcPrefix+"merge nodes: %s\n", string(d))
-	s.logger.Printf(infoRpcPrefix+"return nodes: %s\n", string(r))
 	s.Shutter()
 	return
 }
 
 func (s *Server) Shutter() {
+	s.Lock()
+	defer s.Unlock()
 	h := sha1.New()
 	io.WriteString(h, s.String())
 	s.SnapShot = fmt.Sprintf("%x", h.Sum(nil))
 }
 
 func (s *Server) AddNode(node *Node) *Node {
+	s.Lock()
+	defer s.Unlock()
 	if nd := s.Nodes[node.Name]; nd != nil {
 		node = nd
 	} else {

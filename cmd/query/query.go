@@ -111,7 +111,9 @@ func (c *cmd) Nodes() {
 	results := make([]string, 0, len(nodes)+1)
 	header := "Node|Address|Status|DC|SnapShot"
 	results = append(results, header)
-	for _, n := range nodes {
+
+	for _, name := range nodes.Sort() {
+		n := nodes[name]
 		line := fmt.Sprintf("%s|%s|%s|%s|%s",
 			n.Name,
 			net.JoinHostPort(n.IP, strconv.Itoa(n.Port)),
