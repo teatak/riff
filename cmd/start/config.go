@@ -31,9 +31,9 @@ func defaultConfig() *riff.Config {
 			Rpc:  "",
 		},
 		Ports: &riff.Ports{
-			Http: 8610,
-			Dns:  8620,
-			Rpc:  8630,
+			Http: common.DefaultHttpPort,
+			Dns:  common.DefaultDnsPort,
+			Rpc:  common.DefaultRpcPort,
 		},
 	}
 	return c

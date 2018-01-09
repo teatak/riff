@@ -53,6 +53,7 @@ func (c *cmd) init() {
 		fmt.Println(c.Help())
 	}
 }
+
 func (c *cmd) Run(args []string) int {
 	if err := c.flags.Parse(args); err != nil {
 		return 1
