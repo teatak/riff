@@ -107,9 +107,8 @@ func (s *Server) MergeDiff(diff Nodes) (reDiff Nodes) {
 	}
 	d, _ := json.Marshal(diff)
 	r, _ := json.Marshal(reDiff)
-	s.logger.Printf(infoRpcPrefix+"merge nodes: %s \nreturn nodes: %s\n", string(d), string(r))
-	n, _ := json.Marshal(s.Nodes)
-	s.logger.Printf(infoRpcPrefix+"nodes now is %s\n", string(n))
+	s.logger.Printf(infoRpcPrefix+"merge nodes: %s\n", string(d))
+	s.logger.Printf(infoRpcPrefix+"return nodes: %s\n", string(r))
 	s.Shutter()
 	return
 }

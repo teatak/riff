@@ -23,7 +23,7 @@ func (s *Server) stateFanout() {
 
 		for _, peer := range nodes {
 			if err := s.requestPeer(peer); err != nil {
-				s.logger.Printf(errorRpcPrefix+"request peer error: %v", err)
+				s.logger.Printf(errorRpcPrefix+"request peer error: %v\n", err)
 			}
 		}
 		time.Sleep(200 * time.Millisecond)
