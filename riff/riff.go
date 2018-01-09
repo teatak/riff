@@ -3,9 +3,9 @@ package riff
 import (
 	"bytes"
 	"crypto/sha1"
+	"encoding/json"
 	"fmt"
 	"io"
-	"encoding/json"
 )
 
 func (s *Server) String() string {

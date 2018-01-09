@@ -8,6 +8,6 @@ const (
 	Success         = Green + "[  OK  ]" + Reset
 	Failed          = Red + "[FAILED]" + Reset
 	DefaultHttpPort = 8610
-	DefaultDnsPort = 8620
+	DefaultDnsPort  = 8620
 	DefaultRpcPort  = 8630
 )
