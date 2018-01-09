@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"crypto/sha1"
 	"fmt"
-	"github.com/gin-gonic/gin/json"
 	"io"
+	"encoding/json"
 )
 
 func (s *Server) String() string {
