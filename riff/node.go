@@ -34,10 +34,10 @@ func (ns *Nodes) Sort() []string {
 
 func (ns *Nodes) Slice() []*Node {
 	keys := ns.Sort()
-	nodes := make([]*Node,0)
+	nodes := make([]*Node, 0)
 	for _, key := range keys {
-		if n,ok := ns.Load(key);ok {
-			nodes = append(nodes,n.(*Node))
+		if n, _ := ns.Load(key); n != nil {
+			nodes = append(nodes, n.(*Node))
 		}
 	}
 	return nodes
@@ -50,10 +50,10 @@ func (ns *Nodes) randomNodes(fanout int, filterFn func(*Node) bool) []*Node {
 OUTER:
 	for i := 0; i < 3*n && len(RNodes) < fanout; i++ {
 		idx := common.RandomNumber(n)
-		node,ok := ns.Load(nodes[idx])
-		if !ok {
+		node, _ := ns.Load(nodes[idx])
+		if node == nil {
 			continue OUTER
-		}		//filter nodes
+		} //filter nodes
 		if filterFn != nil && filterFn(node.(*Node)) {
 			continue OUTER
 		}
@@ -102,8 +102,8 @@ type Node struct {
 	StateChange time.Time // Time last state change happened
 	SnapShot    string
 	Services
-	IsSelf      bool
-	nodeLock    sync.RWMutex
+	IsSelf   bool
+	nodeLock sync.RWMutex
 }
 
 func (n *Node) Address() string {

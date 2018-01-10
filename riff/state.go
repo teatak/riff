@@ -21,6 +21,8 @@ func (s *Server) fanoutNodes() {
 				if addr != "" && addr != s.Self.Address() {
 					if err := s.requestPeer(addr); err != nil {
 						s.logger.Printf(errorRpcPrefix+"%v\n", err)
+					} else {
+						break
 					}
 				}
 			}
