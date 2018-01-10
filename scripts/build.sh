@@ -37,6 +37,7 @@ for OS in ${XC_OS}; do
             NAME="${BIN}.exe"
         fi
         if ! CGO_ENABLED=0 GOOS="${OS}" GOARCH="${ARCH}" go build -ldflags "${LDFLAGS}" -o ./pkg/"${OS}"_"${ARCH}"/"${NAME}" ./cmd/ > /dev/null 2>&1; then
+            echo -e "\033[31;1mBuilding ${OS}/${ARCH} error\033[0m"
             continue
         fi
     done

@@ -11,8 +11,8 @@ func (q *Query) SnapShot(_ struct{}, snap *string) error {
 	return nil
 }
 
-func (q *Query) Nodes(_ struct{}, nodes *Nodes) error {
-	*nodes = q.server.Nodes
+func (q *Query) Nodes(_ struct{}, nodes *[]*Node) error {
+	*nodes = q.server.Nodes.Slice()
 	q.server.logger.Printf(infoRpcPrefix + "client get nodes list")
 	return nil
 }

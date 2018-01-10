@@ -41,7 +41,7 @@ func (a Api) snap(c *cart.Context) {
 
 func (a Api) nodes(c *cart.Context) {
 	c.JSON(200, cart.H{
-		"Nodes": a.server.Nodes,
+		"Nodes": a.server.Nodes.Slice(),
 	})
 }
 

@@ -5,7 +5,7 @@ type Riff struct {
 }
 
 // push request a digest
-func (r *Riff) Request(snap string, digests *Digests) error {
+func (r *Riff) Request(snap string, digests *[]*Digest) error {
 	if snap == r.server.SnapShot {
 		*digests = nil
 	} else {
@@ -16,7 +16,7 @@ func (r *Riff) Request(snap string, digests *Digests) error {
 }
 
 //push changes
-func (r *Riff) PushDiff(diff Nodes, remoteDiff *Nodes) error {
+func (r *Riff) PushDiff(diff []*Node, remoteDiff *[]*Node) error {
 	if len(diff) == 0 {
 		*remoteDiff = nil
 	} else {

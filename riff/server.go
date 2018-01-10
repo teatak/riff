@@ -25,7 +25,6 @@ type Server struct {
 	logger     *log.Logger
 	logWriter  *LogWriter
 	Self       *Node
-	sync.RWMutex
 	Nodes
 	SnapShot     string
 	config       *Config
@@ -79,7 +78,6 @@ func (s *Server) setupServer() error {
 		StateChange: time.Now(),
 	}
 	s.Self = self
-	s.Nodes = make(map[string]*Node)
 	s.AddNode(self)
 	s.Shutter() //make snap sort
 	return nil

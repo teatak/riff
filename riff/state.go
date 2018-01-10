@@ -20,7 +20,7 @@ func (s *Server) fanoutNodes() {
 			for _, addr := range addrs {
 				if addr != "" && addr != s.Self.Address() {
 					if err := s.requestPeer(addr); err != nil {
-						s.logger.Printf(errorRpcPrefix+"request peer error: %v\n", err)
+						s.logger.Printf(errorRpcPrefix+"%v\n", err)
 					}
 				}
 			}
@@ -31,7 +31,7 @@ func (s *Server) fanoutNodes() {
 					peer.Version++
 					peer.Shutter()
 					s.Shutter()
-					s.logger.Printf(errorRpcPrefix+"request peer error: %v\n", err)
+					s.logger.Printf(errorRpcPrefix+"%v\n", err)
 				}
 			}
 		}
@@ -54,7 +54,7 @@ func (s *Server) fanoutDeadNodes() {
 					peer.Shutter()
 					s.Shutter()
 				}
-				s.logger.Printf(errorRpcPrefix+"request dead peer error: %v\n", err)
+				s.logger.Printf(errorRpcPrefix+"%v\n", err)
 			} else {
 				peer.State = stateAlive
 				peer.Version++
@@ -75,7 +75,7 @@ func (s *Server) requestPeer(peer string) error {
 	cmd := rpc.NewClientWithCodec(codec)
 	defer cmd.Close()
 
-	var digests Digests
+	var digests []*Digest
 	err = cmd.Call("Riff.Request", s.SnapShot, &digests)
 	if err != nil {
 		return fmt.Errorf("peer: %s error: %v", peer, err)
@@ -84,7 +84,7 @@ func (s *Server) requestPeer(peer string) error {
 	if len(digests) != 0 {
 		diff := s.MakeDiffNodes(digests)
 		if len(diff) != 0 {
-			var reDiff Nodes
+			var reDiff []*Node
 			err = cmd.Call("Riff.PushDiff", diff, &reDiff)
 			if len(reDiff) != 0 {
 				s.MergeDiff(reDiff)

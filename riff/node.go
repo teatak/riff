@@ -13,8 +13,10 @@ import (
 	"time"
 )
 
-type Nodes map[string]*Node
-type Digests map[string]*Digest
+type Nodes struct {
+	sync.Map
+}
+
 type Digest struct {
 	Name     string
 	SnapShot string
@@ -22,11 +24,23 @@ type Digest struct {
 
 func (ns *Nodes) Sort() []string {
 	var keys = make([]string, 0, 0)
-	for key, _ := range *ns {
-		keys = append(keys, key)
-	}
+	ns.Range(func(key, value interface{}) bool {
+		keys = append(keys, key.(string))
+		return true
+	})
 	sort.Strings(keys)
 	return keys
+}
+
+func (ns *Nodes) Slice() []*Node {
+	keys := ns.Sort()
+	nodes := make([]*Node,0)
+	for _, key := range keys {
+		if n,ok := ns.Load(key);ok {
+			nodes = append(nodes,n.(*Node))
+		}
+	}
+	return nodes
 }
 
 func (ns *Nodes) randomNodes(fanout int, filterFn func(*Node) bool) []*Node {
@@ -36,9 +50,11 @@ func (ns *Nodes) randomNodes(fanout int, filterFn func(*Node) bool) []*Node {
 OUTER:
 	for i := 0; i < 3*n && len(RNodes) < fanout; i++ {
 		idx := common.RandomNumber(n)
-		node := (*ns)[nodes[idx]]
-		//filter nodes
-		if filterFn != nil && filterFn(node) {
+		node,ok := ns.Load(nodes[idx])
+		if !ok {
+			continue OUTER
+		}		//filter nodes
+		if filterFn != nil && filterFn(node.(*Node)) {
 			continue OUTER
 		}
 		// Check if we have this node already
@@ -47,7 +63,7 @@ OUTER:
 				continue OUTER
 			}
 		}
-		RNodes = append(RNodes, node)
+		RNodes = append(RNodes, node.(*Node))
 	}
 
 	return RNodes
@@ -77,7 +93,6 @@ func (s stateType) String() string {
 }
 
 type Node struct {
-	Services
 	Name        string
 	DataCenter  string
 	IP          string
@@ -86,6 +101,7 @@ type Node struct {
 	State       stateType // Current state
 	StateChange time.Time // Time last state change happened
 	SnapShot    string
+	Services
 	IsSelf      bool
 	nodeLock    sync.RWMutex
 }

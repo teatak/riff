@@ -102,7 +102,7 @@ func (c *cmd) Nodes() {
 	}
 	codec := common.NewGobClientCodec(conn)
 	cmd := rpc.NewClientWithCodec(codec)
-	var nodes riff.Nodes
+	var nodes []*riff.Node
 	err = cmd.Call("Query.Nodes", struct{}{}, &nodes)
 	if err != nil {
 		fmt.Println("error", err)
@@ -112,8 +112,7 @@ func (c *cmd) Nodes() {
 	header := "Node|Address|Status|DC|SnapShot"
 	results = append(results, header)
 
-	for _, name := range nodes.Sort() {
-		n := nodes[name]
+	for _, n := range nodes {
 		line := fmt.Sprintf("%s|%s|%s|%s|%s",
 			n.Name,
 			net.JoinHostPort(n.IP, strconv.Itoa(n.Port)),
