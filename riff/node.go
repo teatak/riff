@@ -58,6 +58,10 @@ func (ns *Nodes) Set(value *Node) {
 	ns.nodes.Store(value.Name, value)
 }
 
+func (ns *Nodes) Delete(key string) {
+	ns.nodes.Delete(key)
+}
+
 func (ns *Nodes) randomNodes(fanout int, filterFn func(*Node) bool) []*Node {
 	nodes := ns.Keys()
 	n := len(nodes)
@@ -163,7 +167,7 @@ func (n *Node) Dead(s *Server) {
 		n.timeoutFn = func() {
 			//delete this node
 			if n.State == stateDead {
-				s.Nodes.nodes.Delete(n.Name)
+				s.Nodes.Delete(n.Name)
 				s.Shutter()
 			}
 		}
