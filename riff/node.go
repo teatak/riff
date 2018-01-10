@@ -167,7 +167,7 @@ func (n *Node) Dead(s *Server) {
 				s.Shutter()
 			}
 		}
-		timeout := 10*time.Second
+		timeout := 10 * time.Second
 		n.timer = time.AfterFunc(timeout, n.timeoutFn)
 	}
 }

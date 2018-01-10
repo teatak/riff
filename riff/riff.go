@@ -62,7 +62,7 @@ func (s *Server) MakeDiffNodes(digests []*Digest) (diff []*Node) {
 		}
 	}
 
-	s.Range(func(key string,node *Node) bool {
+	s.Range(func(key string, node *Node) bool {
 		if !keysDiff[node.Name] && !keysDigest[node.Name] {
 			diff = append(diff, node)
 		}
