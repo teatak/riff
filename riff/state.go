@@ -65,7 +65,7 @@ func (s *Server) fanoutDeadNodes() {
 func (s *Server) requestPeer(peer string) error {
 	conn, err := net.DialTimeout("tcp", peer, time.Second*10)
 	if err != nil {
-		return fmt.Errorf("peer: %s error: %v", peer, err)
+		return fmt.Errorf("%v", err)
 	}
 	codec := common.NewGobClientCodec(conn)
 	cmd := rpc.NewClientWithCodec(codec)

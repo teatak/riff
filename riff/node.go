@@ -167,8 +167,11 @@ func (n *Node) Dead(s *Server) {
 		n.timeoutFn = func() {
 			//delete this node
 			if n.State == stateDead {
-				s.Nodes.Delete(n.Name)
+				s.logger.Printf(infoRpcPrefix+"remove dead node %s\n", n.Name)
+				s.Delete(n.Name)
 				s.Shutter()
+				//clear fn
+				n.timeoutFn = nil
 			}
 		}
 		timeout := 10 * time.Second

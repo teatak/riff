@@ -78,8 +78,11 @@ func (s *Server) MergeDiff(diff []*Node) (reDiff []*Node) {
 	for _, d := range diff {
 		n := s.Get(d.Name) //find in server nodes
 		if n == nil {
-			d.IsSelf = false //remove is self
-			s.SetNode(d)     //if not find then add node
+			if d.State != stateDead {
+				//exclude dead node
+				d.IsSelf = false //remove is self
+				s.SetNode(d)     //if not find then add node
+			}
 		} else {
 			if d.SnapShot == n.SnapShot {
 				continue
