@@ -22,7 +22,7 @@ func (n *Service) Address() string {
 	return net.JoinHostPort(n.IP, strconv.Itoa(int(n.Port)))
 }
 
-func (ss *Services) sort() []string {
+func (ss *Services) Keys() []string {
 	var keys = make([]string, 0, 0)
 	for key, _ := range *ss {
 		keys = append(keys, key)

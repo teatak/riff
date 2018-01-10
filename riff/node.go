@@ -14,7 +14,7 @@ import (
 )
 
 type Nodes struct {
-	sync.Map
+	nodes sync.Map
 }
 
 type Digest struct {
@@ -22,9 +22,9 @@ type Digest struct {
 	SnapShot string
 }
 
-func (ns *Nodes) Sort() []string {
+func (ns *Nodes) Keys() []string {
 	var keys = make([]string, 0, 0)
-	ns.Range(func(key, value interface{}) bool {
+	ns.nodes.Range(func(key, value interface{}) bool {
 		keys = append(keys, key.(string))
 		return true
 	})
@@ -33,37 +33,52 @@ func (ns *Nodes) Sort() []string {
 }
 
 func (ns *Nodes) Slice() []*Node {
-	keys := ns.Sort()
+	keys := ns.Keys()
 	nodes := make([]*Node, 0)
 	for _, key := range keys {
-		if n, _ := ns.Load(key); n != nil {
+		if n, _ := ns.nodes.Load(key); n != nil {
 			nodes = append(nodes, n.(*Node))
 		}
 	}
 	return nodes
 }
+func (ns *Nodes) Range(f func(string, *Node) bool) {
+	ns.nodes.Range(func(key, value interface{}) bool {
+		return f(key.(string), value.(*Node))
+	})
+}
+func (ns *Nodes) Get(key string) *Node {
+	if n, _ := ns.nodes.Load(key); n != nil {
+		return n.(*Node)
+	}
+	return nil
+}
+
+func (ns *Nodes) Set(value *Node) {
+	ns.nodes.Store(value.Name, value)
+}
 
 func (ns *Nodes) randomNodes(fanout int, filterFn func(*Node) bool) []*Node {
-	nodes := ns.Sort()
+	nodes := ns.Keys()
 	n := len(nodes)
 	RNodes := make([]*Node, 0, fanout)
 OUTER:
 	for i := 0; i < 3*n && len(RNodes) < fanout; i++ {
 		idx := common.RandomNumber(n)
-		node, _ := ns.Load(nodes[idx])
-		if node == nil {
+		n := ns.Get(nodes[idx])
+		if n == nil {
 			continue OUTER
 		} //filter nodes
-		if filterFn != nil && filterFn(node.(*Node)) {
+		if filterFn != nil && filterFn(n) {
 			continue OUTER
 		}
 		// Check if we have this node already
 		for j := 0; j < len(RNodes); j++ {
-			if node == RNodes[j] {
+			if n == RNodes[j] {
 				continue OUTER
 			}
 		}
-		RNodes = append(RNodes, node.(*Node))
+		RNodes = append(RNodes, n)
 	}
 
 	return RNodes
@@ -102,8 +117,10 @@ type Node struct {
 	StateChange time.Time // Time last state change happened
 	SnapShot    string
 	Services
-	IsSelf   bool
-	nodeLock sync.RWMutex
+	IsSelf    bool
+	nodeLock  sync.RWMutex
+	timer     *time.Timer
+	timeoutFn func()
 }
 
 func (n *Node) Address() string {
@@ -112,13 +129,13 @@ func (n *Node) Address() string {
 
 func (n *Node) String() string {
 	buff := bytes.NewBuffer(nil)
-	io.WriteString(buff, n.Name+":"+strconv.Itoa(int(n.Version))+":{")
+	io.WriteString(buff, n.Name+":"+strconv.FormatUint(n.Version, 10)+":{")
 	//write service name and version
-	sortedServices := n.Services.sort()
-	for i, sk := range sortedServices {
+	keys := n.Services.Keys()
+	for i, sk := range keys {
 		s := n.Services[sk]
 		io.WriteString(buff, s.Name+":{"+s.Address()+","+strconv.FormatUint(s.Version, 10)+"}")
-		if i != len(sortedServices)-1 {
+		if i != len(keys)-1 {
 			io.WriteString(buff, ",")
 		}
 	}
@@ -130,6 +147,34 @@ func (n *Node) Shutter() {
 	h := sha1.New()
 	io.WriteString(h, n.String())
 	n.SnapShot = fmt.Sprintf("%x", h.Sum(nil))
+}
+
+func (n *Node) Suspect() {
+	n.State = stateSuspect
+	n.Version++
+	n.Shutter()
+}
+
+func (n *Node) Dead(s *Server) {
+	if n.timeoutFn == nil {
+		n.State = stateDead
+		n.Version++
+		n.Shutter()
+		n.timeoutFn = func() {
+			//delete this node
+			if n.State == stateDead {
+				s.Nodes.nodes.Delete(n.Name)
+				s.Shutter()
+			}
+		}
+		timeout := 10*time.Second
+		n.timer = time.AfterFunc(timeout, n.timeoutFn)
+	}
+}
+
+func (n *Node) Alive() {
+	n.State = stateAlive
+	n.Shutter()
 }
 
 func (n *Node) AddService(s *Service) {

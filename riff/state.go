@@ -27,11 +27,9 @@ func (s *Server) fanoutNodes() {
 				}
 			}
 		} else {
-			for _, peer := range nodes {
-				if err := s.requestPeer(peer.Address()); err != nil {
-					peer.State = stateSuspect
-					peer.Version++
-					peer.Shutter()
+			for _, n := range nodes {
+				if err := s.requestPeer(n.Address()); err != nil {
+					n.Suspect()
 					s.Shutter()
 					s.logger.Printf(errorRpcPrefix+"%v\n", err)
 				}
@@ -48,19 +46,15 @@ func (s *Server) fanoutDeadNodes() {
 				node.State == stateAlive
 		})
 
-		for _, peer := range nodes {
-			if err := s.requestPeer(peer.Address()); err != nil {
-				if peer.State == stateSuspect {
-					peer.State = stateDead
-					peer.Version++
-					peer.Shutter()
+		for _, n := range nodes {
+			if err := s.requestPeer(n.Address()); err != nil {
+				if n.State == stateSuspect {
+					n.Dead(s)
 					s.Shutter()
 				}
-				s.logger.Printf(errorRpcPrefix+"%v\n", err)
+				//s.logger.Printf(errorRpcPrefix+"%v\n", err)
 			} else {
-				peer.State = stateAlive
-				peer.Version++
-				peer.Shutter()
+				n.Alive()
 				s.Shutter()
 			}
 		}

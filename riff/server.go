@@ -78,8 +78,8 @@ func (s *Server) setupServer() error {
 		StateChange: time.Now(),
 	}
 	s.Self = self
-	s.AddNode(self)
-	s.Shutter() //make snap sort
+	s.SetNode(self)
+	s.Shutter()
 	return nil
 }
 
