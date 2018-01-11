@@ -23,7 +23,7 @@ Available subcommands are:
 
 Options:
 
-  -rpc    RPC address of riff (-rpc 0.0.0.0:8630)
+  -rpc    RPC address of riff (-rpc 192.168.1.1:8630)
 `
 
 type cmd struct {
