@@ -50,7 +50,7 @@ func (s *Server) fanoutDeadNodes() {
 			if err := s.requestPeer(n.Address()); err != nil {
 				if n.State == stateSuspect {
 					n.Leave()
-					n.Dead(s)
+					s.RemoveTimer(n)
 					s.Shutter()
 				}
 				//s.logger.Printf(errorRpcPrefix+"%v\n", err)
@@ -60,7 +60,7 @@ func (s *Server) fanoutDeadNodes() {
 			}
 		}
 
-		time.Sleep(2 * time.Second)
+		time.Sleep(10 * time.Second)
 	}
 }
 

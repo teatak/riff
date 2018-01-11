@@ -65,7 +65,8 @@ func (s *Server) SetNode(node *Node) {
 	node.Shutter()
 	s.nodes.Store(node.Name, node)
 	if node.State == stateDead {
-		node.Dead(s)
+		s.RemoveTimer(node)
+		//node.Dead(s)
 	}
 }
 
@@ -148,7 +149,7 @@ func (n *Node) VersionInc() uint64{
 
 // Witness is called to update our local clock if necessary after
 // witnessing a clock value received from another process
-func (n *Node) Witness(v uint64) {
+func (n *Node) VersionSet(v uint64) {
 WITNESS:
 // If the other value is old, we do not need to do anything
 	cur := atomic.LoadUint64(&n.Version)
@@ -158,7 +159,7 @@ WITNESS:
 	}
 
 	// Ensure that our local clock is at least one ahead.
-	if !atomic.CompareAndSwapUint64(&n.Version, cur, other+1) {
+	if !atomic.CompareAndSwapUint64(&n.Version, cur, other) {
 		// The CAS failed, so we just retry. Eventually our CAS should
 		// succeed or a future witness will pass us by and our witness
 		// will end.
@@ -201,23 +202,6 @@ func (n *Node) Leave() {
 	n.State = stateDead
 	n.VersionInc()
 	n.Shutter()
-}
-
-func (n *Node) Dead(s *Server) {
-	if n.timeoutFn == nil {
-		n.timeoutFn = func() {
-			//delete this node
-			if n.State == stateDead {
-				s.Logger.Printf(infoNodePrefix+"remove dead node %s\n", n.Name)
-				s.DeleteNode(n.Name)
-				s.Shutter()
-				//clear fn
-				n.timeoutFn = nil
-			}
-		}
-		timeout := 10 * time.Second
-		n.timer = time.AfterFunc(timeout, n.timeoutFn)
-	}
 }
 
 func (n *Node) Alive() {

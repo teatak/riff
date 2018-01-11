@@ -3,6 +3,7 @@ package riff
 import (
 	"bytes"
 	"io"
+	"time"
 )
 
 func (s *Server) String() string {
@@ -92,19 +93,28 @@ func (s *Server) MergeDiff(diff []*Node) (reDiff []*Node) {
 			}
 			if d.IsSelf {
 				//if remote node is self then overwrite server node
-				v := n.VersionInc()
-				//n.Version + 1
-				*n = *d
-				n.IsSelf = false
-				n.Witness(v)
-				s.SetNode(n)
+				switch n.State {
+				case stateAlive:
+					n.Alive()
+					break
+				case stateDead:
+					n.Leave()
+					s.RemoveTimer(n)
+					break
+				}
+				//v := n.VersionInc()
+				////n.Version + 1
+				//*n = *d
+				//n.IsSelf = false
+				//n.VersionSet(v)
+				//s.SetNode(n)
 				reDiff = append(reDiff, n)
 				//reDiff[n.Name] = n //shot out new version
 			} else {
 				if d.VersionGet() > n.VersionGet() {
 					if n.IsSelf {
 						//only update version
-						n.Witness(d.Version)
+						n.VersionSet(d.Version)
 						n.Shutter()
 					} else {
 						*n = *d
@@ -120,4 +130,21 @@ func (s *Server) MergeDiff(diff []*Node) (reDiff []*Node) {
 	s.Logger.Printf(infoNodePrefix+"server %s merge %d nodes return %d nodes\n", s.Self.Name, len(diff), len(reDiff))
 	s.Shutter()
 	return
+}
+
+func (s *Server) RemoveTimer(n *Node) {
+	if n.timeoutFn == nil {
+		n.timeoutFn = func() {
+			//delete this node
+			if n.State == stateDead {
+				s.Logger.Printf(infoNodePrefix+"remove dead node %s\n", n.Name)
+				s.DeleteNode(n.Name)
+				s.Shutter()
+				//clear fn
+				n.timeoutFn = nil
+			}
+		}
+		timeout := 10 * time.Second
+		n.timer = time.AfterFunc(timeout, n.timeoutFn)
+	}
 }
