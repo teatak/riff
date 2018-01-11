@@ -92,24 +92,25 @@ func (s *Server) MergeDiff(diff []*Node) (reDiff []*Node) {
 			}
 			if d.IsSelf {
 				//if remote node is self then overwrite server node
-				v := n.Version + 1
+				v := n.VersionInc()
+				//n.Version + 1
 				*n = *d
 				n.IsSelf = false
-				n.Version = v
+				n.Witness(v)
 				s.SetNode(n)
 				reDiff = append(reDiff, n)
 				//reDiff[n.Name] = n //shot out new version
 			} else {
-				if d.Version > n.Version {
+				if d.VersionGet() > n.VersionGet() {
 					if n.IsSelf {
 						//only update version
-						n.Version = d.Version
+						n.Witness(d.Version)
 						n.Shutter()
 					} else {
 						*n = *d
 						s.SetNode(n)
 					}
-				} else if d.Version != n.Version {
+				} else if d.VersionGet() != n.VersionGet() {
 					//take my node
 					reDiff = append(reDiff, n)
 				}

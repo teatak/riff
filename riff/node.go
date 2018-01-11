@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"sync"
 	"time"
+	"sync/atomic"
 )
 
 type Nodes struct {
@@ -137,6 +138,34 @@ type Node struct {
 	timeoutFn func()
 }
 
+func (n *Node) VersionGet() uint64{
+	return atomic.LoadUint64(&n.Version)
+}
+
+func (n *Node) VersionInc() uint64{
+	return atomic.AddUint64(&n.Version, 1)
+}
+
+// Witness is called to update our local clock if necessary after
+// witnessing a clock value received from another process
+func (n *Node) Witness(v uint64) {
+WITNESS:
+// If the other value is old, we do not need to do anything
+	cur := atomic.LoadUint64(&n.Version)
+	other := uint64(v)
+	if other < cur {
+		return
+	}
+
+	// Ensure that our local clock is at least one ahead.
+	if !atomic.CompareAndSwapUint64(&n.Version, cur, other+1) {
+		// The CAS failed, so we just retry. Eventually our CAS should
+		// succeed or a future witness will pass us by and our witness
+		// will end.
+		goto WITNESS
+	}
+}
+
 func (n *Node) Address() string {
 	return net.JoinHostPort(n.IP, strconv.Itoa(int(n.Port)))
 }
@@ -165,12 +194,12 @@ func (n *Node) Shutter() {
 
 func (n *Node) Suspect() {
 	n.State = stateSuspect
-	n.Version++
+	n.VersionInc()
 	n.Shutter()
 }
 func (n *Node) Leave() {
 	n.State = stateDead
-	n.Version++
+	n.VersionInc()
 	n.Shutter()
 }
 
@@ -193,7 +222,7 @@ func (n *Node) Dead(s *Server) {
 
 func (n *Node) Alive() {
 	n.State = stateAlive
-	n.Version++
+	n.VersionInc()
 	n.Shutter()
 }
 
