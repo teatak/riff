@@ -11,7 +11,7 @@ import (
 
 func (s *Server) fanoutNodes() {
 	for {
-		nodes := s.Nodes.randomNodes(s.config.Fanout, func(node *Node) bool {
+		nodes := s.randomNodes(s.config.Fanout, func(node *Node) bool {
 			return node.Name == s.Self.Name ||
 				node.State != stateAlive
 		})
@@ -41,7 +41,7 @@ func (s *Server) fanoutNodes() {
 }
 func (s *Server) fanoutDeadNodes() {
 	for {
-		nodes := s.Nodes.randomNodes(1, func(node *Node) bool {
+		nodes := s.randomNodes(1, func(node *Node) bool {
 			return node.Name == s.Self.Name ||
 				node.State == stateAlive
 		})

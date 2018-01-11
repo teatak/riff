@@ -41,7 +41,7 @@ func (a Api) snap(c *cart.Context) {
 
 func (a Api) nodes(c *cart.Context) {
 	c.IndentedJSON(200, cart.H{
-		"Nodes": a.server.Nodes.Slice(),
+		"Nodes": a.server.Slice(),
 	})
 }
 

@@ -11,11 +11,9 @@ func TestServer(t *testing.T) {
 	//riff.AddService()
 	st := time.Now()
 
-	s := Server{
-		Nodes: make(map[string]*Node),
-	}
+	s := Server{}
 	for i := 0; i < 100; i++ {
-		s.AddNode(&Node{
+		s.SetNode(&Node{
 			Name: "node" + strconv.Itoa(i),
 		})
 	}

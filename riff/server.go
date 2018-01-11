@@ -17,6 +17,8 @@ import (
 const errorServerPrefix = "riff.server error: "
 const errorRpcPrefix = "[ERR]  riff.rpc: "
 const infoRpcPrefix = "[INFO] riff.rpc: "
+const errorNodePrefix = "[ERR]  riff.node: "
+const infoNodePrefix = "[INFO] riff.node: "
 
 type Server struct {
 	Listener   net.Listener

@@ -2,17 +2,15 @@ package riff
 
 import (
 	"bytes"
-	"crypto/sha1"
-	"fmt"
 	"io"
 )
 
 func (s *Server) String() string {
 	buff := bytes.NewBuffer(nil)
 	io.WriteString(buff, "{")
-	keys := s.Nodes.Keys()
+	keys := s.Keys()
 	for i, nk := range keys {
-		n := s.Get(nk)
+		n := s.GetNode(nk)
 		if n != nil && n.State != stateDead {
 			io.WriteString(buff, n.SnapShot)
 			if i != len(keys)-1 {
@@ -34,7 +32,7 @@ func (s *Server) MakeDigest() (digests []*Digest) {
 		digests = append(digests, digest)
 		return true
 	})
-	s.logger.Printf(infoRpcPrefix+"server %s send %d digests\n", s.Self.Name, len(digests))
+	s.logger.Printf(infoNodePrefix+"server %s send %d digests\n", s.Self.Name, len(digests))
 	return
 }
 
@@ -45,7 +43,7 @@ func (s *Server) MakeDiffNodes(digests []*Digest) (diff []*Node) {
 	for _, d := range digests {
 		keysDigest[d.Name] = true
 		//find in server nodes
-		n := s.Get(d.Name)
+		n := s.GetNode(d.Name)
 		if n == nil {
 			//make an empty node for remote diff snap is empty
 			empty := &Node{
@@ -69,14 +67,14 @@ func (s *Server) MakeDiffNodes(digests []*Digest) (diff []*Node) {
 		return true
 	})
 
-	s.logger.Printf(infoRpcPrefix+"server %s get %d digests send %d nodes\n", s.Self.Name, len(digests), len(diff))
+	s.logger.Printf(infoNodePrefix+"server %s get %d digests send %d nodes\n", s.Self.Name, len(digests), len(diff))
 	return
 }
 
 func (s *Server) MergeDiff(diff []*Node) (reDiff []*Node) {
 	reDiff = make([]*Node, 0)
 	for _, d := range diff {
-		n := s.Get(d.Name) //find in server nodes
+		n := s.GetNode(d.Name) //find in server nodes
 		if n == nil {
 			if d.State != stateDead {
 				//exclude dead node
@@ -118,21 +116,7 @@ func (s *Server) MergeDiff(diff []*Node) (reDiff []*Node) {
 			}
 		}
 	}
-	s.logger.Printf(infoRpcPrefix+"server %s merge %d nodes return %d nodes\n", s.Self.Name, len(diff), len(reDiff))
+	s.logger.Printf(infoNodePrefix+"server %s merge %d nodes return %d nodes\n", s.Self.Name, len(diff), len(reDiff))
 	s.Shutter()
 	return
-}
-
-func (s *Server) Shutter() {
-	h := sha1.New()
-	io.WriteString(h, s.String())
-	s.SnapShot = fmt.Sprintf("%x", h.Sum(nil))
-}
-
-func (s *Server) SetNode(node *Node) {
-	node.Shutter()
-	s.Set(node)
-	if node.State == stateDead {
-		node.Dead(s)
-	}
 }

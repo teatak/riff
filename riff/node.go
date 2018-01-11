@@ -22,9 +22,15 @@ type Digest struct {
 	SnapShot string
 }
 
-func (ns *Nodes) Keys() []string {
+func (s *Server) Shutter() {
+	h := sha1.New()
+	io.WriteString(h, s.String())
+	s.SnapShot = fmt.Sprintf("%x", h.Sum(nil))
+}
+
+func (s *Server) Keys() []string {
 	var keys = make([]string, 0, 0)
-	ns.nodes.Range(func(key, value interface{}) bool {
+	s.nodes.Range(func(key, value interface{}) bool {
 		keys = append(keys, key.(string))
 		return true
 	})
@@ -32,44 +38,48 @@ func (ns *Nodes) Keys() []string {
 	return keys
 }
 
-func (ns *Nodes) Slice() []*Node {
-	keys := ns.Keys()
+func (s *Server) Slice() []*Node {
+	keys := s.Keys()
 	nodes := make([]*Node, 0)
 	for _, key := range keys {
-		if n, _ := ns.nodes.Load(key); n != nil {
+		if n, _ := s.nodes.Load(key); n != nil {
 			nodes = append(nodes, n.(*Node))
 		}
 	}
 	return nodes
 }
-func (ns *Nodes) Range(f func(string, *Node) bool) {
-	ns.nodes.Range(func(key, value interface{}) bool {
+func (s *Server) Range(f func(string, *Node) bool) {
+	s.nodes.Range(func(key, value interface{}) bool {
 		return f(key.(string), value.(*Node))
 	})
 }
-func (ns *Nodes) Get(key string) *Node {
+func (ns *Server) GetNode(key string) *Node {
 	if n, _ := ns.nodes.Load(key); n != nil {
 		return n.(*Node)
 	}
 	return nil
 }
 
-func (ns *Nodes) Set(value *Node) {
-	ns.nodes.Store(value.Name, value)
+func (s *Server) SetNode(node *Node) {
+	node.Shutter()
+	s.nodes.Store(node.Name, node)
+	if node.State == stateDead {
+		node.Dead(s)
+	}
 }
 
-func (ns *Nodes) Delete(key string) {
-	ns.nodes.Delete(key)
+func (s *Server) DeleteNode(key string) {
+	s.nodes.Delete(key)
 }
 
-func (ns *Nodes) randomNodes(fanout int, filterFn func(*Node) bool) []*Node {
-	nodes := ns.Keys()
+func (s *Server) randomNodes(fanout int, filterFn func(*Node) bool) []*Node {
+	nodes := s.Keys()
 	n := len(nodes)
 	RNodes := make([]*Node, 0, fanout)
 OUTER:
 	for i := 0; i < 3*n && len(RNodes) < fanout; i++ {
 		idx := common.RandomNumber(n)
-		n := ns.Get(nodes[idx])
+		n := s.GetNode(nodes[idx])
 		if n == nil {
 			continue OUTER
 		} //filter nodes
@@ -167,8 +177,8 @@ func (n *Node) Dead(s *Server) {
 		n.timeoutFn = func() {
 			//delete this node
 			if n.State == stateDead {
-				s.logger.Printf(infoRpcPrefix+"remove dead node %s\n", n.Name)
-				s.Delete(n.Name)
+				s.logger.Printf(infoNodePrefix+"remove dead node %s\n", n.Name)
+				s.DeleteNode(n.Name)
 				s.Shutter()
 				//clear fn
 				n.timeoutFn = nil

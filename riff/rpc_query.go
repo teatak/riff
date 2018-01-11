@@ -12,7 +12,7 @@ func (q *Query) SnapShot(_ struct{}, snap *string) error {
 }
 
 func (q *Query) Nodes(_ struct{}, nodes *[]*Node) error {
-	*nodes = q.server.Nodes.Slice()
+	*nodes = q.server.Slice()
 	q.server.logger.Printf(infoRpcPrefix + "client get nodes list")
 	return nil
 }
