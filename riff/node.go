@@ -10,8 +10,8 @@ import (
 	"sort"
 	"strconv"
 	"sync"
-	"time"
 	"sync/atomic"
+	"time"
 )
 
 type Nodes struct {
@@ -139,11 +139,11 @@ type Node struct {
 	timeoutFn func()
 }
 
-func (n *Node) VersionGet() uint64{
+func (n *Node) VersionGet() uint64 {
 	return atomic.LoadUint64(&n.Version)
 }
 
-func (n *Node) VersionInc() uint64{
+func (n *Node) VersionInc() uint64 {
 	return atomic.AddUint64(&n.Version, 1)
 }
 
@@ -151,7 +151,7 @@ func (n *Node) VersionInc() uint64{
 // witnessing a clock value received from another process
 func (n *Node) VersionSet(v uint64) {
 WITNESS:
-// If the other value is old, we do not need to do anything
+	// If the other value is old, we do not need to do anything
 	cur := atomic.LoadUint64(&n.Version)
 	other := uint64(v)
 	if other < cur {
