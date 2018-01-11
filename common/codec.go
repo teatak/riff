@@ -8,7 +8,6 @@ import (
 	"log"
 	"net/rpc"
 	"time"
-	"io/ioutil"
 )
 
 func TimeoutCoder(f func(interface{}) error, e interface{}, msg string) error {
