@@ -3,7 +3,6 @@ package riff
 import (
 	"bytes"
 	"io"
-	"time"
 )
 
 func (s *Server) String() string {
@@ -33,7 +32,6 @@ func (s *Server) MakeDigest() (digests []*Digest) {
 		digests = append(digests, digest)
 		return true
 	})
-	s.Logger.Printf(infoNodePrefix+"server %s send %d digests\n", s.Self.Name, len(digests))
 	return
 }
 
@@ -67,84 +65,147 @@ func (s *Server) MakeDiffNodes(digests []*Digest) (diff []*Node) {
 		}
 		return true
 	})
-
-	s.Logger.Printf(infoNodePrefix+"server %s get %d digests send %d nodes\n", s.Self.Name, len(digests), len(diff))
 	return
 }
 
-func (s *Server) MergeDiff(diff []*Node) (reDiff []*Node) {
-	reDiff = make([]*Node, 0)
-	for _, d := range diff {
+func (s *Server) MergeDiff(diffs []*Node) (reDiffs []*Node) {
+	reDiffs = make([]*Node, 0)
+	count := 0
+	for _, d := range diffs {
 		n := s.GetNode(d.Name) //find in server nodes
-		if n == nil {
+		if n == nil {          //if not found in server then add node
 			if d.State != stateDead {
 				//exclude dead node
 				d.IsSelf = false //remove is self
-				s.SetNode(d)     //if not find then add node
+				s.AddNode(d)     //if not find then add node
+				count++
 			}
 		} else {
+			// if found in node map
 			if d.SnapShot == n.SnapShot {
+				// continue if have same snap
 				continue
 			}
 			if d.SnapShot == "" {
-				//need update this
-				reDiff = append(reDiff, n)
+				//other cluster will send empty snap node for query this node
+				reDiffs = append(reDiffs, n)
 				continue
 			}
-			if d.IsSelf {
-				//if remote node is self then overwrite server node
-				switch n.State {
-				case stateAlive:
-					n.Alive()
-					break
-				case stateDead:
-					n.Leave()
-					s.RemoveTimer(n)
-					break
+
+			switch d.IsSelf {
+			case true:
+				if reDiff := s.trueNode(d, n); reDiff != nil {
+					reDiffs = append(reDiffs, reDiff)
 				}
-				//v := n.VersionInc()
-				////n.Version + 1
-				//*n = *d
-				//n.IsSelf = false
-				//n.VersionSet(v)
-				//s.SetNode(n)
-				reDiff = append(reDiff, n)
-				//reDiff[n.Name] = n //shot out new version
-			} else {
-				if d.VersionGet() > n.VersionGet() {
-					if n.IsSelf {
-						//only update version
-						n.VersionSet(d.Version)
-						n.Shutter()
-					} else {
-						*n = *d
-						s.SetNode(n)
-					}
-				} else if d.VersionGet() != n.VersionGet() {
-					//take my node
-					reDiff = append(reDiff, n)
+				break
+			case false:
+				if reDiff := s.gossipNode(d, n); reDiff != nil {
+					reDiffs = append(reDiffs, reDiff)
 				}
+				break
 			}
 		}
 	}
-	s.Logger.Printf(infoNodePrefix+"server %s merge %d nodes return %d nodes\n", s.Self.Name, len(diff), len(reDiff))
+	s.Logger.Printf(infoNodePrefix+"server %s merge %d nodes return %d nodes\n", s.Self.Name, count, len(reDiffs))
 	s.Shutter()
+	return
+	//reDiff = make([]*Node, 0)
+	//for _, d := range diff {
+	//	n := s.GetNode(d.Name) //find in server nodes
+	//	if n == nil {
+	//		if d.State != stateDead {
+	//			//exclude dead node
+	//			d.IsSelf = false //remove is self
+	//			s.SetNode(d)     //if not find then add node
+	//		}
+	//	} else {
+	//		if d.SnapShot == n.SnapShot {
+	//			continue
+	//		}
+	//		if d.SnapShot == "" {
+	//			//need update this
+	//			reDiff = append(reDiff, n)
+	//			continue
+	//		}
+	//		if d.IsSelf {
+	//			//if remote node is self then overwrite server node
+	//			switch d.State {
+	//			case stateAlive:
+	//				s.SetState(n, stateAlive)
+	//				break
+	//			case stateDead:
+	//				n.State = stateDead
+	//				n.VersionSet(d.Version)
+	//				s.SetNode(n)
+	//				s.RemoveNode(n)
+	//				break
+	//			}
+	//			reDiff = append(reDiff, n)
+	//			//reDiff[n.Name] = n //shot out new version
+	//		} else {
+	//			if d.VersionGet() > n.VersionGet() {
+	//				if n.IsSelf {
+	//					//only update version
+	//					n.VersionSet(d.Version)
+	//					n.Shutter()
+	//				} else {
+	//					*n = *d
+	//					s.SetNode(n)
+	//				}
+	//			} else if d.VersionGet() != n.VersionGet() {
+	//				//take my node
+	//				reDiff = append(reDiff, n)
+	//			}
+	//		}
+	//	}
+	//}
+	//s.Logger.Printf(infoNodePrefix+"server %s merge %d nodes return %d nodes\n", s.Self.Name, len(diff), len(reDiff))
+	//s.Shutter()
+	//return
+}
+
+// it's real true node state
+func (s *Server) trueNode(d, n *Node) (reDiff *Node) {
+	//if remote node is self then overwrite server node
+	switch d.State {
+	case stateAlive:
+		if d.VersionGet() == 0 { //if d is new online
+			v := s.SetState(n, stateAlive)
+			if v > 1 {
+				reDiff = n //shot out my version
+			}
+		} else {
+			//if remote node service changes .... take remote node
+			*n = *d
+		}
+		break
+	case stateDead:
+		if n.State != stateDead {
+			*n = *d
+			s.RemoveNodeDelay(n)
+		}
+		break
+	}
 	return
 }
 
-func (s *Server) RemoveTimer(n *Node) {
-	if n.timeoutFn == nil {
-		n.timeoutFn = func() {
-			//delete this node
-			if n.State == stateDead {
-				s.Logger.Printf(infoNodePrefix+"remove dead node %s\n", n.Name)
-				s.DeleteNode(n.Name)
-				s.Shutter()
-				//clear fn
-				n.timeoutFn = nil
+func (s *Server) gossipNode(d, n *Node) (reDiff *Node) {
+	if d.VersionGet() > n.VersionGet() {
+		if n.IsSelf {
+			//only update version
+			n.VersionSet(d.Version)
+			n.Shutter()
+		} else {
+			if n.State != stateDead && d.State == stateDead {
+				*n = *d
+				s.RemoveNodeDelay(n)
+			} else {
+				*n = *d
 			}
 		}
-		timeout := 10 * time.Second
-		n.timer = time.AfterFunc(timeout, n.timeoutFn)
+	} else if d.VersionGet() != n.VersionGet() {
+		//take my node
+		reDiff = n
 	}
+	return
 }

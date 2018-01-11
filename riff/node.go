@@ -23,10 +23,18 @@ type Digest struct {
 	SnapShot string
 }
 
+var removeFirst = 0
+
 func (s *Server) Shutter() {
 	h := sha1.New()
 	io.WriteString(h, s.String())
 	s.SnapShot = fmt.Sprintf("%x", h.Sum(nil))
+	if removeFirst != 0 {
+		s.Logger.Printf(infoRpcPrefix+"riff snapshot now is: %s\n", s.SnapShot)
+	} else {
+		removeFirst++
+	}
+
 }
 
 func (s *Server) Keys() []string {
@@ -61,19 +69,54 @@ func (ns *Server) GetNode(key string) *Node {
 	return nil
 }
 
-func (s *Server) SetNode(node *Node) {
-	node.Shutter()
-	s.nodes.Store(node.Name, node)
-	if node.State == stateDead {
-		s.RemoveTimer(node)
-		//node.Dead(s)
-	}
+func (s *Server) AddNode(n *Node) {
+	n.Shutter()
+	s.nodes.Store(n.Name, n)
 }
 
 func (s *Server) DeleteNode(key string) {
 	s.nodes.Delete(key)
 }
 
+func (s *Server) RemoveNodeDelay(n *Node) {
+	if n.timeoutFn == nil {
+		n.timeoutFn = func() {
+			//delete this node
+			if n.State == stateDead {
+				s.Logger.Printf(infoNodePrefix+"remove dead node %s\n", n.Name)
+				s.DeleteNode(n.Name)
+				//clear fn
+				n.timeoutFn = nil
+			}
+		}
+		timeout := 10 * time.Second
+		n.timer = time.AfterFunc(timeout, n.timeoutFn)
+	}
+}
+
+// set node state version inc and shutter node return version
+func (s *Server) SetStateOnly(n *Node, state stateType) uint64 {
+	n.State = state
+	n.Shutter()
+	return n.VersionGet()
+}
+
+// set node state version inc and shutter node return version++
+func (s *Server) SetState(n *Node, state stateType) uint64 {
+	n.State = state
+	v := n.VersionInc()
+	n.Shutter()
+	return v
+}
+
+// SetState and make a snapsort return version ++
+func (s *Server) SetStateWithShutter(n *Node, state stateType) uint64 {
+	v := s.SetState(n, state)
+	s.Shutter()
+	return v
+}
+
+// get random nodes
 func (s *Server) randomNodes(fanout int, filterFn func(*Node) bool) []*Node {
 	nodes := s.Keys()
 	n := len(nodes)
@@ -193,22 +236,17 @@ func (n *Node) Shutter() {
 	n.SnapShot = fmt.Sprintf("%x", h.Sum(nil))
 }
 
-func (n *Node) Suspect() {
-	n.State = stateSuspect
-	n.VersionInc()
-	n.Shutter()
-}
-func (n *Node) Leave() {
-	n.State = stateDead
-	n.VersionInc()
-	n.Shutter()
-}
-
-func (n *Node) Alive() {
-	n.State = stateAlive
-	n.VersionInc()
-	n.Shutter()
-}
+//func (n *Node) Suspect() {
+//	n.State = stateSuspect
+//	n.VersionInc()
+//	n.Shutter()
+//}
+//
+//func (n *Node) Alive() {
+//	n.State = stateAlive
+//	n.VersionInc()
+//	n.Shutter()
+//}
 
 func (n *Node) AddService(s *Service) {
 	if n.Services == nil {

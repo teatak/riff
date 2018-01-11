@@ -80,7 +80,7 @@ func (s *Server) setupServer() error {
 		StateChange: time.Now(),
 	}
 	s.Self = self
-	s.SetNode(self)
+	s.AddNode(self)
 	s.Shutter()
 	return nil
 }
@@ -173,7 +173,7 @@ func (s *Server) Shutdown() error {
 	}
 
 	s.Logger.Printf(infoRpcPrefix+"%s leave", s.Self.Name)
-	s.leave()
+	s.fanoutLeave()
 
 	s.shutdown = true
 	close(s.ShutdownCh)

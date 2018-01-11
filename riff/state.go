@@ -29,8 +29,7 @@ func (s *Server) fanoutNodes() {
 		} else {
 			for _, n := range nodes {
 				if err := s.requestPeer(n.Address()); err != nil {
-					n.Suspect()
-					s.Shutter()
+					s.SetStateWithShutter(n, stateSuspect)
 					s.Logger.Printf(errorRpcPrefix+"%v\n", err)
 				}
 			}
@@ -49,14 +48,12 @@ func (s *Server) fanoutDeadNodes() {
 		for _, n := range nodes {
 			if err := s.requestPeer(n.Address()); err != nil {
 				if n.State == stateSuspect {
-					n.Leave()
-					s.RemoveTimer(n)
-					s.Shutter()
+					s.SetStateWithShutter(n, stateDead)
+					s.RemoveNodeDelay(n)
 				}
 				//s.logger.Printf(errorRpcPrefix+"%v\n", err)
 			} else {
-				n.Alive()
-				s.Shutter()
+				s.SetStateWithShutter(n, stateAlive)
 			}
 		}
 
@@ -64,18 +61,17 @@ func (s *Server) fanoutDeadNodes() {
 	}
 }
 
-func (s *Server) leave() {
+func (s *Server) fanoutLeave() {
 	nodes := s.randomNodes(s.config.Fanout, func(node *Node) bool {
 		return node.Name == s.Self.Name ||
 			node.State != stateAlive
 	})
+	s.SetState(s.Self, stateDead)
 	for _, n := range nodes {
-		s.Self.Leave()
 		if err := s.requestLeave(n.Address()); err != nil {
 			s.Logger.Printf(errorRpcPrefix+"%v\n", err)
 		}
 	}
-
 }
 
 func (s *Server) requestLeave(peer string) error {

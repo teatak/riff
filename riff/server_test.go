@@ -13,7 +13,7 @@ func TestServer(t *testing.T) {
 
 	s := Server{}
 	for i := 0; i < 100; i++ {
-		s.SetNode(&Node{
+		s.AddNode(&Node{
 			Name: "node" + strconv.Itoa(i),
 		})
 	}
