@@ -62,7 +62,6 @@ func (c *cmd) Run(args []string) int {
 	}
 	c.rpc = net.JoinHostPort(host, strconv.Itoa(port))
 
-	fmt.Println(host, port, advise, c.rpc)
 	//get args 0
 	command := args[0]
 	switch command {
