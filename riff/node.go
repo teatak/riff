@@ -176,7 +176,6 @@ func (n *Node) Leave() {
 
 func (n *Node) Dead(s *Server) {
 	if n.timeoutFn == nil {
-		n.Leave()
 		n.timeoutFn = func() {
 			//delete this node
 			if n.State == stateDead {

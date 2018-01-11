@@ -49,6 +49,7 @@ func (s *Server) fanoutDeadNodes() {
 		for _, n := range nodes {
 			if err := s.requestPeer(n.Address()); err != nil {
 				if n.State == stateSuspect {
+					n.Leave()
 					n.Dead(s)
 					s.Shutter()
 				}
