@@ -20,7 +20,7 @@ func (s *Server) fanoutNodes() {
 			for _, addr := range addrs {
 				if addr != "" && addr != s.Self.Address() {
 					if err := s.requestPeer(addr); err != nil {
-						s.logger.Printf(errorRpcPrefix+"%v\n", err)
+						s.Logger.Printf(errorRpcPrefix+"%v\n", err)
 					} else {
 						break
 					}
@@ -31,7 +31,7 @@ func (s *Server) fanoutNodes() {
 				if err := s.requestPeer(n.Address()); err != nil {
 					n.Suspect()
 					s.Shutter()
-					s.logger.Printf(errorRpcPrefix+"%v\n", err)
+					s.Logger.Printf(errorRpcPrefix+"%v\n", err)
 				}
 			}
 		}
@@ -62,6 +62,38 @@ func (s *Server) fanoutDeadNodes() {
 		time.Sleep(2 * time.Second)
 	}
 }
+
+func (s *Server) leave() {
+	nodes := s.randomNodes(s.config.Fanout, func(node *Node) bool {
+		return node.Name == s.Self.Name ||
+			node.State != stateAlive
+	})
+	for _, n := range nodes {
+		s.Self.Leave()
+		if err := s.requestLeave(n.Address()); err != nil {
+			s.Logger.Printf(errorRpcPrefix+"%v\n", err)
+		}
+	}
+
+}
+
+func (s *Server) requestLeave(peer string) error {
+	conn, err := net.DialTimeout("tcp", peer, time.Second*10)
+	if err != nil {
+		return fmt.Errorf("%v", err)
+	}
+	codec := common.NewGobClientCodec(conn)
+	cmd := rpc.NewClientWithCodec(codec)
+	defer cmd.Close()
+
+	diff := []*Node{s.Self}
+
+	var reDiff []*Node
+	err = cmd.Call("Riff.PushDiff", diff, &reDiff)
+
+	return err
+}
+
 func (s *Server) requestPeer(peer string) error {
 	conn, err := net.DialTimeout("tcp", peer, time.Second*10)
 	if err != nil {

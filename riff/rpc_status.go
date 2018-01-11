@@ -6,7 +6,7 @@ type Status struct {
 
 // Ping is used to just check for connectivity
 func (s *Status) Ping(_ struct{}, reply *string) error {
-	s.server.logger.Printf("ping")
+	s.server.Logger.Printf("ping")
 	*reply = "pong"
 	return nil
 }

@@ -73,7 +73,7 @@ func (a Api) logs(c *cart.Context) {
 
 	flusher, ok := resp.(http.Flusher)
 	if !ok {
-		a.server.logger.Println("Streaming not supported")
+		a.server.Logger.Println("Streaming not supported")
 	}
 	for {
 		select {

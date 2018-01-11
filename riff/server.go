@@ -24,7 +24,7 @@ type Server struct {
 	Listener   net.Listener
 	httpServer *http.Server
 	rpcServer  *rpc.Server
-	logger     *log.Logger
+	Logger     *log.Logger
 	logWriter  *LogWriter
 	Self       *Node
 	Nodes
@@ -47,7 +47,7 @@ func NewServer(config *Config) (*Server, error) {
 	}
 
 	logOutput := io.MultiWriter(os.Stderr, s.logWriter)
-	s.logger = log.New(logOutput, "", log.LstdFlags)
+	s.Logger = log.New(logOutput, "", log.LstdFlags)
 
 	if err := s.setupServer(); err != nil {
 		s.Shutdown()
@@ -96,7 +96,7 @@ func (s *Server) httpLogger() cart.Handler {
 		clientIP := c.ClientIP()
 		statusCode := c.Response.Status()
 
-		s.logger.Printf("[INFO] cart: status:%d latency:%v ip:%s method:%s path:%s\n",
+		s.Logger.Printf("[INFO] cart: status:%d latency:%v ip:%s method:%s path:%s\n",
 			statusCode,
 			latency,
 			clientIP,
@@ -116,7 +116,7 @@ func (s *Server) setupCart() error {
 	r.Use("/favicon.ico", func(c *cart.Context, next cart.Next) {
 		b, err := assetFS().Asset("static/images/favicon.ico")
 		if err != nil {
-			s.logger.Printf(errorRpcPrefix+"error: %v\n", err)
+			s.Logger.Printf(errorRpcPrefix+"error: %v\n", err)
 			next()
 		} else {
 			c.Response.WriteHeader(200)
@@ -126,7 +126,7 @@ func (s *Server) setupCart() error {
 	r.Use("/console/*file", func(c *cart.Context, next cart.Next) {
 		b, err := assetFS().Asset("static/index.html")
 		if err != nil {
-			s.logger.Printf(errorRpcPrefix+"error: %v\n", err)
+			s.Logger.Printf(errorRpcPrefix+"error: %v\n", err)
 			next()
 		} else {
 			c.Response.WriteHeader(200)
@@ -172,11 +172,13 @@ func (s *Server) Shutdown() error {
 		return nil
 	}
 
+	s.Logger.Printf(infoRpcPrefix+"%s leave", s.Self.Name)
+	s.leave()
+
 	s.shutdown = true
 	close(s.ShutdownCh)
 	if s.Listener != nil {
 		s.Listener.Close()
 	}
-
 	return nil
 }

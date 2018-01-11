@@ -4,7 +4,10 @@ import (
 	"flag"
 	"fmt"
 	"github.com/gimke/riff/riff"
+	"os"
+	"os/signal"
 	"strings"
+	"syscall"
 )
 
 const synopsis = "Start Riff service"
@@ -21,6 +24,8 @@ Options:
   -rpc        RPC address of riff (-rpc [::]:8630)
   -join       Join RPC address (-join 192.168.1.1:8630,192.168.1.2:8630,192.168.1.3:8630)
 `
+
+const infoServerPrefix = "[INFO] riff.server: "
 
 type cmd struct {
 	flags *flag.FlagSet
@@ -69,6 +74,20 @@ func (c *cmd) Run(args []string) int {
 		return 1
 	}
 	defer s.Shutdown()
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM, syscall.SIGUSR2)
+	go func() {
+		for {
+			sig := <-sigs
+			fmt.Println()
+			s.Logger.Printf(infoServerPrefix+"get signal %v\n", sig)
+			if sig == syscall.SIGUSR2 {
+				s.Shutdown()
+			} else {
+				s.Shutdown()
+			}
+		}
+	}()
 	<-s.ShutdownCh
 	return 0
 }

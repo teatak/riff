@@ -168,16 +168,19 @@ func (n *Node) Suspect() {
 	n.Version++
 	n.Shutter()
 }
+func (n *Node) Leave() {
+	n.State = stateDead
+	n.Version++
+	n.Shutter()
+}
 
 func (n *Node) Dead(s *Server) {
 	if n.timeoutFn == nil {
-		n.State = stateDead
-		n.Version++
-		n.Shutter()
+		n.Leave()
 		n.timeoutFn = func() {
 			//delete this node
 			if n.State == stateDead {
-				s.logger.Printf(infoNodePrefix+"remove dead node %s\n", n.Name)
+				s.Logger.Printf(infoNodePrefix+"remove dead node %s\n", n.Name)
 				s.DeleteNode(n.Name)
 				s.Shutter()
 				//clear fn
@@ -191,6 +194,7 @@ func (n *Node) Dead(s *Server) {
 
 func (n *Node) Alive() {
 	n.State = stateAlive
+	n.Version++
 	n.Shutter()
 }
 

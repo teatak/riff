@@ -32,7 +32,7 @@ func (s *Server) MakeDigest() (digests []*Digest) {
 		digests = append(digests, digest)
 		return true
 	})
-	s.logger.Printf(infoNodePrefix+"server %s send %d digests\n", s.Self.Name, len(digests))
+	s.Logger.Printf(infoNodePrefix+"server %s send %d digests\n", s.Self.Name, len(digests))
 	return
 }
 
@@ -67,7 +67,7 @@ func (s *Server) MakeDiffNodes(digests []*Digest) (diff []*Node) {
 		return true
 	})
 
-	s.logger.Printf(infoNodePrefix+"server %s get %d digests send %d nodes\n", s.Self.Name, len(digests), len(diff))
+	s.Logger.Printf(infoNodePrefix+"server %s get %d digests send %d nodes\n", s.Self.Name, len(digests), len(diff))
 	return
 }
 
@@ -116,7 +116,7 @@ func (s *Server) MergeDiff(diff []*Node) (reDiff []*Node) {
 			}
 		}
 	}
-	s.logger.Printf(infoNodePrefix+"server %s merge %d nodes return %d nodes\n", s.Self.Name, len(diff), len(reDiff))
+	s.Logger.Printf(infoNodePrefix+"server %s merge %d nodes return %d nodes\n", s.Self.Name, len(diff), len(reDiff))
 	s.Shutter()
 	return
 }
