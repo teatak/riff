@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
+
+cd `dirname $0`
+cd ..
 cd bin
+
 for((i=1;i<=2;i++));do
 
 httpPort=$(expr $i \+ 8000);
