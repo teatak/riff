@@ -43,6 +43,22 @@ func (s *Server) Keys() []string {
 		keys = append(keys, key.(string))
 		return true
 	})
+	/*sort.Slice(keys, func(i, j int) bool {
+		var validID = regexp.MustCompile(`^(\S+)([0-9]+)$`)
+		if validID.MatchString(keys[i]) && validID.MatchString(keys[j]) {
+			arri := validID.FindAllStringSubmatch(keys[i],-1)
+			arrj := validID.FindAllStringSubmatch(keys[j],-1)
+			if arri[0][1] == arrj[0][1] {
+				inti,_ := strconv.Atoi(arri[0][2])
+				intj,_ := strconv.Atoi(arrj[0][2])
+				return inti <  intj
+			} else {
+				return  arri[0][1] < arrj[0][1]
+			}
+		} else {
+			return keys[i] < keys[j]
+		}
+	})*/
 	sort.Strings(keys)
 	return keys
 }
@@ -235,18 +251,6 @@ func (n *Node) Shutter() {
 	io.WriteString(h, n.String())
 	n.SnapShot = fmt.Sprintf("%x", h.Sum(nil))
 }
-
-//func (n *Node) Suspect() {
-//	n.State = stateSuspect
-//	n.VersionInc()
-//	n.Shutter()
-//}
-//
-//func (n *Node) Alive() {
-//	n.State = stateAlive
-//	n.VersionInc()
-//	n.Shutter()
-//}
 
 func (n *Node) AddService(s *Service) {
 	if n.Services == nil {

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 cd bin
-for((i=1;i<=50;i++));do
+for((i=1;i<=2;i++));do
 
 httpPort=$(expr $i \+ 8000);
 rpcPort=$(expr $i \+ 9000);
