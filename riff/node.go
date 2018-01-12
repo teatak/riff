@@ -30,7 +30,7 @@ func (s *Server) Shutter() {
 	io.WriteString(h, s.String())
 	s.SnapShot = fmt.Sprintf("%x", h.Sum(nil))
 	if removeFirst != 0 {
-		s.Logger.Printf(infoRpcPrefix+"riff snapshot now is: %s\n", s.SnapShot)
+		s.Logger.Printf(infoRpcPrefix+"server %s snapshot now is: %s\n", s.Self.Name, s.SnapShot)
 	} else {
 		removeFirst++
 	}

@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 cd bin
-for((i=1;i<=100;i++));do
+for((i=1;i<=50;i++));do
 
 httpPort=$(expr $i \+ 8000);
 rpcPort=$(expr $i \+ 9000);
 
-rm -rf config && ./riff start -name node$i -rpc :$rpcPort -http :$httpPort -join 192.168.1.220:9001,192.168.1.220:9002,192.168.1.220:9003 &
-sleep 1
+rm -rf config && ./riff start -name node$i -rpc :$rpcPort -http :$httpPort -join 192.168.3.2:9001,192.168.3.2:9002,192.168.3.2:9003 &
+#sleep 1
 
 done
 

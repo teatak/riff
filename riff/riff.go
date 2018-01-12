@@ -92,17 +92,21 @@ func (s *Server) MergeDiff(diffs []*Node) (reDiffs []*Node) {
 				continue
 			}
 
+			var merged bool
+			var reDiff *Node
 			switch d.IsSelf {
 			case true:
-				if reDiff := s.trueNode(d, n); reDiff != nil {
-					reDiffs = append(reDiffs, reDiff)
-				}
+				merged, reDiff = s.trueNode(d, n)
 				break
 			case false:
-				if reDiff := s.gossipNode(d, n); reDiff != nil {
-					reDiffs = append(reDiffs, reDiff)
-				}
+				merged, reDiff = s.gossipNode(d, n)
 				break
+			}
+			if reDiff != nil {
+				reDiffs = append(reDiffs, reDiff)
+			}
+			if merged {
+				count++
 			}
 		}
 	}
@@ -165,7 +169,7 @@ func (s *Server) MergeDiff(diffs []*Node) (reDiffs []*Node) {
 }
 
 // it's real true node state
-func (s *Server) trueNode(d, n *Node) (reDiff *Node) {
+func (s *Server) trueNode(d, n *Node) (merged bool, reDiff *Node) {
 	//if remote node is self then overwrite server node
 	switch d.State {
 	case stateAlive:
@@ -178,18 +182,20 @@ func (s *Server) trueNode(d, n *Node) (reDiff *Node) {
 			//if remote node service changes .... take remote node
 			*n = *d
 		}
+		merged = true
 		break
 	case stateDead:
 		if n.State != stateDead {
 			*n = *d
 			s.RemoveNodeDelay(n)
+			merged = true
 		}
 		break
 	}
 	return
 }
 
-func (s *Server) gossipNode(d, n *Node) (reDiff *Node) {
+func (s *Server) gossipNode(d, n *Node) (merged bool, reDiff *Node) {
 	if d.VersionGet() > n.VersionGet() {
 		if n.IsSelf {
 			//only update version
@@ -203,6 +209,7 @@ func (s *Server) gossipNode(d, n *Node) (reDiff *Node) {
 				*n = *d
 			}
 		}
+		merged = true
 	} else if d.VersionGet() != n.VersionGet() {
 		//take my node
 		reDiff = n

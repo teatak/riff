@@ -66,8 +66,10 @@ func (s *Server) fanoutLeave() {
 		return node.Name == s.Self.Name ||
 			node.State != stateAlive
 	})
+	s.SetState(s.Self, stateSuspect)
 	s.SetState(s.Self, stateDead)
 	for _, n := range nodes {
+		s.Logger.Printf(infoRpcPrefix+"server %s send leave event to %s", s.Self.Name, n.Address())
 		if err := s.requestLeave(n.Address()); err != nil {
 			s.Logger.Printf(errorRpcPrefix+"%v\n", err)
 		}
