@@ -31,6 +31,15 @@ for OS in ${XC_OS}; do
         if [ ${OS}/${ARCH} == "darwin/arm" ]; then
             continue
         fi
+        if [ ${OS}/${ARCH} == "windows/arm" ]; then
+            continue
+        fi
+        if [ ${OS}/${ARCH} == "solaris/arm" ]; then
+            continue
+        fi
+        if [ ${OS}/${ARCH} == "solaris/386" ]; then
+            continue
+        fi
         echo "Building ${OS}/${ARCH}"
         NAME="${BIN}"
         if [ ${OS} == "windows" ]; then
