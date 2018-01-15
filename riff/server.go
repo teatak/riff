@@ -47,7 +47,7 @@ func NewServer(config *Config) (*Server, error) {
 	}
 
 	logOutput := io.MultiWriter(os.Stderr, s.logWriter)
-	s.Logger = log.New(logOutput, "", log.LstdFlags)
+	s.Logger = log.New(logOutput, "", log.LstdFlags|log.Lmicroseconds)
 
 	if err := s.setupServer(); err != nil {
 		s.Shutdown()
