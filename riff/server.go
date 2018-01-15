@@ -19,6 +19,10 @@ const errorRpcPrefix = "[ERR]  riff.rpc: "
 const infoRpcPrefix = "[INFO] riff.rpc: "
 const errorNodePrefix = "[ERR]  riff.node: "
 const infoNodePrefix = "[INFO] riff.node: "
+const errorServicePrefix = "[ERR]  riff.service: "
+const infoServicePrefix = "[INFO] riff.service: "
+
+var server *Server
 
 type Server struct {
 	Listener   net.Listener
@@ -39,35 +43,36 @@ func NewServer(config *Config) (*Server, error) {
 
 	shutdownCh := make(chan struct{})
 
-	s := &Server{
+	server = &Server{
 		logWriter:  NewLogWriter(512),
 		rpcServer:  rpc.NewServer(),
 		config:     config,
 		ShutdownCh: shutdownCh,
 	}
 
-	logOutput := io.MultiWriter(os.Stderr, s.logWriter)
-	s.Logger = log.New(logOutput, "", log.LstdFlags|log.Lmicroseconds)
+	logOutput := io.MultiWriter(os.Stderr, server.logWriter)
+	server.Logger = log.New(logOutput, "", log.LstdFlags|log.Lmicroseconds)
 
-	if err := s.setupServer(); err != nil {
-		s.Shutdown()
+	if err := server.setupServer(); err != nil {
+		server.Shutdown()
 		return nil, fmt.Errorf(errorServerPrefix+"%v", err)
 	}
 
-	if err := s.setupRPC(); err != nil {
-		s.Shutdown()
+	if err := server.setupRPC(); err != nil {
+		server.Shutdown()
 		return nil, fmt.Errorf(errorServerPrefix+"%v", err)
 	}
-	if err := s.setupCart(); err != nil {
-		s.Shutdown()
+	if err := server.setupCart(); err != nil {
+		server.Shutdown()
 		return nil, fmt.Errorf(errorServerPrefix+"%v", err)
 	}
-	s.print()
-	go s.listenRpc()       //listen rpc
-	go s.listenHttp()      //listen http
-	go s.fanoutNodes()     //fanout state
-	go s.fanoutDeadNodes() //fanout dead state
-	return s, nil
+	server.print()
+	server.Self.LoadServices()
+	go server.listenRpc()       //listen rpc
+	go server.listenHttp()      //listen http
+	go server.fanoutNodes()     //fanout state
+	go server.fanoutDeadNodes() //fanout dead state
+	return server, nil
 }
 func (s *Server) setupServer() error {
 	self := &Node{
@@ -78,6 +83,7 @@ func (s *Server) setupServer() error {
 		IsSelf:      true,
 		State:       stateAlive,
 		StateChange: time.Now(),
+		Services:    make(map[string]*Service),
 	}
 	s.Self = self
 	s.AddNode(self)

@@ -3,93 +3,15 @@ package start
 import (
 	"github.com/gimke/riff/common"
 	"github.com/gimke/riff/riff"
-	"gopkg.in/yaml.v2"
-	"io/ioutil"
 	"net"
-	"os"
 )
-
-func isExist(file string) bool {
-	if _, err := os.Stat(file); os.IsNotExist(err) {
-		return false
-	}
-	return true
-}
-
-func defaultConfig() *riff.Config {
-	hostName, _ := os.Hostname()
-	c := &riff.Config{
-		Name:       hostName,
-		DataCenter: "dc1",
-		AutoPilot:  false,
-		Fanout:     3,
-		Addresses: &riff.Addresses{
-			Http: "127.0.0.1",
-			Dns:  "127.0.0.1",
-			Rpc:  "",
-		},
-		Ports: &riff.Ports{
-			Http: common.DefaultHttpPort,
-			Dns:  common.DefaultDnsPort,
-			Rpc:  common.DefaultRpcPort,
-		},
-	}
-	return c
-}
-func mergeConfig(src, dest *riff.Config) {
-	if src.Name != "" {
-		dest.Name = src.Name
-	}
-	if src.DataCenter != "" {
-		dest.DataCenter = src.DataCenter
-	}
-	if src.IP != "" {
-		dest.IP = src.IP
-	}
-	if src.Join != "" {
-		dest.Join = src.Join
-	}
-	if src.Addresses != nil {
-		if src.Addresses.Http != "" {
-			dest.Addresses.Http = src.Addresses.Http
-		}
-		if src.Addresses.Dns != "" {
-			dest.Addresses.Dns = src.Addresses.Dns
-		}
-		if src.Addresses.Rpc != "" {
-			dest.Addresses.Rpc = src.Addresses.Rpc
-		}
-	}
-	if src.Ports != nil {
-		if src.Ports.Http != 0 {
-			dest.Ports.Http = src.Ports.Http
-		}
-		if src.Ports.Dns != 0 {
-			dest.Ports.Dns = src.Ports.Dns
-		}
-		if src.Ports.Rpc != 0 {
-			dest.Ports.Rpc = src.Ports.Rpc
-		}
-	}
-}
 
 func loadConfig(cmd *cmd) (*riff.Config, error) {
 	var host string
 	var port int
 	var err error
 
-	c := defaultConfig()
-	file := common.BinDir + "/config/" + common.Name + ".yml"
-	if isExist(file) {
-		//return nil, fmt.Errorf("file not exist %s", file)
-		content, _ := ioutil.ReadFile(file)
-		var file = &riff.Config{}
-		err := yaml.Unmarshal(content, &c)
-		if err != nil {
-			return nil, err
-		}
-		mergeConfig(file, c)
-	}
+	c := riff.LoadConfig()
 
 	advise, err := common.AdviseRpc()
 	if err != nil {
@@ -134,13 +56,6 @@ func loadConfig(cmd *cmd) (*riff.Config, error) {
 	}
 	if cmd.dc != "" {
 		c.DataCenter = cmd.dc
-	}
-	if !isExist(file) {
-		os.MkdirAll(common.BinDir+"/config", 0755)
-		out, err := yaml.Marshal(c)
-		if err == nil {
-			ioutil.WriteFile(file, out, 0666)
-		}
 	}
 	return c, nil
 }

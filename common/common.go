@@ -27,6 +27,22 @@ func init() {
 
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
 
+func MakeFile(path string) *os.File {
+	dir := filepath.Dir(path)
+	if !IsExist(dir) {
+		os.MkdirAll(dir, 0755)
+	}
+	file, _ := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	return file
+}
+
+func IsExist(file string) bool {
+	if _, err := os.Stat(file); os.IsNotExist(err) {
+		return false
+	}
+	return true
+}
+
 func GenerateID(length int) string {
 	b := make([]rune, length)
 	for i := range b {

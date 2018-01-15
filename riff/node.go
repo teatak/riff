@@ -12,6 +12,10 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+	"io/ioutil"
+	"gopkg.in/yaml.v2"
+	"strings"
+	"path/filepath"
 )
 
 type Nodes struct {
@@ -24,18 +28,6 @@ type Digest struct {
 }
 
 var removeFirst = 0
-
-func (s *Server) Shutter() {
-	h := sha1.New()
-	io.WriteString(h, s.String())
-	s.SnapShot = fmt.Sprintf("%x", h.Sum(nil))
-	if removeFirst != 0 {
-		s.Logger.Printf(infoRpcPrefix+"server %s snapshot now is: %s\n", s.Self.Name, s.SnapShot)
-	} else {
-		removeFirst++
-	}
-
-}
 
 func (s *Server) Keys() []string {
 	var keys = make([]string, 0, 0)
@@ -252,10 +244,47 @@ func (n *Node) Shutter() {
 	n.SnapShot = fmt.Sprintf("%x", h.Sum(nil))
 }
 
-func (n *Node) AddService(s *Service) {
+func (n *Node) LoadServices() {
 	if n.Services == nil {
 		n.Services = make(map[string]*Service)
 	}
-	n.Services[s.Name] = s
+	files, err := ioutil.ReadDir(common.BinDir + "/config")
+	if err == nil {
+		for _, file := range files {
+			basename := file.Name()
+			if basename == "riff.yml" {
+				continue
+			}
+			if strings.HasPrefix(basename, ".") {
+				continue
+			}
+			name := strings.TrimSuffix(basename, filepath.Ext(basename))
+			s := n.LoadService(name)
+			if s != nil {
+				n.Services[s.Name] = s
+			}
+		}
+	}
 	n.Shutter()
+}
+
+func (n *Node) LoadService(name string) *Service {
+	file := common.BinDir + "/config/" + name + ".yml"
+	if !common.IsExist(file) {
+		return nil
+	}
+	content, _ := ioutil.ReadFile(file)
+	var s = &Service{}
+	err := yaml.Unmarshal(content, &s)
+	if err != nil {
+		return nil
+	}
+	s.StateChange = time.Now()
+	s.AutoRun()
+	if s.GetPid() == 0 {
+		s.State = stateDead
+	} else {
+		s.State = stateAlive
+	}
+	return s
 }
