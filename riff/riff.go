@@ -2,9 +2,9 @@ package riff
 
 import (
 	"bytes"
-	"io"
 	"crypto/sha1"
 	"fmt"
+	"io"
 )
 
 func (s *Server) Shutter() {

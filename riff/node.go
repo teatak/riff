@@ -5,17 +5,17 @@ import (
 	"crypto/sha1"
 	"fmt"
 	"github.com/gimke/riff/common"
+	"gopkg.in/yaml.v2"
 	"io"
+	"io/ioutil"
 	"net"
+	"path/filepath"
 	"sort"
 	"strconv"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
-	"io/ioutil"
-	"gopkg.in/yaml.v2"
-	"strings"
-	"path/filepath"
 )
 
 type Nodes struct {
