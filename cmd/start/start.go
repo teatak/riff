@@ -61,39 +61,4 @@ func (c *cmd) Synopsis() string {
 
 func (c *cmd) Help() string {
 	return strings.TrimSpace(help)
-
 }
-
-//func (c *cmd) Ping() {
-//	conn, err := net.DialTimeout("tcp", ":8530", time.Second*10)
-//	if err != nil {
-//		fmt.Println("error", err)
-//		return
-//	}
-//	//encBuf := bufio.NewWriter(conn)
-//	var exit = make(chan bool)
-//	codec := common.NewGobClientCodec(conn)
-//	//codec := jsonrpc.NewClientCodec(conn)
-//	cmd := rpc.NewClientWithCodec(codec)
-//	var reply string
-//	for {
-//		err = cmd.Call("Status.Ping", struct{}{}, &reply)
-//		if err != nil {
-//			fmt.Println("error", err)
-//			close(exit)
-//			break
-//		}
-//		fmt.Println(reply)
-//		time.Sleep(5 * time.Second)
-//	}
-//	<-exit
-//	//cmd.Close()
-//	//if err != nil && errc != nil {
-//	//	return fmt.Errorf("%s %s", err, errc)
-//	//}
-//	//if err != nil {
-//	//	return err
-//	//} else {
-//	//	return errc
-//	//}
-//}
