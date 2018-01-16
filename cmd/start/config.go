@@ -4,6 +4,9 @@ import (
 	"github.com/gimke/riff/common"
 	"github.com/gimke/riff/riff"
 	"net"
+	"os"
+	"gopkg.in/yaml.v2"
+	"io/ioutil"
 )
 
 func loadConfig(cmd *cmd) (*riff.Config, error) {
@@ -56,6 +59,15 @@ func loadConfig(cmd *cmd) (*riff.Config, error) {
 	}
 	if cmd.dc != "" {
 		c.DataCenter = cmd.dc
+	}
+
+	file := common.BinDir + "/config/" + common.Name + ".yml"
+	if !common.IsExist(file) {
+		os.MkdirAll(common.BinDir+"/config", 0755)
+		out, err := yaml.Marshal(c)
+		if err == nil {
+			ioutil.WriteFile(file, out, 0666)
+		}
 	}
 	return c, nil
 }

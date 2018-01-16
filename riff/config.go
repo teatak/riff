@@ -98,12 +98,6 @@ func LoadConfig() *Config {
 		if err == nil {
 			mergeConfig(fc, c)
 		}
-	} else {
-		os.MkdirAll(common.BinDir+"/config", 0755)
-		out, err := yaml.Marshal(c)
-		if err == nil {
-			ioutil.WriteFile(file, out, 0666)
-		}
 	}
 	return c
 
