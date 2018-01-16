@@ -94,6 +94,7 @@ func (s *Server) MergeDiff(diffs []*Node) (reDiffs []*Node) {
 				count++
 			}
 		} else {
+
 			// if found in node map
 			if d.SnapShot == n.SnapShot {
 				// continue if have same snap
@@ -107,6 +108,7 @@ func (s *Server) MergeDiff(diffs []*Node) (reDiffs []*Node) {
 
 			var merged bool
 			var reDiff *Node
+
 			switch d.IsSelf {
 			case true:
 				merged, reDiff = s.trueNode(d, n)
@@ -194,12 +196,14 @@ func (s *Server) trueNode(d, n *Node) (merged bool, reDiff *Node) {
 		} else {
 			//if remote node service changes .... take remote node
 			*n = *d
+			n.IsSelf = false
 		}
 		merged = true
 		break
 	case stateDead:
 		if n.State != stateDead {
 			*n = *d
+			n.IsSelf = false
 			s.RemoveNodeDelay(n)
 			merged = true
 		}
@@ -217,9 +221,11 @@ func (s *Server) gossipNode(d, n *Node) (merged bool, reDiff *Node) {
 		} else {
 			if n.State != stateDead && d.State == stateDead {
 				*n = *d
+				n.IsSelf = false
 				s.RemoveNodeDelay(n)
 			} else {
 				*n = *d
+				n.IsSelf = false
 			}
 		}
 		merged = true

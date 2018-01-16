@@ -33,7 +33,6 @@ func (s *Server) listenHttp() {
 }
 func (s *Server) listenRpc() {
 	s.Logger.Printf(infoRpcPrefix+"start to accept rpc conn: %v\n", s.Listener.Addr())
-	s.Logger.Printf(infoRpcPrefix+"riff snapshot now is: %s\n", s.SnapShot)
 	for {
 		// Accept a connection
 		conn, err := s.Listener.Accept()

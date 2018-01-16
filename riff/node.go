@@ -70,8 +70,8 @@ func (s *Server) Range(f func(string, *Node) bool) {
 		return f(key.(string), value.(*Node))
 	})
 }
-func (ns *Server) GetNode(key string) *Node {
-	if n, _ := ns.nodes.Load(key); n != nil {
+func (s *Server) GetNode(key string) *Node {
+	if n, _ := s.nodes.Load(key); n != nil {
 		return n.(*Node)
 	}
 	return nil
@@ -283,10 +283,5 @@ func (n *Node) LoadService(name string) *Service {
 	s.Config = c
 	s.StateChange = time.Now()
 	s.RunAtLoad()
-	if s.GetPid() == 0 {
-		s.State = stateDead
-	} else {
-		s.State = stateAlive
-	}
 	return s
 }

@@ -80,6 +80,7 @@ func (s *Server) handleServices() {
 		}
 		for _, service := range s.Self.Services {
 			//first run it
+			service.CheckState()
 			service.KeepAlive()
 			service.Update()
 		}
@@ -93,12 +94,19 @@ func (s *Server) handleServices() {
 	}
 }
 
+func (s *Service) CheckState() {
+	if pid := s.GetPid(); pid == 0 {
+		s.State = stateDead
+	} else {
+		s.State = stateAlive
+	}
+}
+
 func (s *Service) KeepAlive() {
 	if pid := s.GetPid(); pid == 0 && s.Config.KeepAlive {
 		err := s.Start()
 		if err != nil {
 			server.Logger.Printf(errorServicePrefix+"%s running error: %v", s.Config.Name, err)
-			//Logger.Error("%s running error %v", s.Name, err)
 		}
 	}
 }
