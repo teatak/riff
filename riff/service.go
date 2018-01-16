@@ -1,10 +1,14 @@
 package riff
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gimke/riff/common"
+	"github.com/gimke/riff/git"
 	"io/ioutil"
 	"net"
+	"net/http"
+	"net/url"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -15,16 +19,34 @@ import (
 	"time"
 )
 
+const branch = "branch"
+const release = "release"
+const latest = "latest"
+
+func versionType(version string) string {
+	if version == "latest" {
+		return latest
+	}
+	if strings.Contains(version, ":") {
+		return release
+	}
+	return branch
+	//return branch
+}
+
 type Services map[string]*Service
 
 type Service struct {
-	Name        string `yaml:"name,omitempty"`
-	IP          string `yaml:"ip,omitempty"`
-	Port        uint16 `yaml:"port,omitempty"`
 	Version     uint64
 	State       stateType // Current state
 	StateChange time.Time // Time last state change happened
+	Config      *ServiceConfig
+}
 
+type ServiceConfig struct {
+	Name       string   `yaml:"name,omitempty"`
+	IP         string   `yaml:"ip,omitempty"`
+	Port       uint16   `yaml:"port,omitempty"`
 	Env        []string `yaml:"env,omitempty"`
 	Command    []string `yaml:"command,omitempty"`
 	PidFile    string   `yaml:"pid_file,omitempty"`
@@ -44,8 +66,240 @@ type Deploy struct {
 	Payload    string `yaml:"payload,omitempty"`
 }
 
+func (s *Server) initServices() {
+	s.Self.LoadServices()
+	s.Shutter()
+}
+
+func (s *Server) handleServices() {
+	for {
+		select {
+		case <-s.ShutdownCh:
+			return
+		default:
+		}
+		for _, service := range s.Self.Services {
+			//first run it
+			service.KeepAlive()
+			service.Update()
+		}
+
+		time.Sleep(30 * time.Second)
+	}
+}
+
+func (s *Service) KeepAlive() {
+	if pid := s.GetPid(); pid == 0 && s.Config.KeepAlive {
+		err := s.Start()
+		if err != nil {
+			server.Logger.Printf(errorServicePrefix+"%s running error: %v", s.Config.Name, err)
+			//Logger.Error("%s running error %v", s.Name, err)
+		}
+	}
+}
+
+func (s *Service) Update() {
+	defer func() {
+		if err := recover(); err != nil {
+			server.Logger.Printf(errorServicePrefix+"%s update error: %v", s.Config.Name, err)
+		}
+	}()
+	if pid := s.GetPid(); pid != 0 || !s.IsExist() {
+		deploy := s.Config.Deploy
+		if deploy != nil && deploy.Provider != "" {
+			var client git.Client
+			switch strings.ToLower(deploy.Provider) {
+			case "github":
+				client = git.GithubClient(deploy.Token, deploy.Repository)
+				break
+			case "gitlab":
+				client = git.GitlabClient(deploy.Token, deploy.Repository)
+			}
+			if client != nil {
+				s.processGit(client)
+			}
+		}
+	}
+}
+
+func (s *Service) IsExist() bool {
+	command := s.resoveCommand()
+	if _, err := exec.LookPath(command); err == nil {
+		return true
+	}
+	return false
+}
+
+func (s *Service) processGit(client git.Client) {
+	//get content from remote git
+	var (
+		preVersion string
+		version    string
+		asset      string
+		doPayload  = true
+		err        error
+	)
+
+	defer func() {
+		if doPayload {
+			payloadUrl := s.Config.Deploy.Payload
+			if payloadUrl != "" {
+				//Payload callback
+				data := url.Values{}
+				hostName, _ := os.Hostname()
+				jsons := map[string]interface{}{
+					"hostName": hostName,
+					"name":     s.Config.Name,
+				}
+				if err != nil {
+					jsons["event"] = "update"
+					jsons["status"] = "failed"
+					jsons["error"] = err.Error()
+				} else {
+					jsons["event"] = "update"
+					jsons["status"] = "success"
+					jsons["preVersion"] = preVersion
+					jsons["version"] = version
+				}
+				jsonb, _ := json.Marshal(jsons)
+				data.Add("event", "update")
+				data.Add("payload", string(jsonb))
+				resp, err := http.PostForm(payloadUrl, data)
+				if err != nil {
+					server.Logger.Printf(errorServicePrefix+"%s payload:%s error: %v", s.Config.Name, err)
+				} else {
+					resultData, _ := ioutil.ReadAll(resp.Body)
+					if resp.StatusCode == 200 {
+						server.Logger.Printf(infoServicePrefix+"%s payload:%s success: %s", s.Config.Name, string(resultData))
+					} else {
+						server.Logger.Printf(errorServicePrefix+"%s payload:%s error: %s", s.Config.Name, string(resultData))
+					}
+				}
+			}
+		}
+	}()
+	config := s.Config
+	t := versionType(config.Deploy.Version)
+	switch t {
+	case branch:
+		version, asset, err = client.GetBranch(config.Deploy.Version)
+		break
+	case latest:
+		version, asset, err = client.GetRelease(config.Deploy.Version)
+		break
+	case release:
+		arr := strings.Split(config.Deploy.Version, ":")
+		version, err = client.GetContentFile(arr[0], strings.Join(arr[1:], ":"))
+		version = strings.TrimSpace(version)
+		version = strings.Trim(version, "\n")
+		version = strings.Trim(version, "\r")
+
+		if err != nil {
+			server.Logger.Printf(errorServicePrefix+"%s get file error: %v", s.Config.Name, err)
+		}
+		version, asset, err = client.GetRelease(version)
+		break
+	}
+	if err != nil {
+		server.Logger.Printf(errorServicePrefix+"%s find version error: %v", s.Config.Name, err)
+		return
+	}
+	server.Logger.Printf(infoServicePrefix+"%s find version:%s asset:%s", s.Config.Name, version, asset)
+	//check local version
+	preVersion = s.GetVersion()
+	if preVersion == version {
+		server.Logger.Printf(infoServicePrefix+"%s preVersion=newVersion=%s", s.Config.Name, version)
+		doPayload = false
+		return
+	}
+
+	//download zip file and unzip
+	dir, _ := filepath.Abs(filepath.Dir(config.Command[0]))
+	file := common.BinDir + "/update/" + s.Config.Name + "/" + version + ".zip"
+
+	//Termination download when shouldQuit close
+	var quitLoop = make(chan bool)
+	go func() {
+		for {
+			select {
+			case <-quitLoop:
+				return
+			case <-server.ShutdownCh:
+				client.Termination()
+				server.Logger.Printf(infoServicePrefix+"%s termination download", s.Config.Name)
+				return
+			}
+		}
+	}()
+	err = client.DownloadFile(file, asset)
+	close(quitLoop)
+
+	if err != nil {
+		server.Logger.Printf(errorServicePrefix+"%s update download error: %v", s.Config.Name, err)
+		return
+	}
+	err = common.Unzip(file, dir)
+	if err != nil {
+		server.Logger.Printf(errorServicePrefix+"%s update unzip file error: %v", s.Config.Name, err)
+		return
+	}
+	s.SetVersion(version)
+	err = s.Restart()
+	if err != nil {
+		server.Logger.Printf(errorServicePrefix+"%s restart service error: %v", s.Config.Name, err)
+
+	} else {
+		server.Logger.Printf(infoServicePrefix+"%s update service success preVersion:%s newVersion:%s", s.Config.Name, preVersion, version)
+	}
+}
+
+func (s *Service) GetVersion() string {
+	versionPath := common.BinDir + "/run/" + s.Config.Name + ".ver"
+	content, err := ioutil.ReadFile(versionPath)
+	if err != nil {
+		return ""
+	}
+	return string(content)
+}
+func (s *Service) SetVersion(version string) {
+	versionPath := common.BinDir + "/run/" + s.Config.Name + ".ver"
+	data := []byte(version)
+	os.MkdirAll(filepath.Dir(versionPath), 0755)
+	ioutil.WriteFile(versionPath, data, 0666)
+}
+
+func (s *Service) Restart() error {
+	pid := s.GetPid()
+	if pid != 0 {
+		if s.Config.Grace {
+			if p, find := s.processExist(pid); find {
+				err := p.Signal(syscall.SIGUSR2)
+				if err != nil {
+					return err
+				}
+			}
+		} else {
+			err := s.Stop()
+			if err != nil {
+				return err
+			} else {
+				err = s.Start()
+				if err != nil {
+					return err
+				}
+			}
+		}
+	} else {
+		err := s.Start()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (s *Service) Address() string {
-	return net.JoinHostPort(s.IP, strconv.Itoa(int(s.Port)))
+	return net.JoinHostPort(s.Config.IP, strconv.Itoa(int(s.Config.Port)))
 }
 
 func (s *Services) Keys() []string {
@@ -57,42 +311,42 @@ func (s *Services) Keys() []string {
 	return keys
 }
 
-func (s *Service) AutoRun() {
-	if pid := s.GetPid(); pid == 0 && s.RunAtLoad {
+func (s *Service) RunAtLoad() {
+	if pid := s.GetPid(); pid == 0 && s.Config.RunAtLoad {
 		err := s.Start()
 		if err != nil {
-			server.Logger.Printf(errorServicePrefix+"%s running error %v", s.Name, err)
+			server.Logger.Printf(errorServicePrefix+"%s running error %v", s.Config.Name, err)
 		} else {
-			server.Logger.Printf(infoServicePrefix+"%s running success", s.Name)
+			server.Logger.Printf(infoServicePrefix+"%s running success", s.Config.Name)
 		}
 	}
 }
 
 func (s *Service) Start() error {
 	if s.GetPid() != 0 {
-		return fmt.Errorf(errorServicePrefix+"%s is already running", s.Name)
+		return fmt.Errorf(errorServicePrefix+"%s is already running", s.Config.Name)
 	}
 	command := s.resoveCommand()
 	dir, _ := filepath.Abs(filepath.Dir(command))
 
-	cmd := exec.Command(command, s.Command[1:]...)
-	if len(s.Env) > 0 {
-		cmd.Env = append(os.Environ(), s.Env...)
+	cmd := exec.Command(command, s.Config.Command[1:]...)
+	if len(s.Config.Env) > 0 {
+		cmd.Env = append(os.Environ(), s.Config.Env...)
 	}
 	cmd.Dir = dir
 
-	if s.StdOutFile != "" {
-		out := common.MakeFile(s.resovePath(s.StdOutFile))
+	if s.Config.StdOutFile != "" {
+		out := common.MakeFile(s.resovePath(s.Config.StdOutFile))
 		cmd.Stdout = out
 	} else {
-		out := common.MakeFile(common.BinDir + "/logs/" + s.Name + "/stdout.log")
+		out := common.MakeFile(common.BinDir + "/logs/" + s.Config.Name + "/stdout.log")
 		cmd.Stdout = out
 	}
-	if s.StdErrFile != "" {
-		err := common.MakeFile(s.resovePath(s.StdErrFile))
+	if s.Config.StdErrFile != "" {
+		err := common.MakeFile(s.resovePath(s.Config.StdErrFile))
 		cmd.Stderr = err
 	} else {
-		err := common.MakeFile(common.BinDir + "/logs/" + s.Name + "/stderr.log")
+		err := common.MakeFile(common.BinDir + "/logs/" + s.Config.Name + "/stderr.log")
 		cmd.Stderr = err
 	}
 
@@ -103,7 +357,7 @@ func (s *Service) Start() error {
 		go func() {
 			cmd.Wait()
 		}()
-		if s.PidFile == "" {
+		if s.Config.PidFile == "" {
 			s.SetPid(cmd.Process.Pid)
 		}
 	}
@@ -113,7 +367,7 @@ func (s *Service) Start() error {
 func (s *Service) Stop() error {
 	pid := s.GetPid()
 	if pid == 0 {
-		return fmt.Errorf(errorServicePrefix+"%s has already been stopped", s.Name)
+		return fmt.Errorf(errorServicePrefix+"%s has already been stopped", s.Config.Name)
 	} else {
 		if p, find := s.processExist(pid); find {
 			err := p.Signal(syscall.SIGINT)
@@ -131,7 +385,7 @@ func (s *Service) Stop() error {
 				}
 			}()
 			<-quitStop
-			if s.PidFile == "" {
+			if s.Config.PidFile == "" {
 				s.RemovePid()
 			}
 		}
@@ -176,7 +430,7 @@ func (s *Service) resovePath(path string) string {
 }
 
 func (s *Service) resoveCommand() string {
-	path := s.Command[0]
+	path := s.Config.Command[0]
 	if filepath.IsAbs(path) {
 		return path
 	} else {
@@ -189,11 +443,11 @@ func (s *Service) resoveCommand() string {
 }
 
 func (s *Service) pidFile() string {
-	if s != nil && s.PidFile != "" {
-		pid := s.resovePath(s.PidFile)
+	if s != nil && s.Config.PidFile != "" {
+		pid := s.resovePath(s.Config.PidFile)
 		return pid
 	} else {
-		return common.BinDir + "/run/" + s.Name + ".pid"
+		return common.BinDir + "/run/" + s.Config.Name + ".pid"
 	}
 }
 

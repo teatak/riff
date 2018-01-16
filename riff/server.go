@@ -67,7 +67,8 @@ func NewServer(config *Config) (*Server, error) {
 		return nil, fmt.Errorf(errorServerPrefix+"%v", err)
 	}
 	server.print()
-	server.Self.LoadServices()
+	server.initServices()
+	go server.handleServices()  //handle service
 	go server.listenRpc()       //listen rpc
 	go server.listenHttp()      //listen http
 	go server.fanoutNodes()     //fanout state
@@ -87,7 +88,6 @@ func (s *Server) setupServer() error {
 	}
 	s.Self = self
 	s.AddNode(self)
-	s.Shutter()
 	return nil
 }
 

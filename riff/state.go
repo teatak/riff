@@ -11,6 +11,11 @@ import (
 
 func (s *Server) fanoutNodes() {
 	for {
+		select {
+		case <-s.ShutdownCh:
+			return
+		default:
+		}
 		nodes := s.randomNodes(s.config.Fanout, func(node *Node) bool {
 			return node.Name == s.Self.Name ||
 				node.State != stateAlive
@@ -40,6 +45,11 @@ func (s *Server) fanoutNodes() {
 }
 func (s *Server) fanoutDeadNodes() {
 	for {
+		select {
+		case <-s.ShutdownCh:
+			return
+		default:
+		}
 		nodes := s.randomNodes(1, func(node *Node) bool {
 			return node.Name == s.Self.Name ||
 				node.State == stateAlive

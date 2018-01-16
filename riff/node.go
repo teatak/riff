@@ -229,7 +229,7 @@ func (n *Node) String() string {
 	keys := n.Services.Keys()
 	for i, sk := range keys {
 		s := n.Services[sk]
-		io.WriteString(buff, s.Name+":{"+s.Address()+","+strconv.FormatUint(s.Version, 10)+"}")
+		io.WriteString(buff, s.Config.Name+":{"+s.Address()+","+s.State.String()+"}")
 		if i != len(keys)-1 {
 			io.WriteString(buff, ",")
 		}
@@ -261,7 +261,7 @@ func (n *Node) LoadServices() {
 			name := strings.TrimSuffix(basename, filepath.Ext(basename))
 			s := n.LoadService(name)
 			if s != nil {
-				n.Services[s.Name] = s
+				n.Services[s.Config.Name] = s
 			}
 		}
 	}
@@ -275,12 +275,14 @@ func (n *Node) LoadService(name string) *Service {
 	}
 	content, _ := ioutil.ReadFile(file)
 	var s = &Service{}
-	err := yaml.Unmarshal(content, &s)
+	var c = &ServiceConfig{}
+	err := yaml.Unmarshal(content, &c)
 	if err != nil {
 		return nil
 	}
+	s.Config = c
 	s.StateChange = time.Now()
-	s.AutoRun()
+	s.RunAtLoad()
 	if s.GetPid() == 0 {
 		s.State = stateDead
 	} else {
