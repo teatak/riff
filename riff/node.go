@@ -27,8 +27,6 @@ type Digest struct {
 	SnapShot string
 }
 
-var removeFirst = 0
-
 func (s *Server) Keys() []string {
 	var keys = make([]string, 0, 0)
 	s.nodes.Range(func(key, value interface{}) bool {
@@ -277,7 +275,9 @@ func (n *Node) LoadService(name string) *Service {
 	var s = &Service{}
 	var c = &ServiceConfig{}
 	err := yaml.Unmarshal(content, &c)
+
 	if err != nil {
+		server.Logger.Printf(errorServicePrefix+"%s config file error: %v", name, err)
 		return nil
 	}
 	s.Config = c

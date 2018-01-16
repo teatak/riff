@@ -217,11 +217,11 @@ func (s *Service) processGit(client git.Client) {
 		server.Logger.Printf(errorServicePrefix+"%s find version error: %v", s.Config.Name, err)
 		return
 	}
-	server.Logger.Printf(infoServicePrefix+"%s find version:%s asset:%s", s.Config.Name, version, asset)
+	server.Logger.Printf(infoServicePrefix+"%s find version: %s asset: %s", s.Config.Name, version, asset)
 	//check local version
 	preVersion = s.GetVersion()
 	if preVersion == version {
-		server.Logger.Printf(infoServicePrefix+"%s preVersion=newVersion=%s", s.Config.Name, version)
+		server.Logger.Printf(infoServicePrefix+"%s preVersion=newVersion: %s", s.Config.Name, version)
 		doPayload = false
 		return
 	}
@@ -298,7 +298,7 @@ func (s *Service) RunAtLoad() {
 	if pid := s.GetPid(); pid == 0 && s.Config.RunAtLoad {
 		err := s.Start()
 		if err != nil {
-			server.Logger.Printf(errorServicePrefix+"%s running error %v", s.Config.Name, err)
+			server.Logger.Printf(errorServicePrefix+"%s running error: %v", s.Config.Name, err)
 		} else {
 			server.Logger.Printf(infoServicePrefix+"%s running success", s.Config.Name)
 		}
