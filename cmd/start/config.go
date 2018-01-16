@@ -3,10 +3,10 @@ package start
 import (
 	"github.com/gimke/riff/common"
 	"github.com/gimke/riff/riff"
-	"net"
-	"os"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"net"
+	"os"
 )
 
 func loadConfig(cmd *cmd) (*riff.Config, error) {
