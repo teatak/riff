@@ -10,8 +10,8 @@ import (
 func TestServer(t *testing.T) {
 	//riff.AddService()
 	st := time.Now()
-
-	s := Server{}
+	c := DefaultConfig()
+	s,_ := NewServer(c)
 	for i := 0; i < 100; i++ {
 		s.AddNode(&Node{
 			Name: "node" + strconv.Itoa(i),

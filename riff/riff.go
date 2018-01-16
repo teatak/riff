@@ -11,7 +11,7 @@ func (s *Server) Shutter() {
 	h := sha1.New()
 	io.WriteString(h, s.String())
 	s.SnapShot = fmt.Sprintf("%x", h.Sum(nil))
-	s.Logger.Printf(infoRpcPrefix+"server %s snapshot now is: %s\n", s.Self.Name, s.SnapShot)
+	s.Logger.Printf(infoRpcPrefix+"snapshot now is: %s\n", s.SnapShot)
 }
 
 func (s *Server) String() string {
