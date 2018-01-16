@@ -2,8 +2,6 @@
 
 package riff
 
-import "syscall"
-
 func (s *Service) Restart() error {
 	pid := s.GetPid()
 	if pid != 0 {

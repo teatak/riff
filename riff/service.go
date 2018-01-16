@@ -83,7 +83,12 @@ func (s *Server) handleServices() {
 			service.KeepAlive()
 			service.Update()
 		}
-
+		preSnap := s.Self.SnapShot
+		s.Self.Shutter()
+		nowSnap := s.Self.SnapShot
+		if preSnap != nowSnap {
+			s.Shutter()
+		}
 		time.Sleep(30 * time.Second)
 	}
 }
