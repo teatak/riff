@@ -8,7 +8,10 @@ class Menu extends React.Component {
     }
 
     render() {
-        return <div>Menu</div>
+        return <div className="nav-menu">
+            <img src="/static/images/logo.svg" />
+            <span className="title">Console</span>
+        </div>
     }
 }
 
