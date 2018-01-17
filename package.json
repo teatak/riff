@@ -9,9 +9,8 @@
   },
   "scripts": {
     "watch": "export NODE_ENV=development && webpack -w",
-    "watch-win": "set NODE_ENV=development&&webpack -w",
-    "product": "export NODE_ENV=production && webpack --hide-modules --progress",
-    "product-win": "set NODE_ENV=production&&webpack --hide-modules --progress"
+    "watch-p": "export NODE_ENV=production && webpack -w",
+    "product": "export NODE_ENV=production && webpack --hide-modules --progress"
   },
   "devDependencies": {
     "autoprefixer": "^6.7.7",

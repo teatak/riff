@@ -1,6 +1,5 @@
 import React from 'react'
-import { connect } from 'react-redux'
-import { Switch, Route, Redirect } from 'react-router-dom'
+import Menu from './components/menu'
 
 class App extends React.Component {
     constructor(props) {
@@ -8,7 +7,9 @@ class App extends React.Component {
     }
 
     render() {
-        return <div>App</div>
+        return <div>
+            <Menu/>
+        </div>
     }
 }
 
