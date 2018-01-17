@@ -1,6 +1,6 @@
 @import "../../config/var.css";
 
-.nav-menu {
+.menu {
     display: flex;
     background: var(--faintBlack);
     height: 56px;
