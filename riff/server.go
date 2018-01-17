@@ -130,7 +130,7 @@ func (s *Server) setupCart() error {
 		}
 	})
 	r.Use("/console/*file", func(c *cart.Context, next cart.Next) {
-		b, err := assetFS().Asset("static/index.html")
+		b, err := assetFS().Asset("static/dist/console.html")
 		if err != nil {
 			s.Logger.Printf(errorRpcPrefix+"error: %v\n", err)
 			next()

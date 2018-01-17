@@ -1,0 +1,11 @@
+@import "../config/var.css";
+
+html, body {
+    height: auto;
+    width: auto;
+}
+a:focus {
+    text-decoration: none;
+    -webkit-text-decoration-skip: none;
+    text-decoration-skip: none;
+}
