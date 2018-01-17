@@ -23,6 +23,8 @@ func (a *Api) apiIndex(r *cart.Router) {
 	r.Route("/version").GET(a.version)
 	r.Route("/snap").GET(a.snap)
 	r.Route("/nodes").GET(a.nodes)
+	r.Route("/node/:name").GET(a.node)
+	r.Route("/services").GET(a.services)
 	r.Route("/logs").GET(a.logs)
 }
 
@@ -40,9 +42,16 @@ func (a Api) snap(c *cart.Context) {
 }
 
 func (a Api) nodes(c *cart.Context) {
-	c.IndentedJSON(200, cart.H{
-		"Nodes": a.server.Slice(),
-	})
+	c.IndentedJSON(200, a.server.Slice())
+}
+
+func (a Api) services(c *cart.Context) {
+	c.IndentedJSON(200, a.server.ServicesSlice())
+}
+
+func (a Api) node(c *cart.Context) {
+	name, _ := c.Param("name")
+	c.IndentedJSON(200, a.server.GetNode(name))
 }
 
 type httpLogHandler struct {

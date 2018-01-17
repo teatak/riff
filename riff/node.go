@@ -57,17 +57,36 @@ func (s *Server) Slice() []*Node {
 	keys := s.Keys()
 	nodes := make([]*Node, 0)
 	for _, key := range keys {
-		if n, _ := s.nodes.Load(key); n != nil {
-			nodes = append(nodes, n.(*Node))
+		if n := s.GetNode(key); n != nil {
+			nodes = append(nodes, n)
 		}
 	}
 	return nodes
 }
+
+func (s *Server) ServicesSlice() []string {
+	keys := s.Keys()
+	helper := make(map[string]string, 0)
+	services := []string{}
+	for _, key := range keys {
+		if n := s.GetNode(key); n != nil {
+			for name, _ := range n.Services {
+				if _, ok := helper[name]; !ok {
+					helper[name] = name
+					services = append(services, name)
+				}
+			}
+		}
+	}
+	return services
+}
+
 func (s *Server) Range(f func(string, *Node) bool) {
 	s.nodes.Range(func(key, value interface{}) bool {
 		return f(key.(string), value.(*Node))
 	})
 }
+
 func (s *Server) GetNode(key string) *Node {
 	if n, _ := s.nodes.Load(key); n != nil {
 		return n.(*Node)
