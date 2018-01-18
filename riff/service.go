@@ -72,26 +72,47 @@ func (s *Server) initServices() {
 }
 
 func (s *Server) handleServices() {
-	for {
-		select {
-		case <-s.ShutdownCh:
-			return
-		default:
+	go func() {
+		for {
+			select {
+			case <-s.ShutdownCh:
+				return
+			default:
+			}
+			for _, service := range s.Self.Services {
+				//first run it
+				service.CheckState()
+			}
+			preSnap := s.Self.SnapShot
+			s.Self.Shutter()
+			nowSnap := s.Self.SnapShot
+			if preSnap != nowSnap {
+				s.Shutter()
+			}
+			time.Sleep(1 * time.Second)
 		}
-		for _, service := range s.Self.Services {
-			//first run it
-			service.CheckState()
-			service.KeepAlive()
-			service.Update()
+	}()
+	go func() {
+		for {
+			select {
+			case <-s.ShutdownCh:
+				return
+			default:
+			}
+			for _, service := range s.Self.Services {
+				//first run it
+				service.KeepAlive()
+				service.Update()
+			}
+			preSnap := s.Self.SnapShot
+			s.Self.Shutter()
+			nowSnap := s.Self.SnapShot
+			if preSnap != nowSnap {
+				s.Shutter()
+			}
+			time.Sleep(30 * time.Second)
 		}
-		preSnap := s.Self.SnapShot
-		s.Self.Shutter()
-		nowSnap := s.Self.SnapShot
-		if preSnap != nowSnap {
-			s.Shutter()
-		}
-		time.Sleep(30 * time.Second)
-	}
+	}()
 }
 
 func (s *Service) CheckState() {

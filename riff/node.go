@@ -81,6 +81,34 @@ func (s *Server) ServicesSlice() []string {
 	return services
 }
 
+//todo 需要完善
+func (s *Server) GetService(findName string) interface{} {
+	keys := s.Keys()
+	var service map[string]interface{}
+	nodes := []string{}
+	for _, key := range keys {
+		if n := s.GetNode(key); n != nil {
+			for name, n := range n.Services {
+				if name == findName {
+					if service == nil {
+						service = map[string]interface{}{
+							"Name": name,
+
+						}
+					}
+					if n.State == stateAlive {
+						nodes = append(nodes,n.Address())
+					}
+				}
+			}
+		}
+	}
+	if service != nil {
+		service["Nodes"] = nodes
+	}
+	return service
+}
+
 func (s *Server) Range(f func(string, *Node) bool) {
 	s.nodes.Range(func(key, value interface{}) bool {
 		return f(key.(string), value.(*Node))
@@ -299,6 +327,7 @@ func (n *Node) LoadService(name string) *Service {
 		server.Logger.Printf(errorServicePrefix+"%s config file error: %v", name, err)
 		return nil
 	}
+	s.State = stateDead
 	s.Config = c
 	s.StateChange = time.Now()
 	s.RunAtLoad()

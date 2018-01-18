@@ -25,6 +25,7 @@ func (a *Api) apiIndex(r *cart.Router) {
 	r.Route("/nodes").GET(a.nodes)
 	r.Route("/node/:name").GET(a.node)
 	r.Route("/services").GET(a.services)
+	r.Route("/service/:name").GET(a.service)
 	r.Route("/logs").GET(a.logs)
 }
 
@@ -47,6 +48,11 @@ func (a Api) nodes(c *cart.Context) {
 
 func (a Api) services(c *cart.Context) {
 	c.IndentedJSON(200, a.server.ServicesSlice())
+}
+
+func (a Api) service(c *cart.Context) {
+	name, _ := c.Param("name")
+	c.IndentedJSON(200, a.server.GetService(name))
 }
 
 func (a Api) node(c *cart.Context) {
