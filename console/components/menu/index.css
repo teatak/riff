@@ -2,7 +2,6 @@
 
 .menu {
     display: flex;
-    background: var(--faintBlack);
     height: 56px;
     align-items: center;
     & .title {
