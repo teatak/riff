@@ -1,16 +1,14 @@
 package riff
 
-type Riff struct {
-	server *Server
-}
+type Riff struct {}
 
 // push request a digest
 func (r *Riff) Request(snap string, digests *[]*Digest) error {
-	if snap == r.server.SnapShot {
+	if snap == server.SnapShot {
 		*digests = nil
 	} else {
 		//build digest
-		*digests = r.server.MakeDigest()
+		*digests = server.MakeDigest()
 	}
 	return nil
 }
@@ -20,7 +18,7 @@ func (r *Riff) PushDiff(diff []*Node, remoteDiff *[]*Node) error {
 	if len(diff) == 0 {
 		*remoteDiff = nil
 	} else {
-		*remoteDiff = r.server.MergeDiff(diff)
+		*remoteDiff = server.MergeDiff(diff)
 	}
 	return nil
 }

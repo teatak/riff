@@ -3,13 +3,14 @@ package query
 import (
 	"flag"
 	"fmt"
-	"github.com/gimke/riff/common"
+	"github.com/gimke/riff/api"
 	"github.com/gimke/riff/riff"
 	"github.com/ryanuber/columnize"
 	"net"
 	"net/rpc"
 	"strconv"
 	"time"
+	"github.com/gimke/riff/common"
 )
 
 const help = `Usage: riff query <command> [options]
@@ -83,7 +84,7 @@ func (c *cmd) SnapShot() {
 		fmt.Println("error", err)
 		return
 	}
-	codec := common.NewGobClientCodec(conn)
+	codec := api.NewGobClientCodec(conn)
 	cmd := rpc.NewClientWithCodec(codec)
 	var snapshot string
 	err = cmd.Call("Query.SnapShot", struct{}{}, &snapshot)
@@ -99,7 +100,7 @@ func (c *cmd) Nodes() {
 		fmt.Println("error", err)
 		return
 	}
-	codec := common.NewGobClientCodec(conn)
+	codec := api.NewGobClientCodec(conn)
 	cmd := rpc.NewClientWithCodec(codec)
 	var nodes []*riff.Node
 	err = cmd.Call("Query.Nodes", struct{}{}, &nodes)

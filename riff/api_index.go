@@ -7,18 +7,16 @@ import (
 	"net/http"
 )
 
-type Api struct {
-	server *Server
-}
+type httpAPI struct {}
 
-func (a *Api) Index(r *cart.Router) {
+func (a *httpAPI) Index(r *cart.Router) {
 	r.Route("/").GET(func(c *cart.Context) {
 		c.Redirect(302, "/console/")
 	})
 	r.Route("/api", a.apiIndex)
 }
 
-func (a *Api) apiIndex(r *cart.Router) {
+func (a *httpAPI) apiIndex(r *cart.Router) {
 	r.Route("").GET(a.version)
 	r.Route("/version").GET(a.version)
 	r.Route("/snap").GET(a.snap)
@@ -29,35 +27,35 @@ func (a *Api) apiIndex(r *cart.Router) {
 	r.Route("/logs").GET(a.logs)
 }
 
-func (a Api) version(c *cart.Context) {
+func (a httpAPI) version(c *cart.Context) {
 	version := fmt.Sprintf("Cart version %s Riff version %s, build %s-%s", cart.Version, common.Version, common.GitBranch, common.GitSha)
 	c.IndentedJSON(200, cart.H{
 		"Version": version,
 	})
 }
 
-func (a Api) snap(c *cart.Context) {
+func (a httpAPI) snap(c *cart.Context) {
 	c.IndentedJSON(200, cart.H{
-		"SnapShot": a.server.SnapShot,
+		"SnapShot": server.SnapShot,
 	})
 }
 
-func (a Api) nodes(c *cart.Context) {
-	c.IndentedJSON(200, a.server.Slice())
+func (a httpAPI) nodes(c *cart.Context) {
+	c.IndentedJSON(200, server.api.Nodes())
 }
 
-func (a Api) services(c *cart.Context) {
-	c.IndentedJSON(200, a.server.ServicesSlice())
+func (a httpAPI) services(c *cart.Context) {
+	c.IndentedJSON(200, server.ServicesSlice())
 }
 
-func (a Api) service(c *cart.Context) {
+func (a httpAPI) service(c *cart.Context) {
 	name, _ := c.Param("name")
-	c.IndentedJSON(200, a.server.GetService(name))
+	c.IndentedJSON(200, server.GetService(name))
 }
 
-func (a Api) node(c *cart.Context) {
+func (a httpAPI) node(c *cart.Context) {
 	name, _ := c.Param("name")
-	c.IndentedJSON(200, a.server.GetNode(name))
+	c.IndentedJSON(200, server.GetNode(name))
 }
 
 type httpLogHandler struct {
@@ -71,7 +69,7 @@ func (h *httpLogHandler) HandleLog(log string) {
 	}
 }
 
-func (a Api) logs(c *cart.Context) {
+func (a httpAPI) logs(c *cart.Context) {
 	resp := c.Response
 	clientGone := resp.(http.CloseNotifier).CloseNotify()
 
@@ -83,12 +81,12 @@ func (a Api) logs(c *cart.Context) {
 	handler := &httpLogHandler{
 		logCh: make(chan string, 512),
 	}
-	a.server.logWriter.RegisterHandler(handler)
-	defer a.server.logWriter.DeregisterHandler(handler)
+	server.logWriter.RegisterHandler(handler)
+	defer server.logWriter.DeregisterHandler(handler)
 
 	flusher, ok := resp.(http.Flusher)
 	if !ok {
-		a.server.Logger.Println("Streaming not supported")
+		server.Logger.Println("Streaming not supported")
 	}
 	for {
 		select {

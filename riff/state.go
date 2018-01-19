@@ -2,11 +2,11 @@ package riff
 
 import (
 	"fmt"
-	"github.com/gimke/riff/common"
 	"net"
 	"net/rpc"
 	"strings"
 	"time"
+	"github.com/gimke/riff/api"
 )
 
 func (s *Server) fanoutNodes() {
@@ -91,7 +91,7 @@ func (s *Server) requestLeave(peer string) error {
 	if err != nil {
 		return fmt.Errorf("%v", err)
 	}
-	codec := common.NewGobClientCodec(conn)
+	codec := api.NewGobClientCodec(conn)
 	cmd := rpc.NewClientWithCodec(codec)
 	defer cmd.Close()
 
@@ -108,7 +108,7 @@ func (s *Server) requestPeer(peer string) error {
 	if err != nil {
 		return fmt.Errorf("%v", err)
 	}
-	codec := common.NewGobClientCodec(conn)
+	codec := api.NewGobClientCodec(conn)
 	cmd := rpc.NewClientWithCodec(codec)
 	defer cmd.Close()
 

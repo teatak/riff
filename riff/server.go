@@ -26,16 +26,17 @@ var server *Server
 
 type Server struct {
 	Listener   net.Listener
-	httpServer *http.Server
-	rpcServer  *rpc.Server
 	Logger     *log.Logger
-	logWriter  *LogWriter
 	Self       *Node
+	ShutdownCh chan struct{}
+	SnapShot   string
 	Nodes
-	SnapShot     string
+	api          *API
+	httpServer   *http.Server
+	rpcServer    *rpc.Server
+	logWriter    *LogWriter
 	config       *Config
 	shutdown     bool
-	ShutdownCh   chan struct{}
 	shutdownLock sync.Mutex
 }
 
@@ -46,6 +47,7 @@ func NewServer(config *Config) (*Server, error) {
 	server = &Server{
 		logWriter:  NewLogWriter(512),
 		rpcServer:  rpc.NewServer(),
+		api:        &API{},
 		config:     config,
 		ShutdownCh: shutdownCh,
 	}
@@ -149,9 +151,7 @@ func (s *Server) setupCart() error {
 	//debug
 	r.Use("/console/*file", cart.File("../static/dist/console.html"))
 	r.Use("/static/*file", cart.Static("../static", false))
-	a := Api{
-		server: s,
-	}
+	a := httpAPI{}
 	r.Route("/", a.Index)
 	s.httpServer = r.ServerKeepAlive(s.config.Addresses.Http + ":" + strconv.Itoa(s.config.Ports.Http))
 	return nil

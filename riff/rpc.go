@@ -2,9 +2,9 @@ package riff
 
 import (
 	"fmt"
-	"github.com/gimke/riff/common"
 	"io"
 	"net"
+	"github.com/gimke/riff/api"
 )
 
 type factory func(s *Server) interface{}
@@ -18,9 +18,9 @@ func registerEndpoint(fn factory) {
 }
 
 func init() {
-	registerEndpoint(func(s *Server) interface{} { return &Status{s} })
-	registerEndpoint(func(s *Server) interface{} { return &Query{s} })
-	registerEndpoint(func(s *Server) interface{} { return &Riff{s} })
+	registerEndpoint(func(s *Server) interface{} { return &Status{} })
+	registerEndpoint(func(s *Server) interface{} { return &Query{} })
+	registerEndpoint(func(s *Server) interface{} { return &Riff{} })
 }
 
 func (s *Server) listenHttp() {
@@ -49,7 +49,7 @@ func (s *Server) listenRpc() {
 
 func (s *Server) handleConn(conn net.Conn) {
 	defer conn.Close()
-	codec := common.NewGobServerCodec(conn)
+	codec := api.NewGobServerCodec(conn)
 	for {
 		select {
 		case <-s.ShutdownCh:
