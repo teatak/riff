@@ -274,7 +274,7 @@ func (n *Node) String() string {
 	keys := n.Services.Keys()
 	for i, sk := range keys {
 		s := n.Services[sk]
-		io.WriteString(buff, s.Config.Name+":{"+s.Address()+","+s.State.String()+"}")
+		io.WriteString(buff, s.Name+":{"+s.Address()+","+s.State.String()+"}")
 		if i != len(keys)-1 {
 			io.WriteString(buff, ",")
 		}
@@ -306,7 +306,7 @@ func (n *Node) LoadServices() {
 			name := strings.TrimSuffix(basename, filepath.Ext(basename))
 			s := n.LoadService(name)
 			if s != nil {
-				n.Services[s.Config.Name] = s
+				n.Services[s.Name] = s
 			}
 		}
 	}
@@ -328,8 +328,8 @@ func (n *Node) LoadService(name string) *Service {
 		return nil
 	}
 	s.State = stateDead
-	s.Config = c
+	s.ServiceConfig = c
 	s.StateChange = time.Now()
-	s.RunAtLoad()
+	s.runAtLoad()
 	return s
 }

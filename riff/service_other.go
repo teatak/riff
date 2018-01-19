@@ -7,7 +7,7 @@ import "syscall"
 func (s *Service) Restart() error {
 	pid := s.GetPid()
 	if pid != 0 {
-		if s.Config.Grace {
+		if s.Grace {
 			if p, find := s.processExist(pid); find {
 				err := p.Signal(syscall.SIGUSR2)
 				if err != nil {
