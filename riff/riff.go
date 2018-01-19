@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/sha1"
 	"fmt"
+	"github.com/gimke/riff/api"
 	"io"
 )
 
@@ -20,7 +21,7 @@ func (s *Server) String() string {
 	keys := s.Keys()
 	for i, nk := range keys {
 		n := s.GetNode(nk)
-		if n != nil && n.State != stateDead {
+		if n != nil && n.State != api.StateDead {
 			io.WriteString(buff, n.SnapShot)
 			if i != len(keys)-1 {
 				io.WriteString(buff, ",")
@@ -83,7 +84,7 @@ func (s *Server) MergeDiff(diffs []*Node) (reDiffs []*Node) {
 	for _, d := range diffs {
 		n := s.GetNode(d.Name) //find in server nodes
 		if n == nil {          //if not found in server then add node
-			if d.State != stateDead {
+			if d.State != api.StateDead {
 				//exclude dead node
 				d.IsSelf = false //remove is self
 				s.AddNode(d)     //if not find then add node
@@ -183,9 +184,9 @@ func (s *Server) MergeDiff(diffs []*Node) (reDiffs []*Node) {
 func (s *Server) trueNode(d, n *Node) (merged bool, reDiff *Node) {
 	//if remote node is self then overwrite server node
 	switch d.State {
-	case stateAlive:
+	case api.StateAlive:
 		if d.VersionGet() == 0 { //if d is new online
-			v := s.SetState(n, stateAlive)
+			v := s.SetState(n, api.StateAlive)
 			if v > 1 {
 				reDiff = n //shot out my version
 			}
@@ -196,8 +197,8 @@ func (s *Server) trueNode(d, n *Node) (merged bool, reDiff *Node) {
 		}
 		merged = true
 		break
-	case stateDead:
-		if n.State != stateDead {
+	case api.StateDead:
+		if n.State != api.StateDead {
 			*n = *d
 			n.IsSelf = false
 			s.RemoveNodeDelay(n)
@@ -215,7 +216,7 @@ func (s *Server) gossipNode(d, n *Node) (merged bool, reDiff *Node) {
 			n.VersionSet(d.Version)
 			n.Shutter()
 		} else {
-			if n.State != stateDead && d.State == stateDead {
+			if n.State != api.StateDead && d.State == api.StateDead {
 				*n = *d
 				n.IsSelf = false
 				s.RemoveNodeDelay(n)

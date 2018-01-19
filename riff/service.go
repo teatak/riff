@@ -3,6 +3,7 @@ package riff
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gimke/riff/api"
 	"github.com/gimke/riff/common"
 	"github.com/gimke/riff/git"
 	"io/ioutil"
@@ -38,8 +39,8 @@ type Services map[string]*Service
 
 type Service struct {
 	Version     uint64
-	State       stateType // Current state
-	StateChange time.Time // Time last state change happened
+	State       api.StateType // Current state
+	StateChange time.Time     // Time last state change happened
 	*ServiceConfig
 }
 
@@ -117,9 +118,9 @@ func (s *Server) handleServices() {
 
 func (s *Service) checkState() {
 	if pid := s.GetPid(); pid == 0 {
-		s.State = stateDead
+		s.State = api.StateDead
 	} else {
-		s.State = stateAlive
+		s.State = api.StateAlive
 	}
 }
 

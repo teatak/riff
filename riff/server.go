@@ -3,6 +3,7 @@ package riff
 import (
 	"fmt"
 	"github.com/gimke/cart"
+	"github.com/gimke/riff/api"
 	"io"
 	"log"
 	"net"
@@ -84,7 +85,7 @@ func (s *Server) setupServer() error {
 		Port:        s.config.Ports.Rpc,
 		DataCenter:  s.config.DataCenter,
 		IsSelf:      true,
-		State:       stateAlive,
+		State:       api.StateAlive,
 		StateChange: time.Now(),
 		Services:    make(map[string]*Service),
 	}

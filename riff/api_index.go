@@ -37,7 +37,7 @@ func (a httpAPI) version(c *cart.Context) {
 
 func (a httpAPI) snap(c *cart.Context) {
 	c.IndentedJSON(200, cart.H{
-		"SnapShot": server.SnapShot,
+		"snapShot": server.SnapShot,
 	})
 }
 

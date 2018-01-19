@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/sha1"
 	"fmt"
+	"github.com/gimke/riff/api"
 	"github.com/gimke/riff/common"
 	"gopkg.in/yaml.v2"
 	"io"
@@ -95,7 +96,7 @@ func (s *Server) GetService(findName string) interface{} {
 							"Name": name,
 						}
 					}
-					if n.State == stateAlive {
+					if n.State == api.StateAlive {
 						nodes = append(nodes, n.Address())
 					}
 				}
@@ -134,7 +135,7 @@ func (s *Server) RemoveNodeDelay(n *Node) {
 	if n.timeoutFn == nil {
 		n.timeoutFn = func() {
 			//delete this node
-			if n.State == stateDead {
+			if n.State == api.StateDead {
 				s.Logger.Printf(infoNodePrefix+"remove dead node %s\n", n.Name)
 				s.DeleteNode(n.Name)
 				//clear fn
@@ -147,14 +148,14 @@ func (s *Server) RemoveNodeDelay(n *Node) {
 }
 
 // set node state version inc and shutter node return version
-func (s *Server) SetStateOnly(n *Node, state stateType) uint64 {
+func (s *Server) SetStateOnly(n *Node, state api.StateType) uint64 {
 	n.State = state
 	n.Shutter()
 	return n.VersionGet()
 }
 
 // set node state version inc and shutter node return version++
-func (s *Server) SetState(n *Node, state stateType) uint64 {
+func (s *Server) SetState(n *Node, state api.StateType) uint64 {
 	n.State = state
 	v := n.VersionInc()
 	n.Shutter()
@@ -162,7 +163,7 @@ func (s *Server) SetState(n *Node, state stateType) uint64 {
 }
 
 // SetState and make a snapsort return version ++
-func (s *Server) SetStateWithShutter(n *Node, state stateType) uint64 {
+func (s *Server) SetStateWithShutter(n *Node, state api.StateType) uint64 {
 	v := s.SetState(n, state)
 	s.Shutter()
 	return v
@@ -195,37 +196,14 @@ OUTER:
 	return RNodes
 }
 
-type stateType int
-
-const (
-	stateAlive stateType = 1 + iota
-	stateSuspect
-	stateDead
-)
-
-func (s stateType) String() string {
-	switch s {
-	case stateAlive:
-		return "Alive"
-		break
-	case stateSuspect:
-		return "Suspect"
-		break
-	case stateDead:
-		return "Dead"
-		break
-	}
-	return "Unknow"
-}
-
 type Node struct {
 	Name        string
 	DataCenter  string
 	IP          string
 	Port        int
 	Version     uint64
-	State       stateType // Current state
-	StateChange time.Time // Time last state change happened
+	State       api.StateType // Current state
+	StateChange time.Time     // Time last state change happened
 	SnapShot    string
 	Services
 	IsSelf    bool
@@ -326,7 +304,7 @@ func (n *Node) LoadService(name string) *Service {
 		server.Logger.Printf(errorServicePrefix+"%s config file error: %v", name, err)
 		return nil
 	}
-	s.State = stateDead
+	s.State = api.StateDead
 	s.ServiceConfig = c
 	s.StateChange = time.Now()
 	s.runAtLoad()

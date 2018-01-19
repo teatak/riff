@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/gimke/riff/api"
 	"github.com/gimke/riff/common"
-	"github.com/gimke/riff/riff"
 	"github.com/ryanuber/columnize"
 	"net"
 	"net/rpc"
@@ -102,7 +101,7 @@ func (c *cmd) Nodes() {
 	}
 	codec := api.NewGobClientCodec(conn)
 	cmd := rpc.NewClientWithCodec(codec)
-	var nodes []*riff.Node
+	var nodes api.Nodes
 	err = cmd.Call("Query.Nodes", struct{}{}, &nodes)
 	if err != nil {
 		fmt.Println("error", err)

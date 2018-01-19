@@ -18,7 +18,7 @@ func (s *Server) fanoutNodes() {
 		}
 		nodes := s.randomNodes(s.config.Fanout, func(node *Node) bool {
 			return node.Name == s.Self.Name ||
-				node.State != stateAlive
+				node.State != api.StateAlive
 		})
 		if len(nodes) == 0 {
 			addrs := strings.Split(s.config.Join, ",")
@@ -34,7 +34,7 @@ func (s *Server) fanoutNodes() {
 		} else {
 			for _, n := range nodes {
 				if err := s.requestPeer(n.Address()); err != nil {
-					s.SetStateWithShutter(n, stateSuspect)
+					s.SetStateWithShutter(n, api.StateSuspect)
 					s.Logger.Printf(errorRpcPrefix+"%v\n", err)
 				}
 			}
@@ -52,18 +52,18 @@ func (s *Server) fanoutDeadNodes() {
 		}
 		nodes := s.randomNodes(1, func(node *Node) bool {
 			return node.Name == s.Self.Name ||
-				node.State == stateAlive
+				node.State == api.StateAlive
 		})
 
 		for _, n := range nodes {
 			if err := s.requestPeer(n.Address()); err != nil {
-				if n.State == stateSuspect {
-					s.SetStateWithShutter(n, stateDead)
+				if n.State == api.StateSuspect {
+					s.SetStateWithShutter(n, api.StateDead)
 					s.RemoveNodeDelay(n)
 				}
 				//s.logger.Printf(errorRpcPrefix+"%v\n", err)
 			} else {
-				s.SetStateWithShutter(n, stateAlive)
+				s.SetStateWithShutter(n, api.StateAlive)
 			}
 		}
 
@@ -74,10 +74,10 @@ func (s *Server) fanoutDeadNodes() {
 func (s *Server) fanoutLeave() {
 	nodes := s.randomNodes(s.config.Fanout, func(node *Node) bool {
 		return node.Name == s.Self.Name ||
-			node.State != stateAlive
+			node.State != api.StateAlive
 	})
-	s.SetState(s.Self, stateSuspect)
-	s.SetState(s.Self, stateDead)
+	s.SetState(s.Self, api.StateSuspect)
+	s.SetState(s.Self, api.StateDead)
 	for _, n := range nodes {
 		s.Logger.Printf(infoRpcPrefix+"server %s send leave event to %s", s.Self.Name, n.Address())
 		if err := s.requestLeave(n.Address()); err != nil {

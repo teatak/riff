@@ -62,13 +62,13 @@ func (a *API) Service(name string, all bool) *api.Service {
 							Name: s.Name,
 						}
 					}
-					if n.State == stateAlive && (s.State == stateAlive || all) {
+					if n.State == api.StateAlive && (s.State == api.StateAlive || all) {
 						node := &api.Node{
 							Name:       n.Name,
 							DataCenter: n.DataCenter,
 							IP:         n.IP,
 							Port:       s.Port,
-							State:      int(s.State),
+							State:      s.State,
 						}
 						nodes = append(nodes, node)
 					}
@@ -88,7 +88,7 @@ func (a *API) cloneNode(n *Node) (node *api.Node) {
 		DataCenter: n.DataCenter,
 		IP:         n.IP,
 		Port:       n.Port,
-		State:      int(n.State),
+		State:      n.State,
 		SnapShot:   n.SnapShot,
 	}
 	return
@@ -99,7 +99,7 @@ func (a *API) cloneService(s *Service) (service *api.Service) {
 		Name:  s.Name,
 		IP:    s.IP,
 		Port:  s.Port,
-		State: int(s.State),
+		State: s.State,
 	}
 	return service
 }

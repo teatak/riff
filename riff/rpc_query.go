@@ -1,5 +1,7 @@
 package riff
 
+import "github.com/gimke/riff/api"
+
 type Query struct{}
 
 // Ping is used to just check for connectivity
@@ -9,8 +11,8 @@ func (q *Query) SnapShot(_ struct{}, snap *string) error {
 	return nil
 }
 
-func (q *Query) Nodes(_ struct{}, nodes *[]*Node) error {
-	*nodes = server.Slice()
+func (q *Query) Nodes(_ struct{}, nodes *api.Nodes) error {
+	*nodes = server.api.Nodes()
 	server.Logger.Printf(infoRpcPrefix + "client get nodes list")
 	return nil
 }
