@@ -198,7 +198,7 @@ OUTER:
 type stateType int
 
 const (
-	stateAlive stateType = iota
+	stateAlive stateType = 1 + iota
 	stateSuspect
 	stateDead
 )

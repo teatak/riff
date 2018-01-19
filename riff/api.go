@@ -56,14 +56,13 @@ func (a *API) Service(name string, all bool) *api.Service {
 	for _, key := range keys {
 		if n := server.GetNode(key); n != nil {
 			for _, s := range n.Services {
-				if s.Name == name && (s.State == stateAlive || all) {
+				if s.Name == name {
 					if service == nil {
 						service = &api.Service{
 							Name: s.Name,
-							Port: s.Port,
 						}
 					}
-					if n.State == stateAlive {
+					if n.State == stateAlive && (s.State == stateAlive || all) {
 						node := &api.Node{
 							Name:       n.Name,
 							DataCenter: n.DataCenter,
