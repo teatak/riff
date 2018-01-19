@@ -304,9 +304,9 @@ func (n *Node) LoadService(name string) *Service {
 		server.Logger.Printf(errorServicePrefix+"%s config file error: %v", name, err)
 		return nil
 	}
-	s.State = api.StateDead
 	s.ServiceConfig = c
 	s.StateChange = time.Now()
 	s.runAtLoad()
+	s.checkState()
 	return s
 }

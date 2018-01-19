@@ -71,49 +71,39 @@ func (a httpAPI) service(c *cart.Context) {
 func (a httpAPI) serviceCommand(c *cart.Context) {
 	name, _ := c.Param("name")
 	command, _ := c.Param("command")
-	var err error
-	code := 200
+	var ok bool
 	switch command {
 	case "start":
-		code = server.api.Start(name)
+		ok = server.api.Start(name)
 		break
 	case "stop":
-		code = server.api.Stop(name)
+		ok = server.api.Stop(name)
 		break
 	case "restart":
-		code = server.api.Restart(name)
+		ok = server.api.Restart(name)
 		break
 	default:
-		code = 400
+		err := fmt.Errorf("command missing")
+		c.IndentedJSON(400, cart.H{
+			"status": 400,
+			"error":  err.Error(),
+		})
+		return
 	}
 
-	switch code {
-	case 200:
-		c.IndentedJSON(code, cart.H{
-			"status": code,
+	switch ok {
+	case true:
+		c.IndentedJSON(200, cart.H{
+			"status": 200,
 		})
-	case 201:
-		c.IndentedJSON(code, cart.H{
-			"status": code,
-		})
-	case 404:
-		err = fmt.Errorf("not found")
-		c.IndentedJSON(code, cart.H{
-			"status": code,
+		return
+	case false:
+		err := fmt.Errorf("not found")
+		c.IndentedJSON(404, cart.H{
+			"status": 404,
 			"error":  err.Error(),
 		})
-	case 400:
-		err = fmt.Errorf("command missing")
-		c.IndentedJSON(code, cart.H{
-			"status": code,
-			"error":  err.Error(),
-		})
-	default:
-		err = fmt.Errorf("error")
-		c.IndentedJSON(code, cart.H{
-			"status": code,
-			"error":  err.Error(),
-		})
+		return
 	}
 
 }

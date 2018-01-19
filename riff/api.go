@@ -82,38 +82,38 @@ func (a *API) Service(name string, all bool) *api.Service {
 	return service
 }
 
-func (a *API) Start(name string) int {
+func (a *API) Start(name string) bool {
 	if s, ok := server.Self.Services[name]; ok {
 		err := s.Start()
 		if err != nil {
-			return 201
+			return true
 		}
 	} else {
-		return 404
+		return false
 	}
-	return 200
+	return true
 }
-func (a *API) Stop(name string) int {
+func (a *API) Stop(name string) bool {
 	if s, ok := server.Self.Services[name]; ok {
 		err := s.Stop()
 		if err != nil {
-			return 201
+			return true
 		}
 	} else {
-		return 404
+		return false
 	}
-	return 200
+	return true
 }
-func (a *API) Restart(name string) int {
+func (a *API) Restart(name string) bool {
 	if s, ok := server.Self.Services[name]; ok {
 		err := s.Restart()
 		if err != nil {
-			return 201
+			return true
 		}
 	} else {
-		return 404
+		return false
 	}
-	return 200
+	return true
 }
 func (a *API) cloneNode(n *Node) (node *api.Node) {
 	node = &api.Node{
