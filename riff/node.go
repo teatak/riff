@@ -93,11 +93,10 @@ func (s *Server) GetService(findName string) interface{} {
 					if service == nil {
 						service = map[string]interface{}{
 							"Name": name,
-
 						}
 					}
 					if n.State == stateAlive {
-						nodes = append(nodes,n.Address())
+						nodes = append(nodes, n.Address())
 					}
 				}
 			}

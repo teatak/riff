@@ -1,6 +1,6 @@
 package riff
 
-type Query struct {}
+type Query struct{}
 
 // Ping is used to just check for connectivity
 func (q *Query) SnapShot(_ struct{}, snap *string) error {

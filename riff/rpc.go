@@ -2,9 +2,9 @@ package riff
 
 import (
 	"fmt"
+	"github.com/gimke/riff/api"
 	"io"
 	"net"
-	"github.com/gimke/riff/api"
 )
 
 type factory func(s *Server) interface{}

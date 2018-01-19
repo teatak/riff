@@ -2,11 +2,11 @@ package riff
 
 import (
 	"fmt"
+	"github.com/gimke/riff/api"
 	"net"
 	"net/rpc"
 	"strings"
 	"time"
-	"github.com/gimke/riff/api"
 )
 
 func (s *Server) fanoutNodes() {

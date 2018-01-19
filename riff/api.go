@@ -49,7 +49,7 @@ func (a *API) Services() api.Services {
 	return services
 }
 
-func (a *API) Service(name string,all bool) *api.Service {
+func (a *API) Service(name string, all bool) *api.Service {
 	keys := server.Keys()
 	var service *api.Service
 	nodes := make(api.Nodes, 0)
@@ -65,11 +65,11 @@ func (a *API) Service(name string,all bool) *api.Service {
 					}
 					if n.State == stateAlive {
 						node := &api.Node{
-							Name:n.Name,
-							DataCenter:n.DataCenter,
-							IP:n.IP,
-							Port:s.Port,
-							State:int(s.State),
+							Name:       n.Name,
+							DataCenter: n.DataCenter,
+							IP:         n.IP,
+							Port:       s.Port,
+							State:      int(s.State),
 						}
 						nodes = append(nodes, node)
 					}

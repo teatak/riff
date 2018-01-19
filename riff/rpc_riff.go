@@ -1,6 +1,6 @@
 package riff
 
-type Riff struct {}
+type Riff struct{}
 
 // push request a digest
 func (r *Riff) Request(snap string, digests *[]*Digest) error {
