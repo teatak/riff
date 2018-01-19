@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-type httpAPI struct {}
+type httpAPI struct{}
 
 func (a *httpAPI) Index(r *cart.Router) {
 	r.Route("/").GET(func(c *cart.Context) {
@@ -24,6 +24,7 @@ func (a *httpAPI) apiIndex(r *cart.Router) {
 	r.Route("/node/:name").GET(a.node)
 	r.Route("/services").GET(a.services)
 	r.Route("/service/:name").GET(a.service)
+	r.Route("/service/:name/:all").GET(a.service)
 	r.Route("/logs").GET(a.logs)
 }
 
@@ -44,18 +45,23 @@ func (a httpAPI) nodes(c *cart.Context) {
 	c.IndentedJSON(200, server.api.Nodes())
 }
 
+func (a httpAPI) node(c *cart.Context) {
+	name, _ := c.Param("name")
+	c.IndentedJSON(200, server.api.Node(name))
+}
+
 func (a httpAPI) services(c *cart.Context) {
-	c.IndentedJSON(200, server.ServicesSlice())
+	c.IndentedJSON(200, server.api.Services())
 }
 
 func (a httpAPI) service(c *cart.Context) {
 	name, _ := c.Param("name")
-	c.IndentedJSON(200, server.GetService(name))
-}
-
-func (a httpAPI) node(c *cart.Context) {
-	name, _ := c.Param("name")
-	c.IndentedJSON(200, server.GetNode(name))
+	all, _ := c.Param("all")
+	if all == "all" {
+		c.IndentedJSON(200, server.api.Service(name, true))
+	} else {
+		c.IndentedJSON(200, server.api.Service(name, false))
+	}
 }
 
 type httpLogHandler struct {
