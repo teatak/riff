@@ -23,15 +23,19 @@ func (a *httpAPI) apiIndex(r *cart.Router) {
 	r.Route("/nodes").GET(a.nodes)
 	r.Route("/node/:name").GET(a.node)
 	r.Route("/services").GET(a.services)
-	r.Route("/service/:name").GET(a.service)
-	r.Route("/service/:name/:all").GET(a.service)
+	r.Route("/service/:name", func(router *cart.Router) {
+		router.Route("").GET(a.service)
+		router.Route("/:command").GET(a.service)
+		router.Route("/:command").POST(a.serviceCommand)
+
+	})
 	r.Route("/logs").GET(a.logs)
 }
 
 func (a httpAPI) version(c *cart.Context) {
 	version := fmt.Sprintf("Cart version %s Riff version %s, build %s-%s", cart.Version, common.Version, common.GitBranch, common.GitSha)
 	c.IndentedJSON(200, cart.H{
-		"Version": version,
+		"version": version,
 	})
 }
 
@@ -56,12 +60,62 @@ func (a httpAPI) services(c *cart.Context) {
 
 func (a httpAPI) service(c *cart.Context) {
 	name, _ := c.Param("name")
-	all, _ := c.Param("all")
-	if all == "all" {
-		c.IndentedJSON(200, server.api.Service(name, true))
-	} else {
+	command, _ := c.Param("command")
+	if command == "alive" {
 		c.IndentedJSON(200, server.api.Service(name, false))
+	} else {
+		c.IndentedJSON(200, server.api.Service(name, true))
 	}
+}
+
+func (a httpAPI) serviceCommand(c *cart.Context) {
+	name, _ := c.Param("name")
+	command, _ := c.Param("command")
+	var err error
+	code := 200
+	switch command {
+	case "start":
+		code = server.api.Start(name)
+		break
+	case "stop":
+		code = server.api.Stop(name)
+		break
+	case "restart":
+		code = server.api.Restart(name)
+		break
+	default:
+		code = 400
+	}
+
+	switch code {
+	case 200:
+		c.IndentedJSON(code, cart.H{
+			"status": code,
+		})
+	case 201:
+		c.IndentedJSON(code, cart.H{
+			"status": code,
+		})
+	case 404:
+		err = fmt.Errorf("not found")
+		c.IndentedJSON(code, cart.H{
+			"status": code,
+			"error":  err.Error(),
+		})
+	case 400:
+		err = fmt.Errorf("command missing")
+		c.IndentedJSON(code, cart.H{
+			"status": code,
+			"error":  err.Error(),
+		})
+	default:
+		err = fmt.Errorf("error")
+		c.IndentedJSON(code, cart.H{
+			"status": code,
+			"error":  err.Error(),
+		})
+	}
+
 }
 
 type httpLogHandler struct {
