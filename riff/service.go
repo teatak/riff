@@ -87,7 +87,9 @@ func (s *Server) handleServices() {
 			preSnap := s.Self.SnapShot
 			s.Self.Shutter()
 			nowSnap := s.Self.SnapShot
-			if preSnap != nowSnap {
+			if preSnap != nowSnap { //if presnap != nowsnap then add version and create server snapshort
+				s.Self.VersionInc()
+				s.Self.Shutter()
 				s.Shutter()
 			}
 			time.Sleep(1 * time.Second)
