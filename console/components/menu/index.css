@@ -2,8 +2,11 @@
 
 .menu {
     display: flex;
-    height: 56px;
+    height: 64px;
     align-items: center;
+    padding-left: 8px;
+    background: var(--white);
+    border-bottom: 1px solid var(--faintBlack);
     & .title {
         font-size: 20px;
         font-weight: 500;

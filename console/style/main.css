@@ -13,3 +13,6 @@ a:focus {
     -webkit-text-decoration-skip: none;
     text-decoration-skip: none;
 }
+body {
+    background: var(--backGround);
+}
