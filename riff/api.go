@@ -69,6 +69,7 @@ func (a *API) Service(name string, all bool) *api.Service {
 							IP:         n.IP,
 							Port:       s.Port,
 							State:      s.State,
+							Version:    int(n.Version),
 						}
 						nodes = append(nodes, node)
 					}
@@ -123,6 +124,7 @@ func (a *API) cloneNode(n *Node) (node *api.Node) {
 		Port:       n.Port,
 		State:      n.State,
 		SnapShot:   n.SnapShot,
+		Version:    int(n.Version),
 	}
 	return
 }
