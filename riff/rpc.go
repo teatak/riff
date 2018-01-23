@@ -24,15 +24,15 @@ func init() {
 }
 
 func (s *Server) listenHttp() {
-	s.Logger.Printf(infoRpcPrefix+"start to accept http conn: %v\n", s.httpServer.Addr)
+	s.Logger.Printf(infoServerPrefix+"start to accept http conn: %v\n", s.httpServer.Addr)
 	err := s.httpServer.ListenAndServe()
 	if err != nil {
 		s.Shutdown()
-		s.Logger.Printf(errorRpcPrefix+"start http server error: %s\n", err)
+		s.Logger.Printf(errorServerPrefix+"start http server error: %s\n", err)
 	}
 }
 func (s *Server) listenRpc() {
-	s.Logger.Printf(infoRpcPrefix+"start to accept rpc conn: %v\n", s.Listener.Addr())
+	s.Logger.Printf(infoServerPrefix+"start to accept rpc conn: %v\n", s.Listener.Addr())
 	for {
 		// Accept a connection
 		conn, err := s.Listener.Accept()
@@ -40,7 +40,7 @@ func (s *Server) listenRpc() {
 			if s.shutdown {
 				return
 			}
-			s.Logger.Printf(errorRpcPrefix+"failed to accept RPC conn: %v\n", err)
+			s.Logger.Printf(errorServerPrefix+"failed to accept RPC conn: %v\n", err)
 			continue
 		}
 		go s.handleConn(conn)
@@ -59,7 +59,7 @@ func (s *Server) handleConn(conn net.Conn) {
 		if err := s.rpcServer.ServeRequest(codec); err != nil {
 			if err == io.EOF {
 			} else {
-				s.Logger.Printf(errorRpcPrefix+"%v %s\n", err, conn.RemoteAddr().String())
+				s.Logger.Printf(errorServerPrefix+"%v %s\n", err, conn.RemoteAddr().String())
 			}
 			return
 		}

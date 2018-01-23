@@ -25,7 +25,7 @@ func (s *Server) fanoutNodes() {
 			for _, addr := range addrs {
 				if addr != "" && addr != s.Self.Address() {
 					if err := s.requestPeer(addr); err != nil {
-						s.Logger.Printf(errorRpcPrefix+"%v\n", err)
+						s.Logger.Printf(errorServerPrefix+"%v\n", err)
 					} else {
 						break
 					}
@@ -35,7 +35,7 @@ func (s *Server) fanoutNodes() {
 			for _, n := range nodes {
 				if err := s.requestPeer(n.Address()); err != nil {
 					s.SetStateWithShutter(n, api.StateSuspect)
-					s.Logger.Printf(errorRpcPrefix+"%v\n", err)
+					s.Logger.Printf(errorServerPrefix+"%v\n", err)
 				}
 			}
 		}
@@ -79,9 +79,9 @@ func (s *Server) fanoutLeave() {
 	s.SetState(s.Self, api.StateSuspect)
 	s.SetState(s.Self, api.StateDead)
 	for _, n := range nodes {
-		s.Logger.Printf(infoRpcPrefix+"server %s send leave event to %s", s.Self.Name, n.Address())
+		s.Logger.Printf(infoServerPrefix+"server %s send leave event to %s", s.Self.Name, n.Address())
 		if err := s.requestLeave(n.Address()); err != nil {
-			s.Logger.Printf(errorRpcPrefix+"%v\n", err)
+			s.Logger.Printf(errorServerPrefix+"%v\n", err)
 		}
 	}
 }

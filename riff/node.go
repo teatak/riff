@@ -136,7 +136,7 @@ func (s *Server) RemoveNodeDelay(n *Node) {
 		n.timeoutFn = func() {
 			//delete this node
 			if n.State == api.StateDead {
-				s.Logger.Printf(infoNodePrefix+"remove dead node %s\n", n.Name)
+				s.Logger.Printf(infoServerPrefix+"remove dead node %s\n", n.Name)
 				s.DeleteNode(n.Name)
 				//clear fn
 				n.timeoutFn = nil

@@ -12,7 +12,7 @@ func (s *Server) Shutter() {
 	h := sha1.New()
 	io.WriteString(h, s.String())
 	s.SnapShot = fmt.Sprintf("%x", h.Sum(nil))
-	s.Logger.Printf(infoRpcPrefix+"snapshot now is: %s\n", s.SnapShot)
+	s.Logger.Printf(infoServerPrefix+"snapshot now is: %s\n", s.SnapShot)
 }
 
 func (s *Server) String() string {
@@ -122,7 +122,7 @@ func (s *Server) MergeDiff(diffs []*Node) (reDiffs []*Node) {
 			}
 		}
 	}
-	s.Logger.Printf(infoNodePrefix+"server %s merge %d nodes return %d nodes\n", s.Self.Name, count, len(reDiffs))
+	s.Logger.Printf(infoServerPrefix+"server %s merge %d nodes return %d nodes\n", s.Self.Name, count, len(reDiffs))
 	s.Shutter()
 	return
 	//reDiff = make([]*Node, 0)

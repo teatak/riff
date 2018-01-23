@@ -15,11 +15,8 @@ import (
 	"time"
 )
 
-const errorServerPrefix = "riff.server error: "
-const errorRpcPrefix = "[ERR]  riff.rpc: "
-const infoRpcPrefix = "[INFO] riff.rpc: "
-const errorNodePrefix = "[ERR]  riff.node: "
-const infoNodePrefix = "[INFO] riff.node: "
+const errorServerPrefix = "[ERR]  riff.server: "
+const infoServerPrefix = "[INFO] riff.server: "
 const errorServicePrefix = "[ERR]  riff.service: "
 const infoServicePrefix = "[INFO] riff.service: "
 
@@ -125,7 +122,7 @@ func (s *Server) setupCart() error {
 	r.Use("/favicon.ico", func(c *cart.Context, next cart.Next) {
 		b, err := assetFS().Asset("static/images/favicon.ico")
 		if err != nil {
-			s.Logger.Printf(errorRpcPrefix+"error: %v\n", err)
+			s.Logger.Printf(errorServerPrefix+"error: %v\n", err)
 			next()
 		} else {
 			c.Response.WriteHeader(200)
@@ -182,7 +179,7 @@ func (s *Server) Shutdown() error {
 		return nil
 	}
 
-	s.Logger.Printf(infoRpcPrefix+"%s leave", s.Self.Name)
+	s.Logger.Printf(infoServerPrefix+"%s leave", s.Self.Name)
 	s.fanoutLeave()
 
 	s.shutdown = true
