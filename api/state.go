@@ -3,9 +3,10 @@ package api
 type StateType int
 
 const (
-	StateAlive StateType = 1 + iota
+	StateAlive StateType = 1 << iota
 	StateSuspect
 	StateDead
+	StateAll = StateAlive | StateSuspect | StateDead
 )
 
 func (s StateType) String() string {
@@ -18,6 +19,9 @@ func (s StateType) String() string {
 		break
 	case StateDead:
 		return "Dead"
+		break
+	case StateAll:
+		return "All"
 		break
 	}
 	return "Unknow"

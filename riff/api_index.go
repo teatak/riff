@@ -3,6 +3,7 @@ package riff
 import (
 	"fmt"
 	"github.com/gimke/cart"
+	"github.com/gimke/riff/api"
 	"github.com/gimke/riff/common"
 	"net/http"
 )
@@ -61,10 +62,31 @@ func (a httpAPI) services(c *cart.Context) {
 func (a httpAPI) service(c *cart.Context) {
 	name, _ := c.Param("name")
 	command, _ := c.Param("command")
-	if command == "alive" {
-		c.IndentedJSON(200, server.api.Service(name, false))
+	state := api.StateAll
+	switch command {
+	case "alive":
+		state = api.StateAlive
+		break
+	case "dead":
+		state = api.StateDead
+		break
+	case "suspect":
+		state = api.StateSuspect
+		break
+	case "all":
+		state = api.StateAll
+		break
+	}
+	//!= "alive"
+	s := server.api.Service(name, state)
+	if s != nil {
+		c.IndentedJSON(200, s)
 	} else {
-		c.IndentedJSON(200, server.api.Service(name, true))
+		err := fmt.Errorf("not found")
+		c.IndentedJSON(404, cart.H{
+			"status": 404,
+			"error":  err.Error(),
+		})
 	}
 }
 

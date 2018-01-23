@@ -49,7 +49,7 @@ func (a *API) Services() api.Services {
 	return services
 }
 
-func (a *API) Service(name string, all bool) *api.Service {
+func (a *API) Service(name string, state api.StateType) *api.Service {
 	keys := server.Keys()
 	var service *api.Service
 	nodes := make(api.Nodes, 0)
@@ -62,7 +62,7 @@ func (a *API) Service(name string, all bool) *api.Service {
 							Name: s.Name,
 						}
 					}
-					if n.State == api.StateAlive && (s.State == api.StateAlive || all) {
+					if n.State&state == n.State || s.State&state == s.State {
 						node := &api.Node{
 							Name:       n.Name,
 							DataCenter: n.DataCenter,
