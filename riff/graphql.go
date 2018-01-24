@@ -1,6 +1,7 @@
 package riff
 
 import (
+	"fmt"
 	"github.com/gimke/riff/api"
 	"github.com/gimke/riff/common"
 	"github.com/graphql-go/graphql"
@@ -10,7 +11,8 @@ var riffType = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Riff",
 	Fields: graphql.Fields{
 		"version": &graphql.Field{
-			Type: graphql.String,
+			Type:        graphql.String,
+			Description: "current version",
 		},
 		"gitSha": &graphql.Field{
 			Type: graphql.String,
@@ -85,10 +87,11 @@ func init() {
 }
 
 var rootQuery = graphql.NewObject(graphql.ObjectConfig{
-	Name: "RootQuery",
+	Name: "Query",
 	Fields: graphql.Fields{
 		"riff": &graphql.Field{
-			Type: riffType,
+			Type:        riffType,
+			Description: "riff",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				return map[string]interface{}{
 					"version":   common.Version,
@@ -117,6 +120,8 @@ var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 				if ok {
 					if n := server.api.Node(name); n != nil {
 						return n, nil
+					} else {
+						return nil, fmt.Errorf("NOT_FOUND")
 					}
 				}
 				return nil, nil

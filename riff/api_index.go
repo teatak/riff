@@ -1,9 +1,12 @@
 package riff
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gimke/cart"
+	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 type httpAPI struct{}
@@ -17,12 +20,27 @@ func (a *httpAPI) Index(r *cart.Router) {
 
 func (a *httpAPI) apiIndex(r *cart.Router) {
 	r.ANY(func(c *cart.Context, next cart.Next) {
-		q := c.Request.URL.Query().Get("query")
+		var q string
+		if c.Request.Method == "GET" {
+			q = c.Request.URL.Query().Get("query")
+		}
+		if c.Request.Method == "POST" {
+			content := c.Request.Header.Get("content-type")
+			if strings.ToLower(content) == "application/json" {
+				b, _ := ioutil.ReadAll(c.Request.Body)
+				var query map[string]interface{}
+				json.Unmarshal(b, &query)
+				q = query["query"].(string)
+			} else if strings.ToLower(content) == "application/x-www-form-urlencoded" {
+				q = c.Request.FormValue("query")
+			}
+
+		}
 		result := executeQuery(q, schema)
 		if len(result.Errors) > 0 {
-			c.JSON(500, result)
+			c.IndentedJSON(500, result)
 		} else {
-			c.JSON(200, result)
+			c.IndentedJSON(200, result)
 		}
 	})
 	//r.Route("").GET(a.version)
