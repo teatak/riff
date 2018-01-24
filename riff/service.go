@@ -24,7 +24,7 @@ const branch = "branch"
 const release = "release"
 const latest = "latest"
 
-func versionType(version string) string {
+func getVersionType(version string) string {
 	if version == "latest" {
 		return latest
 	}
@@ -216,7 +216,7 @@ func (s *Service) processGit(client git.Client) {
 		}
 	}()
 	config := s
-	t := versionType(config.Deploy.Version)
+	t := getVersionType(config.Deploy.Version)
 	switch t {
 	case branch:
 		version, asset, err = client.GetBranch(config.Deploy.Version)

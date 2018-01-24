@@ -1,10 +1,25 @@
 package riff
 
 import (
-	"fmt"
 	"github.com/gimke/riff/api"
+	"github.com/gimke/riff/common"
 	"github.com/graphql-go/graphql"
 )
+
+var riffType = graphql.NewObject(graphql.ObjectConfig{
+	Name: "Riff",
+	Fields: graphql.Fields{
+		"version": &graphql.Field{
+			Type: graphql.String,
+		},
+		"gitSha": &graphql.Field{
+			Type: graphql.String,
+		},
+		"gitBranch": &graphql.Field{
+			Type: graphql.String,
+		},
+	},
+})
 
 var serviceType = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Service",
@@ -35,6 +50,9 @@ var nodeType = graphql.NewObject(graphql.ObjectConfig{
 		},
 		"port": &graphql.Field{
 			Type: graphql.Int,
+		},
+		"snapShot": &graphql.Field{
+			Type: graphql.String,
 		},
 	},
 })
@@ -69,6 +87,23 @@ func init() {
 var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 	Name: "RootQuery",
 	Fields: graphql.Fields{
+		"riff": &graphql.Field{
+			Type: riffType,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				return map[string]interface{}{
+					"version":   common.Version,
+					"gitSha":    common.GitSha,
+					"gitBranch": common.GitBranch,
+				}, nil
+			},
+		},
+		"server": &graphql.Field{
+			Type: nodeType,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				name := server.Self.Name
+				return server.api.Node(name), nil
+			},
+		},
 		"node": &graphql.Field{
 			Type: nodeType,
 			Args: graphql.FieldConfigArgument{
@@ -115,7 +150,7 @@ func executeQuery(query string, schema graphql.Schema) *graphql.Result {
 		RequestString: query,
 	})
 	if len(result.Errors) > 0 {
-		fmt.Printf("wrong result, unexpected errors: %v\n", result.Errors)
+		server.Logger.Printf(errorServicePrefix+"wrong result, unexpected errors: %v\n", result.Errors)
 	}
 	return result
 }
