@@ -62,7 +62,7 @@ export const getList = () => (dispatch, getState) => {
 const nodes = (
     state = {
         fetch:          Common.initRequest,
-        data:           [],                   //数据
+        list:           [],                   //数据
     }, action) => {
     switch (action.type) {
         case NODES_REQUEST:
@@ -81,7 +81,7 @@ const nodes = (
                     status: 200,
                     lastUpdated: action.receivedAt
                 },
-                data: action.json.data.nodes
+                list: action.json.data.nodes
             };
         case NODES_FAILURE:
             return {

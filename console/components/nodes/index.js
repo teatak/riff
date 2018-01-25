@@ -26,7 +26,7 @@ class Nodes extends React.Component {
     }
     renderList() {
         const { nodes } = this.props;
-        return nodes.data.map((node, index) => {
+        return nodes.list.map((node, index) => {
             return <div key={node.name}>
                 {node.name}
                 {node.ip}
