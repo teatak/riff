@@ -21,18 +21,18 @@ export const getList = () => (dispatch, getState) => {
     }
 }`;
     dispatch({ type: NODES_REQUEST });
-    Common.fetch({query},(json,error) => {
-        if(error==null) {
+    Common.fetch({query},(json, error, status) => {
+        if(status === 200) {
             dispatch({
                 type: NODES_SUCCESS,
-                status: 200,
+                status: status,
                 json,
                 receivedAt: Date.now()
             });
         } else {
             dispatch({
                 type: NODES_FAILURE,
-                status: 500,
+                status: status,
                 error: error,
                 receivedAt: Date.now()
             });
@@ -60,18 +60,18 @@ export const getNode = (nodeName) => (dispatch, getState) => {
     }
 }`;
     dispatch({ type: NODE_REQUEST });
-    Common.fetch({query},(json,error) => {
-        if(error==null) {
+    Common.fetch({query},(json, error, status) => {
+        if(status === 200) {
             dispatch({
                 type: NODE_SUCCESS,
-                status: 200,
+                status: status,
                 json,
                 receivedAt: Date.now()
             });
         } else {
             dispatch({
                 type: NODE_FAILURE,
-                status: 500,
+                status: status,
                 error: error,
                 receivedAt: Date.now()
             });

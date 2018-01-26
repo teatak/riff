@@ -31,13 +31,21 @@ class Common  {
             .then(this.parseJSON)
             .then(json => {
                 if (json.errors) {
-                    cb(json, json.errors[0].message)
+                    if (json.errors[0].message === "NOT_FOUND") {
+                        cb(json, json.errors[0].message, 404)
+                    } else {
+                        cb(json, json.errors[0].message, 500)
+                    }
                 } else {
-                    cb(json, null)
+                    cb(json, null, 200)
                 }
             })
             .catch(error => {
-                cb(null, error.message)
+                if(error.response) {
+                    cb(null, error.message, error.response.status);
+                } else {
+                    cb(null, error.message, 500);
+                }
             });
     }
 }

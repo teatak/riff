@@ -47,14 +47,13 @@ class Node extends React.Component {
     }
     render() {
         const { nodes } = this.props;
-
-        if(nodes.fetchNode.status !== 200) {
-            if (nodes.fetchNode.error === "NOT_FOUND") {
-                return <div className="error">Not Found</div>
-            } else {
-                return <div className="error">{nodes.fetchNode.error}</div>
-            }
-        } else {
+        if(nodes.fetchNode.status === 404) {
+            return <div className="error">Not Found</div>
+        }
+        if(nodes.fetchNode.status === 500) {
+            return <div className="error">{nodes.fetchNode.error}</div>
+        }
+        if(nodes.fetchNode.status === 200) {
             return <div>
                 <div className="title">
                     <span className="name">{nodes.data.name}</span>
@@ -62,6 +61,8 @@ class Node extends React.Component {
                 </div>
                 {this.renderList()}
             </div>
+        } else {
+            return null
         }
     }
 }
