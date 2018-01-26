@@ -48,7 +48,9 @@ class Node extends React.Component {
     render() {
         const { nodes } = this.props;
 
-        if(nodes.fetchNode.status === 200) {
+        if(nodes.fetchNode.status === 500) {
+            return <div className="error">{nodes.fetchNode.error.toString()}</div>
+        } else {
             return <div>
                 <div className="title">
                     <span className="name">{nodes.data.name}</span>
@@ -56,8 +58,6 @@ class Node extends React.Component {
                 </div>
                 {this.renderList()}
             </div>
-        } else {
-            return null
         }
     }
 }

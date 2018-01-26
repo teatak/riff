@@ -64,6 +64,9 @@
     }
   }
   & .detail {
+    & .error {
+      font-size: 14px;
+    }
     margin-left: 16px;
     flex: auto;
     border-left: solid 1px var(--faintBlack);
