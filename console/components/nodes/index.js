@@ -5,7 +5,7 @@ import {getList} from '../../reducers/nodes'
 import Node from './node'
 import Search from '../icons/search'
 
-import './index.css'
+import './index.pcss'
 
 const mapStateToProps = (state, ownProps) => {
     return {

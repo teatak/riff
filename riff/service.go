@@ -41,6 +41,7 @@ type Service struct {
 	Version     uint64
 	State       api.StateType // Current state
 	StateChange time.Time     // Time last state change happened
+	Config      string        //config file
 	*ServiceConfig
 }
 

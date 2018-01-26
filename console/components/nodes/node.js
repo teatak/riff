@@ -13,7 +13,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         getNode: (nodeName) => {
             dispatch(getNode(nodeName));
-        }
+        },
     }
 };
 
@@ -41,8 +41,14 @@ class Node extends React.Component {
                 {nodes.data.services.map((service, index) => {
                     let className = "item " + service.state.toLowerCase();
                     return <li className={className} key={service.name}>
-                        <span className="name">{service.name}</span>
-                        <span className="ipport">{service.port !== 0 ? ":" + service.port : ""}</span>
+                        <div className="basic">
+                            <span className="name">{service.name}</span>
+                            <span className="ipport">{service.port !== 0 ? ":" + service.port : ""}</span>
+                        </div>
+
+                        <pre>
+                            {service.config}
+                        </pre>
                     </li>
                 })}
             </ul>

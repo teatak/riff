@@ -10,7 +10,7 @@ import reducer from './reducers'
 
 import App from './app'
 
-import './style/main.css'
+import './style/main.pcss'
 
 const store = createStore(reducer, applyMiddleware(thunk));
 const router = <Provider store={store}>

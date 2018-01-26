@@ -25,6 +25,7 @@ class Common  {
         fetch(Config.api, {
             method: 'post',
             headers: { 'Content-Type': 'application/json' },
+            credentials: "same-origin",
             body: JSON.stringify(cmd),
         })
             .then(this.checkStatus)

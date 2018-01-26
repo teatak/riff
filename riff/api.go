@@ -131,10 +131,11 @@ func (a *API) cloneNode(n *Node) (node *api.Node) {
 
 func (a *API) cloneService(s *Service) (service *api.Service) {
 	service = &api.Service{
-		Name:  s.Name,
-		IP:    s.IP,
-		Port:  s.Port,
-		State: s.State,
+		Name:   s.Name,
+		IP:     s.IP,
+		Port:   s.Port,
+		State:  s.State,
+		Config: s.Config,
 	}
 	return service
 }

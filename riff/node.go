@@ -304,6 +304,7 @@ func (n *Node) LoadService(name string) *Service {
 		server.Logger.Printf(errorServicePrefix+"%s config file error: %v", name, err)
 		return nil
 	}
+	s.Config = string(content)
 	s.ServiceConfig = c
 	s.StateChange = time.Now()
 	s.runAtLoad()

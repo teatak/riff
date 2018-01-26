@@ -1,7 +1,7 @@
 import React from 'react'
 import {NavLink} from 'react-router-dom'
 
-import './index.css'
+import './index.pcss'
 
 class Menu extends React.Component {
     constructor(props) {

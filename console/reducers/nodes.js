@@ -56,6 +56,7 @@ export const getNode = (nodeName) => (dispatch, getState) => {
             ip
             port
             state
+            config
         } 
     }
 }`;

@@ -38,6 +38,9 @@ var serviceType = graphql.NewObject(graphql.ObjectConfig{
 		"state": &graphql.Field{
 			Type: graphql.String,
 		},
+		"config": &graphql.Field{
+			Type: graphql.String,
+		},
 	},
 })
 

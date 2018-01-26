@@ -1,7 +1,7 @@
 import React from 'react'
 import GraphiQL from 'graphiql'
 import 'graphiql/graphiql.css'
-import './index.css'
+import './index.pcss'
 
 function graphQLFetcher(graphQLParams) {
     return fetch(window.location.origin + '/api', {

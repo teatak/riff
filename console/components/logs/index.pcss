@@ -1,0 +1,26 @@
+@import "../../config/var.css";
+
+.logs {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--white);
+  border-top: solid 1px var(--gray);
+  & ul {
+    height: 300px;
+    overflow: auto;
+    overflow-x: hidden;
+    background: var(--white);
+    padding-left: 2px;
+  }
+  & .close {
+    font-size: 12px;
+    height: 24px;
+    line-height: 24px;
+    padding: 0 8px;
+    text-align: right;
+    background: var(--gray);
+    cursor: pointer;
+  }
+}

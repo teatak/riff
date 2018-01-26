@@ -4,12 +4,10 @@
     --mainRed: #f05125;
     --mainYellow: #fdb813;
 
-    --gray: #bbb;
+    --gray: #BDBDBD;
     --black: #000000;
     --white: #ffffff;
     --backGround: #f1f1f1;
-
-    --darkWhite: rgba(255, 255, 255, 0.87);
 
     --transparent: rgba(0, 0, 0, 0);
     --fullBlack: rgba(0, 0, 0, 1);
