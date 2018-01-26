@@ -48,8 +48,12 @@ class Node extends React.Component {
     render() {
         const { nodes } = this.props;
 
-        if(nodes.fetchNode.status === 500) {
-            return <div className="error">{nodes.fetchNode.error.toString()}</div>
+        if(nodes.fetchNode.status !== 200) {
+            if (nodes.fetchNode.error === "NOT_FOUND") {
+                return <div className="error">Not Found</div>
+            } else {
+                return <div className="error">{nodes.fetchNode.error}</div>
+            }
         } else {
             return <div>
                 <div className="title">

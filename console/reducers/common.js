@@ -10,6 +10,8 @@ class Common  {
     checkStatus = (response) => {
         if (response.status >= 200 && response.status < 300) {
             return response
+        } else if (response.status === 500) {
+            return response
         } else {
             let error = new Error(response.statusText);
             error.response = response;
@@ -28,10 +30,14 @@ class Common  {
             .then(this.checkStatus)
             .then(this.parseJSON)
             .then(json => {
-                cb(json, null)
+                if (json.errors) {
+                    cb(json, json.errors[0].message)
+                } else {
+                    cb(json, null)
+                }
             })
             .catch(error => {
-                cb(null, error)
+                cb(null, error.message)
             });
     }
 }

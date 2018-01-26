@@ -1,5 +1,5 @@
 import React from 'react'
-import { Router, Switch, Route } from 'react-router-dom'
+import { Redirect, Switch, Route } from 'react-router-dom'
 import Menu from './components/menu'
 import Nodes from './components/nodes'
 import Services from './components/services'
@@ -15,6 +15,7 @@ class App extends React.Component {
             <Menu/>
             <div className="container">
                 <Switch>
+                    <Redirect exact from="/" to='/nodes'/>
                     <Route strict path="/nodes" component={Nodes} />
                     <Route strict path="/services" component={Services} />
                     <Route strict path="/explorer" component={Explorer} />

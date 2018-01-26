@@ -93,6 +93,7 @@ const nodes = (
                     ...state.fetchNodes,
                     loading: true,
                     status: 0,
+                    error: null,
                 }
             };
         case NODES_SUCCESS:
@@ -101,6 +102,7 @@ const nodes = (
                 fetchNodes: { ...state.fetchNodes,
                     loading: false,
                     status: 200,
+                    error: null,
                     lastUpdated: action.receivedAt
                 },
                 list: action.json.data.nodes
@@ -121,7 +123,8 @@ const nodes = (
                 fetchNode: {
                     ...state.fetchNode,
                     loading: true,
-                    status: 0
+                    status: 0,
+                    error: null,
                 }
             };
         case NODE_SUCCESS:
@@ -130,6 +133,7 @@ const nodes = (
                 fetchNode: { ...state.fetchNode,
                     loading: false,
                     status: 200,
+                    error: null,
                     lastUpdated: action.receivedAt
                 },
                 data: action.json.data.node
