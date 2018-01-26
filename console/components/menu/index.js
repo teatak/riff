@@ -1,5 +1,5 @@
 import React from 'react'
-import { NavLink, withRouter, matchPath } from 'react-router-dom'
+import {NavLink} from 'react-router-dom'
 
 import './index.css'
 

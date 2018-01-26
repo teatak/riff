@@ -3,8 +3,10 @@ import React, {Component} from 'react'
 class Icon extends Component {
 
     static defaultProps = {
-        onMouseEnter: () => {},
-        onMouseLeave: () => {},
+        onMouseEnter: () => {
+        },
+        onMouseLeave: () => {
+        },
         viewBox: '0 0 24 24',
     };
 

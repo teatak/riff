@@ -1,7 +1,7 @@
 import React from 'react'
-import { withRouter } from 'react-router-dom'
-import { connect } from 'react-redux'
-import { getNode} from "../../reducers/nodes";
+import {withRouter} from 'react-router-dom'
+import {connect} from 'react-redux'
+import {getNode} from "../../reducers/nodes";
 
 const mapStateToProps = (state, ownProps) => {
     return {
@@ -21,39 +21,43 @@ class Node extends React.Component {
     constructor(props) {
         super(props);
     }
+
     componentWillMount() {
         let nodeName = this.props.match.params.nodeName;
         this.props.getNode(nodeName)
     }
+
     componentWillReceiveProps(nextProps) {
-        if(this.props.match.params.nodeName !== nextProps.match.params.nodeName) {
+        if (this.props.match.params.nodeName !== nextProps.match.params.nodeName) {
             this.props.getNode(nextProps.match.params.nodeName)
         }
     }
+
     renderList() {
-        const { nodes } = this.props;
+        const {nodes} = this.props;
         if (nodes.data.services) {
             return <ul className="services">
                 <li className="title">Services</li>
                 {nodes.data.services.map((service, index) => {
-                    let className = "item "+service.state.toLowerCase();
+                    let className = "item " + service.state.toLowerCase();
                     return <li className={className} key={service.name}>
                         <span className="name">{service.name}</span>
-                        <span className="ipport">{service.port !== 0?":"+service.port:""}</span>
+                        <span className="ipport">{service.port !== 0 ? ":" + service.port : ""}</span>
                     </li>
                 })}
             </ul>
         }
     }
+
     render() {
-        const { nodes } = this.props;
-        if(nodes.fetchNode.status === 404) {
+        const {nodes} = this.props;
+        if (nodes.fetchNode.status === 404) {
             return <div className="error">Not Found</div>
         }
-        if(nodes.fetchNode.status === 500) {
+        if (nodes.fetchNode.status === 500) {
             return <div className="error">{nodes.fetchNode.error}</div>
         }
-        if(nodes.fetchNode.status === 200) {
+        if (nodes.fetchNode.status === 200) {
             return <div>
                 <div className="title">
                     <span className="name">{nodes.data.name}</span>
@@ -67,4 +71,4 @@ class Node extends React.Component {
     }
 }
 
-export default withRouter(connect(mapStateToProps,mapDispatchToProps)(Node))
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Node))

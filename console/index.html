@@ -15,6 +15,7 @@
             margin-left: -24px;
             user-select: none;
         }
+
         .spinnerwrap img {
             display: block;
             width: 48px;
@@ -25,7 +26,7 @@
 </head>
 <body>
 <div id="root">
-    <div class="spinnerwrap"><img src="/static/images/spinner.svg" /></div>
+    <div class="spinnerwrap"><img src="/static/images/spinner.svg"/></div>
 </div>
 <script type="text/javascript" src="/static/dist/<%= htmlWebpackPlugin.files.chunks['console'].entry %>"></script>
 </body>

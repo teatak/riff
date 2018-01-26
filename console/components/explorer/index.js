@@ -6,7 +6,7 @@ import './index.css'
 function graphQLFetcher(graphQLParams) {
     return fetch(window.location.origin + '/api', {
         method: 'post',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(graphQLParams),
     }).then(response => response.json());
 }
@@ -17,8 +17,7 @@ class Explorer extends React.Component {
     }
 
     render() {
-        return <GraphiQL fetcher={graphQLFetcher} >
-
+        return <GraphiQL fetcher={graphQLFetcher}>
         </GraphiQL>
     }
 }

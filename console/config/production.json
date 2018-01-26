@@ -1,7 +1,7 @@
 {
-  "name":"product",
-  "api":"/api",
-  "public":"/public",
-  "headers":{},
-  "titleSuffix":"Riff"
+  "name": "product",
+  "api": "/api",
+  "public": "/public",
+  "headers": {},
+  "titleSuffix": "Riff"
 }

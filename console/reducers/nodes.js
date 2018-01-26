@@ -20,9 +20,9 @@ export const getList = () => (dispatch, getState) => {
         version
     }
 }`;
-    dispatch({ type: NODES_REQUEST });
-    Common.fetch({query},(json, error, status) => {
-        if(status === 200) {
+    dispatch({type: NODES_REQUEST});
+    Common.fetch({query}, (json, error, status) => {
+        if (status === 200) {
             dispatch({
                 type: NODES_SUCCESS,
                 status: status,
@@ -41,9 +41,9 @@ export const getList = () => (dispatch, getState) => {
 };
 
 export const getNode = (nodeName) => (dispatch, getState) => {
-    let node = (nodeName === undefined)?"node:server":"node(name:\""+nodeName+"\")";
+    let node = (nodeName === undefined) ? "node:server" : "node(name:\"" + nodeName + "\")";
     let query = `{
-    `+node+` {
+    ` + node + ` {
         name
         ip
         port
@@ -59,9 +59,9 @@ export const getNode = (nodeName) => (dispatch, getState) => {
         } 
     }
 }`;
-    dispatch({ type: NODE_REQUEST });
-    Common.fetch({query},(json, error, status) => {
-        if(status === 200) {
+    dispatch({type: NODE_REQUEST});
+    Common.fetch({query}, (json, error, status) => {
+        if (status === 200) {
             dispatch({
                 type: NODE_SUCCESS,
                 status: status,
@@ -79,16 +79,16 @@ export const getNode = (nodeName) => (dispatch, getState) => {
     })
 };
 
-const nodes = (
-    state = {
-        fetchNodes:     Common.initRequest,
-        fetchNode:      Common.initRequest,
-        list:           [],                   //数据
-        data:           {}
-    }, action) => {
+const nodes = (state = {
+    fetchNodes: Common.initRequest,
+    fetchNode: Common.initRequest,
+    list: [],                   //数据
+    data: {}
+}, action) => {
     switch (action.type) {
         case NODES_REQUEST:
-            return { ...state,
+            return {
+                ...state,
                 fetchNodes: {
                     ...state.fetchNodes,
                     loading: true,
@@ -99,7 +99,8 @@ const nodes = (
         case NODES_SUCCESS:
             return {
                 ...state,
-                fetchNodes: { ...state.fetchNodes,
+                fetchNodes: {
+                    ...state.fetchNodes,
                     loading: false,
                     status: 200,
                     error: null,
@@ -119,7 +120,8 @@ const nodes = (
                 },
             };
         case NODE_REQUEST:
-            return { ...state,
+            return {
+                ...state,
                 fetchNode: {
                     ...state.fetchNode,
                     loading: true,
@@ -130,7 +132,8 @@ const nodes = (
         case NODE_SUCCESS:
             return {
                 ...state,
-                fetchNode: { ...state.fetchNode,
+                fetchNode: {
+                    ...state.fetchNode,
                     loading: false,
                     status: 200,
                     error: null,
