@@ -18,7 +18,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         getList: () => {
             dispatch(getList());
-        },
+        }
     }
 };
 
@@ -60,7 +60,7 @@ class Nodes extends React.Component {
                 {this.renderList()}
             <div className="detail">
                 <Switch>
-                    <Route path="/nodes/:nodeName" component={Node}  />
+                    <Route path="/nodes/:nodeName?" component={Node} />
                 </Switch>
             </div>
         </div>

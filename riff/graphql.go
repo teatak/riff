@@ -35,6 +35,9 @@ var serviceType = graphql.NewObject(graphql.ObjectConfig{
 		"port": &graphql.Field{
 			Type: graphql.Int,
 		},
+		"state": &graphql.Field{
+			Type: graphql.String,
+		},
 	},
 })
 

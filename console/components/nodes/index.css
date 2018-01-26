@@ -31,6 +31,8 @@
       margin-bottom: 8px;
       & .node-link {
         display: flex;
+        align-items: center;
+        justify-content: space-between;
         border-radius: var(--borderRadiusLg);
         border: solid 2px var(--mainBlue);
         border-left-width: 8px;
@@ -43,7 +45,6 @@
           padding-right: 16px;
         }
         & .ipport {
-          margin-left: auto;
           font-size: 12px;
           color: var(--darkBlack);
         }
@@ -65,5 +66,62 @@
   & .detail {
     margin-left: 16px;
     flex: auto;
+    border-left: solid 1px var(--faintBlack);
+    padding-left: 16px;
+    & .title {
+      margin-bottom: 16px;
+      color: var(--darkBlack);
+      display: flex;
+      align-items: center;
+      & .name {
+        font-size: 24px;
+        padding-right: 16px;
+      }
+      & .ipport {
+        font-size: 14px;
+        color: var(--lightBlack);
+      }
+      & .snap {
+        margin-left: auto;
+        font-size: 12px;
+        color: var(--lightBlack);
+      }
+    }
+    & .services {
+      & .title {
+        color: var(--darkBlack);
+        font-size: 16px;
+        margin-bottom: 8px;
+      }
+      & .item {
+        font-size: 14px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-radius: var(--borderRadiusLg);
+        border: solid 2px var(--mainGreen);
+        border-top-width: 16px;
+        padding: 8px;
+        color: var(--darkBlack);
+        background: var(--white);
+        transition: all .2s ease-out;
+        &.alive {
+          border-color: var(--mainGreen);
+        }
+        &.suspect {
+          border-color: var(--mainYellow);
+        }
+        &.dead {
+          border-color: var(--mainRed);
+        }
+        & .name {
+
+        }
+        & .ipport {
+
+        }
+      }
+    }
   }
 }

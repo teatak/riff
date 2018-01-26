@@ -1,9 +1,12 @@
-import Config from 'config'
 import Common from './common'
 
 export const NODES_REQUEST = 'NODES_REQUEST';
 export const NODES_SUCCESS = 'NODES_SUCCESS';
 export const NODES_FAILURE = 'NODES_FAILURE';
+
+export const NODE_REQUEST = 'NODE_REQUEST';
+export const NODE_SUCCESS = 'NODE_SUCCESS';
+export const NODE_FAILURE = 'NODE_FAILURE';
 
 //获取Product
 export const getList = () => (dispatch, getState) => {
@@ -18,41 +21,76 @@ export const getList = () => (dispatch, getState) => {
     }
 }`;
     dispatch({ type: NODES_REQUEST });
-    fetch(Config.api, {
-        method: 'post',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({query}),
-    })
-        .then(Common.checkStatus)
-        .then(Common.parseJSON)
-        .then(json => {
+    Common.fetch({query},(json,error) => {
+        if(error==null) {
             dispatch({
                 type: NODES_SUCCESS,
                 status: 200,
                 json,
                 receivedAt: Date.now()
             });
-        })
-        .catch(error => {
+        } else {
             dispatch({
                 type: NODES_FAILURE,
                 status: 500,
                 error: error,
                 receivedAt: Date.now()
             });
-        });
+        }
+    })
+};
+
+export const getNode = (nodeName) => (dispatch, getState) => {
+    let node = (nodeName === undefined)?"node:server":"node(name:\""+nodeName+"\")";
+    let query = `{
+    `+node+` {
+        name
+        ip
+        port
+        dataCenter
+        snapShot
+        state
+        version
+        services {
+            name
+            ip
+            port
+            state
+        } 
+    }
+}`;
+    dispatch({ type: NODE_REQUEST });
+    Common.fetch({query},(json,error) => {
+        if(error==null) {
+            dispatch({
+                type: NODE_SUCCESS,
+                status: 200,
+                json,
+                receivedAt: Date.now()
+            });
+        } else {
+            dispatch({
+                type: NODE_FAILURE,
+                status: 500,
+                error: error,
+                receivedAt: Date.now()
+            });
+        }
+    })
 };
 
 const nodes = (
     state = {
-        fetch:          Common.initRequest,
+        fetchNodes:     Common.initRequest,
+        fetchNode:      Common.initRequest,
         list:           [],                   //数据
+        data:           {}
     }, action) => {
     switch (action.type) {
         case NODES_REQUEST:
             return { ...state,
-                fetch: {
-                    ...state.fetch,
+                fetchNodes: {
+                    ...state.fetchNodes,
                     loading:true,
                     status: 0
                 }
@@ -60,7 +98,7 @@ const nodes = (
         case NODES_SUCCESS:
             return {
                 ...state,
-                fetch: { ...state.fetch,
+                fetchNodes: { ...state.fetchNodes,
                     loading:false,
                     status: 200,
                     lastUpdated: action.receivedAt
@@ -70,8 +108,37 @@ const nodes = (
         case NODES_FAILURE:
             return {
                 ...state,
-                fetch: {
-                    ...state.fetch,
+                fetchNodes: {
+                    ...state.fetchNodes,
+                    loading:false,
+                    status: action.status,
+                    error: action.error,
+                    lastUpdated: action.receivedAt
+                },
+            };
+        case NODE_REQUEST:
+            return { ...state,
+                fetchNode: {
+                    ...state.fetchNode,
+                    loading:true,
+                    status: 0
+                }
+            };
+        case NODE_SUCCESS:
+            return {
+                ...state,
+                fetchNode: { ...state.fetchNode,
+                    loading:false,
+                    status: 200,
+                    lastUpdated: action.receivedAt
+                },
+                data: action.json.data.node
+            };
+        case NODE_FAILURE:
+            return {
+                ...state,
+                fetchNode: {
+                    ...state.fetchNode,
                     loading:false,
                     status: action.status,
                     error: action.error,
