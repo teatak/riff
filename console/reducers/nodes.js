@@ -91,15 +91,15 @@ const nodes = (
             return { ...state,
                 fetchNodes: {
                     ...state.fetchNodes,
-                    loading:true,
-                    status: 0
+                    loading: true,
+                    status: 0,
                 }
             };
         case NODES_SUCCESS:
             return {
                 ...state,
                 fetchNodes: { ...state.fetchNodes,
-                    loading:false,
+                    loading: false,
                     status: 200,
                     lastUpdated: action.receivedAt
                 },
@@ -110,7 +110,7 @@ const nodes = (
                 ...state,
                 fetchNodes: {
                     ...state.fetchNodes,
-                    loading:false,
+                    loading: false,
                     status: action.status,
                     error: action.error,
                     lastUpdated: action.receivedAt
@@ -120,7 +120,7 @@ const nodes = (
             return { ...state,
                 fetchNode: {
                     ...state.fetchNode,
-                    loading:true,
+                    loading: true,
                     status: 0
                 }
             };
@@ -128,7 +128,7 @@ const nodes = (
             return {
                 ...state,
                 fetchNode: { ...state.fetchNode,
-                    loading:false,
+                    loading: false,
                     status: 200,
                     lastUpdated: action.receivedAt
                 },
@@ -139,7 +139,7 @@ const nodes = (
                 ...state,
                 fetchNode: {
                     ...state.fetchNode,
-                    loading:false,
+                    loading: false,
                     status: action.status,
                     error: action.error,
                     lastUpdated: action.receivedAt

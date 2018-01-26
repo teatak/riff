@@ -47,13 +47,18 @@ class Node extends React.Component {
     }
     render() {
         const { nodes } = this.props;
-        return <div>
-            <div className="title">
-                <span className="name">{nodes.data.name}</span>
-                <span className="ipport">{nodes.data.ip}:{nodes.data.port}</span>
+
+        if(nodes.fetchNode.status === 200) {
+            return <div>
+                <div className="title">
+                    <span className="name">{nodes.data.name}</span>
+                    <span className="ipport">{nodes.data.ip}:{nodes.data.port}</span>
+                </div>
+                {this.renderList()}
             </div>
-            {this.renderList()}
-            </div>
+        } else {
+            return null
+        }
     }
 }
 
