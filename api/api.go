@@ -7,7 +7,7 @@ type Node struct {
 	DataCenter string    `json:"dataCenter"`
 	IP         string    `json:"ip"`
 	Port       int       `json:"port,omitempty"`
-	Version    int       `json:"versions"`
+	Version    int       `json:"version"`
 	State      StateType `json:"state"`
 	SnapShot   string    `json:"snapShot,omitempty"`
 	Services   `json:"services,omitempty"`

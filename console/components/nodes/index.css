@@ -1,0 +1,39 @@
+@import "../../config/var.css";
+
+.nodes {
+  display: flex;
+  & .list {
+    & .item {
+      margin-bottom: 8px;
+      & .node-link {
+        display: block;
+        border-radius: var(--borderRadiusLg);
+        border: solid 2px var(--mainBlue);
+        border-left-width: 8px;
+        padding: 8px;
+        color: var(--mainBlue);
+        transition: all .2s ease-out;
+        & .name {
+          font-size: 14px;
+          padding-right: 16px;
+        }
+        & .ipport {
+          font-size: 12px;
+          color: var(--darkBlack);
+        }
+        &.active {
+          border-color: var(--mainGreen);
+          color: var(--mainGreen);
+        }
+        &.dead {
+          border-color: var(--mainRed);
+          color: var(--mainRed);
+        }
+      }
+    }
+  }
+  & .detail {
+    margin-left: 16px;
+    flex: auto;
+  }
+}

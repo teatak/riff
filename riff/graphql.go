@@ -53,6 +53,12 @@ var nodeType = graphql.NewObject(graphql.ObjectConfig{
 		"port": &graphql.Field{
 			Type: graphql.Int,
 		},
+		"state": &graphql.Field{
+			Type: graphql.String,
+		},
+		"version": &graphql.Field{
+			Type: graphql.Int,
+		},
 		"snapShot": &graphql.Field{
 			Type: graphql.String,
 		},

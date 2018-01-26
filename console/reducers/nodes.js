@@ -13,6 +13,8 @@ export const getList = () => (dispatch, getState) => {
         ip
         port
         dataCenter
+        state
+        version
     }
 }`;
     dispatch({ type: NODES_REQUEST });
@@ -38,25 +40,7 @@ export const getList = () => (dispatch, getState) => {
                 error: error,
                 receivedAt: Date.now()
             });
-        })
-    //     .then(response => {
-    //     return response.json()
-    // }).then(json => {
-    //     dispatch({
-    //         type: NODES_SUCCESS,
-    //         status: 200,
-    //         json,
-    //         receivedAt: Date.now()
-    //     });
-    // }).catch( ex => {
-    //     dispatch({
-    //         type: NODES_FAILURE,
-    //         status: 500,
-    //         error: ex,
-    //         receivedAt: Date.now()
-    //     });
-    //     console.log('parsing failed', ex)
-    // });
+        });
 };
 
 const nodes = (
