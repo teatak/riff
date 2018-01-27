@@ -27,6 +27,8 @@ export const getLogs = () => (dispatch, getState) => {
                     init = false;
                 }
                 loop(response);
+            }).catch((error) => {
+                console.log(error)
             })
         }, 0);
     };

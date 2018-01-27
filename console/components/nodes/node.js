@@ -31,7 +31,8 @@ class Node extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (this.props.match.params.nodeName !== nextProps.match.params.nodeName) {
+        const locationChanged = nextProps.location !== this.props.location;
+        if(locationChanged) {
             this.setState({toggle: {}});
             this.props.getNode(nextProps.match.params.nodeName)
         }

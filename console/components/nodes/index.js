@@ -33,6 +33,13 @@ class Nodes extends React.Component {
         this.props.getList();
     }
 
+    componentWillReceiveProps(nextProps) {
+        const locationChanged = nextProps.location !== this.props.location;
+        if(locationChanged) {
+            this.props.getList()
+        }
+    }
+
     onChange = (e) => {
         this.setState({filter: e.target.value});
     };
