@@ -2,6 +2,8 @@ import React from 'react'
 import {withRouter} from 'react-router-dom'
 import {connect} from 'react-redux'
 import {getNode} from "../../reducers/nodes";
+import ArrowDown from '../icons/arrowDown'
+import ArrowUp from '../icons/arrowUp'
 
 const mapStateToProps = (state, ownProps) => {
     return {
@@ -20,6 +22,7 @@ const mapDispatchToProps = (dispatch) => {
 class Node extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {toggle: {}};
     }
 
     componentWillMount() {
@@ -29,9 +32,19 @@ class Node extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         if (this.props.match.params.nodeName !== nextProps.match.params.nodeName) {
+            this.setState({toggle: {}});
             this.props.getNode(nextProps.match.params.nodeName)
         }
     }
+
+    toggle = (name) => {
+        this.setState({
+            toggle: {
+                ...this.state.toggle,
+                [name]: !this.state.toggle[name]
+            }
+        });
+    };
 
     renderList() {
         const {nodes} = this.props;
@@ -41,14 +54,17 @@ class Node extends React.Component {
                 {nodes.data.services.map((service, index) => {
                     let className = "item " + service.state.toLowerCase();
                     return <li className={className} key={service.name}>
-                        <div className="basic">
+                        <div className="basic" onClick={() => {
+                            this.toggle(service.name)
+                        }}>
+                            <div className="toggle">{this.state.toggle[service.name] ? <ArrowUp/> : <ArrowDown/>}</div>
                             <span className="name">{service.name}</span>
                             <span className="ipport">{service.port !== 0 ? ":" + service.port : ""}</span>
                         </div>
 
-                        <pre>
+                        {this.state.toggle[service.name] ? <pre>
                             {service.config}
-                        </pre>
+                        </pre> : null}
                     </li>
                 })}
             </ul>

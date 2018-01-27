@@ -118,17 +118,24 @@
         & .basic {
           display: flex;
           align-items: center;
-          justify-content: space-between;
-          margin-bottom: 8px;
+          cursor: pointer;
           & .name {
-
+            margin-left: 4px;
+          }
+          & .toggle {
+            & svg {
+              height: 16px;
+              width: 16px;
+            }
           }
           & .ipport {
             font-size: 12px;
             color: var(--lightBlack);
+            margin-left: auto;
           }
         }
         & pre {
+          margin-top: 8px;
           background: var(--darkBlack);
           color: var(--white);
           font-size: 12px;
