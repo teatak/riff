@@ -29,21 +29,25 @@ class Logs extends React.Component {
 
     componentDidMount() {
         this.el = document.getElementById("logs");
+        this.handleScroll();
     }
 
     componentWillReceiveProps(nextProps) {
+        this.handleScroll();
+    }
+    handleScroll = () => {
         if (this.el) {
             let scrolltop = this.el.scrollTop;
             let clientHeight = this.el.clientHeight;
             let scrollHeight = this.el.scrollHeight;
-            if (scrolltop + clientHeight === scrollHeight && scrolltop !== 0) {
-                setTimeout(() => {
+            setTimeout(() => {
+                if (scrolltop + clientHeight === scrollHeight || scrolltop === 0) {
+                    scrollHeight = this.el.scrollHeight;
                     this.el.scrollTop = scrollHeight
-                }, 17)
-            }
+                }
+            }, 17)
         }
     }
-
     handleClose = () => {
         if (this.props.onClose) {
             this.props.onClose()
