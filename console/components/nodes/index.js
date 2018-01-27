@@ -35,7 +35,7 @@ class Nodes extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         const locationChanged = nextProps.location !== this.props.location;
-        if(locationChanged) {
+        if (locationChanged) {
             this.props.getList()
         }
     }
