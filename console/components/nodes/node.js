@@ -54,10 +54,10 @@ class Node extends React.Component {
                 {nodes.data.services.map((service, index) => {
                     let className = "item " + service.state.toLowerCase();
                     return <li className={className} key={service.name}>
-                        <div className="basic" onClick={() => {
-                            this.toggle(service.name)
-                        }}>
-                            <div className="toggle">{this.state.toggle[service.name] ? <ArrowUp/> : <ArrowDown/>}</div>
+                        <div className="basic">
+                            <div className="toggle" onClick={() => {
+                                this.toggle(service.name)
+                            }}>{this.state.toggle[service.name] ? <ArrowUp/> : <ArrowDown/>}</div>
                             <span className="name">{service.name}</span>
                             <span className="ipport">{service.port !== 0 ? ":" + service.port : ""}</span>
                         </div>
