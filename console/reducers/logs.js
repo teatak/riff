@@ -5,12 +5,11 @@ export const LOG_REQUEST = 'LOG_REQUEST';
 export const LOG_SUCCESS = 'LOG_SUCCESS';
 export const LOG_FAILURE = 'LOG_FAILURE';
 
-let init = false;
 export const getLogs = () => (dispatch, getState) => {
-    if(init) {
+    let state = getState();
+    if (state.logs.fetchLogs.loading) {
         return
     }
-    init = true;
     dispatch({type: LOG_REQUEST});
     let reader = null;
     let loop = (response) => {
@@ -23,25 +22,34 @@ export const getLogs = () => (dispatch, getState) => {
                     text,
                     receivedAt: Date.now()
                 });
-                if(b.done) {
+                if (b.done) {
                     init = false;
                 }
                 loop(response);
             }).catch((error) => {
-                console.log(error)
+                dispatch({
+                    type: LOG_FAILURE,
+                    status: 500,
+                    error: error,
+                    receivedAt: Date.now()
+                });
             })
         }, 0);
     };
     fetch(Config.api + "/logs", {
         method: 'get',
         headers: {'connection': 'keep-alive'},
+    }).then((response) => {
+        reader = response.body.getReader();
+        loop(response);
+    }).catch((error) => {
+        dispatch({
+            type: LOG_FAILURE,
+            status: 500,
+            error: error,
+            receivedAt: Date.now()
+        });
     })
-        .then((response) => {
-            reader = response.body.getReader();
-            setTimeout(() => {
-                loop(response);
-            }, 0);
-        })
 };
 
 const logs = (state = {
@@ -64,7 +72,6 @@ const logs = (state = {
                 ...state,
                 fetchLogs: {
                     ...state.fetchLogs,
-                    loading: false,
                     status: 200,
                     error: null,
                     lastUpdated: action.receivedAt

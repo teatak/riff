@@ -39,18 +39,23 @@ svg {
 .logs-container {
   position: fixed;
   bottom: 0;
-  background: var(--gray);
-  right: 0;
-  height: 24px;
+  border: solid 1px var(--gray);
+  border-radius: var(--borderRadiusLg);
+  border-bottom: none;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  background: var(--white);
+  width: 80px;
+  margin-left: -40px;
+  left: 50%;
   font-size: 12px;
   z-index: 9;
   & .handle {
     font-size: 12px;
-    height: 24px;
-    line-height: 24px;
     padding: 0 8px;
     cursor: pointer;
-    text-align: right;
-    border-radius: var(--borderRadiusLg);
+    text-align: center;
+    height: 24px;
+    line-height: 24px;
   }
 }

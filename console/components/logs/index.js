@@ -1,6 +1,9 @@
 import React from 'react'
 import {connect} from 'react-redux'
-import {getLogs} from "../../reducers/logs";
+import {getLogs} from "../../reducers/logs"
+import Close from '../icons/close'
+import SwapHoriz from '../icons/swapHoriz'
+import Refresh from '../icons/refresh'
 
 import './index.pcss'
 
@@ -24,7 +27,7 @@ class Logs extends React.Component {
     }
 
     componentWillMount() {
-        this.props.getLogs()
+        this.props.getLogs();
     }
 
     componentDidMount() {
@@ -35,6 +38,11 @@ class Logs extends React.Component {
     componentWillReceiveProps(nextProps) {
         this.handleScroll();
     }
+
+    handleRefresh = () => {
+        this.props.getLogs();
+    };
+
     handleScroll = () => {
         if (this.el) {
             let scrolltop = this.el.scrollTop;
@@ -47,7 +55,8 @@ class Logs extends React.Component {
                 }
             }, 17)
         }
-    }
+    };
+
     handleClose = () => {
         if (this.props.onClose) {
             this.props.onClose()
@@ -56,6 +65,7 @@ class Logs extends React.Component {
 
     renderList() {
         const {logs} = this.props;
+
         return <ul id="logs">
             {logs.list.map((log, index) => {
                 return <li className="item" key={index}>
@@ -68,8 +78,20 @@ class Logs extends React.Component {
     }
 
     render() {
+        const {logs} = this.props;
+        let network = "network";
+        let error = "";
+        if (logs.fetchLogs.status === 500) {
+            network += " error";
+            error = logs.fetchLogs.error.message;
+        }
         return <div className="logs">
-            <div onClick={this.handleClose} className="close">close</div>
+            <div className="logs-toolbar">
+                <SwapHoriz className={network}/>
+                {error === "" ? null :
+                    <div className="error">{error}<Refresh className="refresh" onClick={this.handleRefresh}/></div>}
+                <Close className="close" onClick={this.handleClose}/>
+            </div>
             {this.renderList()}
         </div>
     }
