@@ -116,7 +116,7 @@ func (s *Server) setupCart() error {
 	cart.SetMode(cart.ReleaseMode)
 	//http.Handle("/", http.FileServer(assetFS()))
 	//http.ListenAndServe(s.config.Addresses.Http + ":" + strconv.Itoa(s.config.Ports.Http),nil)
-	//
+
 	r := cart.New()
 	r.Use("/", s.httpLogger(), cart.RecoveryRender(cart.DefaultErrorWriter))
 	r.Use("/favicon.ico", func(c *cart.Context, next cart.Next) {
@@ -129,26 +129,26 @@ func (s *Server) setupCart() error {
 			c.Response.Write(b)
 		}
 	})
-	//r.Use("/console/*file", func(c *cart.Context, next cart.Next) {
-	//	b, err := assetFS().Asset("static/dist/console.html")
-	//	if err != nil {
-	//		s.Logger.Printf(errorRpcPrefix+"error: %v\n", err)
-	//		next()
-	//	} else {
-	//		c.Response.WriteHeader(200)
-	//		c.Response.Write(b)
-	//	}
-	//})
-	//r.Use("/static/*file", func(c *cart.Context, next cart.Next) {
-	//	http.StripPrefix("/static/", http.FileServer(assetFS())).ServeHTTP(c.Response, c.Request)
-	//	if c.Response.Status() == 404 {
-	//		c.Response.WriteHeader(200) //reset status
-	//		next()
-	//	}
-	//})
+	r.Use("/console/*file", func(c *cart.Context, next cart.Next) {
+		b, err := assetFS().Asset("static/dist/console.html")
+		if err != nil {
+			s.Logger.Printf(errorServerPrefix+"error: %v\n", err)
+			next()
+		} else {
+			c.Response.WriteHeader(200)
+			c.Response.Write(b)
+		}
+	})
+	r.Use("/static/*file", func(c *cart.Context, next cart.Next) {
+		http.StripPrefix("/static/", http.FileServer(assetFS())).ServeHTTP(c.Response, c.Request)
+		if c.Response.Status() == 404 {
+			c.Response.WriteHeader(200) //reset status
+			next()
+		}
+	})
 	//debug
-	r.Use("/console/*file", cart.File("../static/dist/console.html"))
-	r.Use("/static/*file", cart.Static("../static", false))
+	//r.Use("/console/*file", cart.File("../static/dist/console.html"))
+	//r.Use("/static/*file", cart.Static("../static", false))
 	a := httpAPI{}
 	r.Route("/", a.Index)
 	s.httpServer = r.ServerKeepAlive(s.config.Addresses.Http + ":" + strconv.Itoa(s.config.Ports.Http))
