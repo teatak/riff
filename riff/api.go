@@ -86,13 +86,21 @@ func (a *API) Service(name string, state api.StateType) *api.Service {
 							Name: s.Name,
 						}
 					}
-					if n.State&state == n.State || s.State&state == s.State {
+
+					resolveState := api.StateAlive
+					if n.State == api.StateAlive {
+						resolveState = s.State
+					} else {
+						resolveState = n.State
+					}
+
+					if resolveState&state == resolveState {
 						node := &api.NestNode{
 							Name:       n.Name,
 							DataCenter: n.DataCenter,
 							IP:         n.IP,
 							Port:       s.Port,
-							State:      s.State,
+							State:      resolveState,
 							Version:    int(n.Version),
 							SnapShot:   n.SnapShot,
 							Config:     s.Config,
