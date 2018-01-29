@@ -7,6 +7,7 @@ function graphQLFetcher(graphQLParams) {
     return fetch(window.location.origin + '/api', {
         method: 'post',
         headers: {'Content-Type': 'application/json'},
+        credentials: "same-origin",
         body: JSON.stringify(graphQLParams),
     }).then(response => response.json());
 }

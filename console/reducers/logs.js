@@ -88,6 +88,7 @@ export const getLogs = () => (dispatch, getState) => {
     fetch(Config.api + "/logs", {
         method: 'get',
         headers: {'connection': 'keep-alive'},
+        credentials: 'same-origin'
     }).then((response) => {
         return consume(response.body.getReader())
     }).catch((error) => {
