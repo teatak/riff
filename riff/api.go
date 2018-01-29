@@ -11,7 +11,16 @@ func (a *API) Nodes() api.Nodes {
 	nodes := make([]*api.Node, 0, len(keys))
 	for _, key := range keys {
 		if n := server.GetNode(key); n != nil {
-			nodes = append(nodes, a.cloneNode(n))
+			node := &api.Node{
+				Name:       n.Name,
+				DataCenter: n.DataCenter,
+				IP:         n.IP,
+				Port:       n.Port,
+				State:      n.State,
+				SnapShot:   n.SnapShot,
+				Version:    int(n.Version),
+			}
+			nodes = append(nodes, node)
 		}
 	}
 	return nodes
@@ -19,10 +28,25 @@ func (a *API) Nodes() api.Nodes {
 
 func (a *API) Node(name string) *api.Node {
 	if n := server.GetNode(name); n != nil {
-		node := &api.Node{}
-		node = a.cloneNode(n)
+		node := &api.Node{
+			Name:       n.Name,
+			DataCenter: n.DataCenter,
+			IP:         n.IP,
+			Port:       n.Port,
+			State:      n.State,
+			SnapShot:   n.SnapShot,
+			Version:    int(n.Version),
+		}
 		for _, key := range n.Services.Keys() {
-			node.Services = append(node.Services, a.cloneService(n.Services[key]))
+			s := n.Services[key]
+			service := &api.NestService{
+				Name:   s.Name,
+				IP:     s.IP,
+				Port:   s.Port,
+				State:  s.State,
+				Config: s.Config,
+			}
+			node.NestServices = append(node.NestServices, service)
 		}
 		return node
 	}
@@ -52,7 +76,7 @@ func (a *API) Services() api.Services {
 func (a *API) Service(name string, state api.StateType) *api.Service {
 	keys := server.Keys()
 	var service *api.Service
-	nodes := make(api.Nodes, 0)
+	nodes := make(api.NestNodes, 0)
 	for _, key := range keys {
 		if n := server.GetNode(key); n != nil {
 			for _, s := range n.Services {
@@ -63,13 +87,15 @@ func (a *API) Service(name string, state api.StateType) *api.Service {
 						}
 					}
 					if n.State&state == n.State || s.State&state == s.State {
-						node := &api.Node{
+						node := &api.NestNode{
 							Name:       n.Name,
 							DataCenter: n.DataCenter,
 							IP:         n.IP,
 							Port:       s.Port,
 							State:      s.State,
 							Version:    int(n.Version),
+							SnapShot:   n.SnapShot,
+							Config:     s.Config,
 						}
 						nodes = append(nodes, node)
 					}
@@ -78,7 +104,7 @@ func (a *API) Service(name string, state api.StateType) *api.Service {
 		}
 	}
 	if service != nil {
-		service.Nodes = nodes
+		service.NestNodes = nodes
 	}
 	return service
 }
@@ -116,26 +142,27 @@ func (a *API) Restart(name string) bool {
 	}
 	return true
 }
-func (a *API) cloneNode(n *Node) (node *api.Node) {
-	node = &api.Node{
-		Name:       n.Name,
-		DataCenter: n.DataCenter,
-		IP:         n.IP,
-		Port:       n.Port,
-		State:      n.State,
-		SnapShot:   n.SnapShot,
-		Version:    int(n.Version),
-	}
-	return
-}
 
-func (a *API) cloneService(s *Service) (service *api.Service) {
-	service = &api.Service{
-		Name:   s.Name,
-		IP:     s.IP,
-		Port:   s.Port,
-		State:  s.State,
-		Config: s.Config,
-	}
-	return service
-}
+//func (a *API) cloneNode(n *Node) (node *api.Node) {
+//	node = &api.Node{
+//		Name:       n.Name,
+//		DataCenter: n.DataCenter,
+//		IP:         n.IP,
+//		Port:       n.Port,
+//		State:      n.State,
+//		SnapShot:   n.SnapShot,
+//		Version:    int(n.Version),
+//	}
+//	return
+//}
+
+//func (a *API) cloneService(s *Service) (service *api.NestService) {
+//	service = &api.NestService{
+//		Name:   s.Name,
+//		IP:     s.IP,
+//		Port:   s.Port,
+//		State:  s.State,
+//		Config: s.Config,
+//	}
+//	return service
+//}
