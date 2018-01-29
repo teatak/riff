@@ -52,7 +52,7 @@ class Nodes extends React.Component {
                 <input placeholder="Filter by name" onChange={this.onChange} value={this.state.filter}/>
             </li>
             {nodes.list.map((node, index) => {
-                if (node.name.indexOf(this.state.filter) > -1) {
+                if (node.name.toLowerCase().indexOf(this.state.filter.toLowerCase()) > -1) {
                     let className = "node-link " + node.state.toLowerCase();
                     return <li className="item" key={node.name}>
                         <NavLink className={className} to={"/nodes/" + node.name}>
