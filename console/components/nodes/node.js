@@ -1,5 +1,5 @@
 import React from 'react'
-import {withRouter} from 'react-router-dom'
+import {NavLink, withRouter} from 'react-router-dom'
 import {connect} from 'react-redux'
 import {getNode} from "../../reducers/nodes";
 import ArrowDown from '../icons/arrowDown'
@@ -50,7 +50,7 @@ class Node extends React.Component {
     renderList() {
         const {nodes} = this.props;
         if (nodes.data.services) {
-            return <ul className="services">
+            return <ul className="nestservices">
                 <li className="title">Services</li>
                 {nodes.data.services.map((service, index) => {
                     let className = "item " + service.state.toLowerCase();
@@ -59,7 +59,11 @@ class Node extends React.Component {
                             <div className="toggle" onClick={() => {
                                 this.toggle(service.name)
                             }}>{this.state.toggle[service.name] ? <ArrowUp/> : <ArrowDown/>}</div>
-                            <span className="name">{service.name}</span>
+                            <span className="name">
+                                <NavLink to={"/services/" + service.name}>
+                                    {service.name}
+                                </NavLink>
+                            </span>
                             <span className="ipport">{service.port !== 0 ? ":" + service.port : ""}</span>
                         </div>
 
