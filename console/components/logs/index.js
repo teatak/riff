@@ -83,7 +83,7 @@ class Logs extends React.Component {
         let error = "";
         if (logs.fetchLogs.status === 500) {
             network += " error";
-            error = logs.fetchLogs.error.message;
+            error = logs.fetchLogs.error;
         }
         return <div className="logs">
             <div className="logs-toolbar">

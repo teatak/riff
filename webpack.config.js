@@ -33,6 +33,10 @@ module.exports = {
             options.push(new webpack.optimize.UglifyJsPlugin());
             options.push(new webpack.LoaderOptionsPlugin({minimize: true}));
         }
+        options.push(new webpack.ProvidePlugin({
+            $: 'jquery',
+            jQuery: "jquery"
+        }));
         return options;
     }(),
     module: {
@@ -85,6 +89,9 @@ module.exports = {
                     }
                 ]
             })
+        },{
+            test: require.resolve('jquery'),
+            loader: "imports-loader?$=jquery&jQuery=jquery"
         },{
             test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/,
             loader: 'file-loader',
