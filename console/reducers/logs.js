@@ -1,9 +1,22 @@
 import Common from './common'
 import Config from 'config'
 
+export const LOG_RESET = 'LOG_RESET';
 export const LOG_REQUEST = 'LOG_REQUEST';
 export const LOG_SUCCESS = 'LOG_SUCCESS';
 export const LOG_FAILURE = 'LOG_FAILURE';
+
+let initReader = null;
+
+export const cancelLogs = () => (dispatch, getState) => {
+    let state = getState();
+    if (state.logs.fetchLogs.loading) {
+        if (initReader !== null) {
+            initReader.cancel();
+            dispatch({type: LOG_RESET});
+        }
+    }
+};
 
 export const getLogs = () => (dispatch, getState) => {
     let state = getState();
@@ -11,58 +24,6 @@ export const getLogs = () => (dispatch, getState) => {
         return
     }
     dispatch({type: LOG_REQUEST});
-
-    // let reader = null;
-    // let loop = (response) => {
-    //     setTimeout(() => {
-    //         reader.read().then((b) => {
-    //             let text = new TextDecoder("utf-8").decode(b.value);
-    //             dispatch({
-    //                 type: LOG_SUCCESS,
-    //                 status: response.status,
-    //                 text,
-    //                 receivedAt: Date.now()
-    //             });
-    //             if (b.done) {
-    //                 init = false;
-    //             }
-    //             loop(response);
-    //         }).catch((error) => {
-    //             dispatch({
-    //                 type: LOG_FAILURE,
-    //                 status: 500,
-    //                 error: error,
-    //                 receivedAt: Date.now()
-    //             });
-    //         })
-    //     }, 0);
-    // };
-
-    // $.ajax({
-    //     type: "get",
-    //     url: Config.api + "/logs",
-    //     dataType: "text",
-    //     xhr: function () {
-    //         let xhr = $.ajaxSettings.xhr();
-    //         xhr.onprogress = (e) => {
-    //             // For downloads
-    //             dispatch({
-    //                 type: LOG_SUCCESS,
-    //                 status: e.currentTarget.status,
-    //                 text: e.currentTarget.responseText,
-    //                 receivedAt: Date.now()
-    //             });
-    //         };
-    //         return xhr;
-    //     }
-    // }).fail((xhr) => {
-    //     dispatch({
-    //         type: LOG_FAILURE,
-    //         status: 500,
-    //         error: xhr.statusText,
-    //         receivedAt: Date.now()
-    //     });
-    // });
 
     let Utf8ArrayToStr = (array) => {
         let out, i, len, c;
@@ -106,6 +67,7 @@ export const getLogs = () => (dispatch, getState) => {
     };
 
     let consume = (reader) => {
+        initReader = reader;
         let pump = () => {
             return reader.read().then(({done, value}) => {
                 if (done) {
@@ -143,6 +105,12 @@ const logs = (state = {
     list: [],                   //数据
 }, action) => {
     switch (action.type) {
+        case LOG_RESET:
+            return {
+                ...state,
+                fetchLogs: Common.initRequest,
+                list: [],
+            };
         case LOG_REQUEST:
             return {
                 ...state,

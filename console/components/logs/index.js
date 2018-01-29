@@ -1,6 +1,6 @@
 import React from 'react'
 import {connect} from 'react-redux'
-import {getLogs} from "../../reducers/logs"
+import {getLogs,cancelLogs} from "../../reducers/logs"
 import Close from '../icons/close'
 import SwapHoriz from '../icons/swapHoriz'
 import Refresh from '../icons/refresh'
@@ -17,6 +17,9 @@ const mapDispatchToProps = (dispatch) => {
     return {
         getLogs: () => {
             dispatch(getLogs());
+        },
+        cancelLogs: () => {
+            dispatch(cancelLogs());
         },
     }
 };
@@ -58,6 +61,7 @@ class Logs extends React.Component {
     };
 
     handleClose = () => {
+        this.props.cancelLogs();
         if (this.props.onClose) {
             this.props.onClose()
         }
