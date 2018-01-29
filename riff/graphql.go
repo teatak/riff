@@ -188,14 +188,6 @@ var enumStateType = graphql.NewEnum(graphql.EnumConfig{
 var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Query",
 	Fields: graphql.Fields{
-		"nestNodeType": &graphql.Field{
-			Type:        nestNodeType,
-			Description: "only export",
-		},
-		"nestServiceType": &graphql.Field{
-			Type:        nestServiceType,
-			Description: "only export",
-		},
 		"riff": &graphql.Field{
 			Type:        riffType,
 			Description: "get riff version, git sha or brance",
@@ -223,13 +215,13 @@ var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 			},
 		},
 		"node": &graphql.Field{
-			Type: nodeType,
+			Type:        nodeType,
+			Description: "get node",
 			Args: graphql.FieldConfigArgument{
 				"name": &graphql.ArgumentConfig{
 					Type: graphql.String,
 				},
 			},
-			Description: "get node",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				name, ok := p.Args["name"].(string)
 				if ok {
@@ -250,16 +242,17 @@ var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 			},
 		},
 		"service": &graphql.Field{
-			Type: serviceType,
+			Type:        serviceType,
+			Description: "get service",
 			Args: graphql.FieldConfigArgument{
 				"name": &graphql.ArgumentConfig{
 					Type: graphql.String,
 				},
 				"state": &graphql.ArgumentConfig{
-					Type: enumStateType,
+					Type:         enumStateType,
+					DefaultValue: api.StateAll,
 				},
 			},
-			Description: "get service",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				name, ok := p.Args["name"].(string)
 				state, stateOk := p.Args["state"]
@@ -280,6 +273,10 @@ var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 var schema, _ = graphql.NewSchema(graphql.SchemaConfig{
 	Query: rootQuery,
 	//Mutation: rootMutation,
+	Types: []graphql.Type{
+		nestNodeType,
+		nestServiceType,
+	},
 })
 
 func executeQuery(query string, schema graphql.Schema) *graphql.Result {
