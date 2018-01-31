@@ -73,7 +73,7 @@ func NewRequestOptions(r *http.Request) *RequestOptions {
 	// TODO: improve Content-Type handling
 	contentTypeStr := r.Header.Get("Content-Type")
 	contentTypeTokens := strings.Split(contentTypeStr, ";")
-	contentType := contentTypeTokens[0]
+	contentType := strings.TrimSpace(contentTypeTokens[0])
 
 	switch contentType {
 	case ContentTypeGraphQL:
