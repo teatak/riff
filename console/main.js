@@ -1,6 +1,5 @@
 import 'whatwg-fetch'
 import 'promise-polyfill/src/polyfill'
-import {TextDecoder, TextEncoder} from 'text-encoding';
 import React from 'react'
 import {render} from 'react-dom'
 import {Provider} from 'react-redux'
@@ -13,10 +12,6 @@ import reducer from './reducers'
 import App from './app'
 
 import './style/main.pcss'
-
-// polyfill TextEncoder
-window.TextEncoder = TextEncoder;
-window.TextDecoder = TextDecoder;
 
 const store = createStore(reducer, applyMiddleware(thunk));
 const router = <Provider store={store}>

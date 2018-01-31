@@ -68,27 +68,35 @@ export const getLogs = () => (dispatch, getState) => {
 
     let consume = (reader) => {
         initReader = reader;
-        let pump = () => {
-            return reader.read().then(({done, value}) => {
-                if (done) {
-                    return
-                }
-                dispatch({
-                    type: LOG_SUCCESS,
-                    status: 200,
-                    text: Utf8ArrayToStr(value),
-                    receivedAt: Date.now()
-                });
-                return pump();
-            })
-        };
-        return pump();
+        let total = 0;
+        return new Promise((resolve, reject) => {
+            function pump() {
+                reader.read().then(({done, value}) => {
+                    if (done) {
+                        resolve();
+                        return
+                    }
+                    total += value.byteLength;
+                    //console.log(`received ${value.byteLength} bytes (${total} bytes in total)`)
+                    let text = Utf8ArrayToStr(value);
+                    dispatch({
+                        type: LOG_SUCCESS,
+                        status: 200,
+                        text: text,
+                        receivedAt: Date.now()
+                    });
+                    pump()
+                }).catch(reject)
+            }
+
+            pump()
+        })
     };
 
     fetch(Config.api + "/logs", {
         method: 'get',
         headers: {'connection': 'keep-alive'},
-        credentials: 'same-origin'
+        credentials: 'include'
     }).then((response) => {
         return consume(response.body.getReader())
     }).catch((error) => {
