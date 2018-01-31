@@ -280,11 +280,8 @@ var schema, _ = graphql.NewSchema(graphql.SchemaConfig{
 	},
 })
 
-func executeQuery(query string, schema graphql.Schema) *graphql.Result {
-	result := graphql.Do(graphql.Params{
-		Schema:        schema,
-		RequestString: query,
-	})
+func executeQuery(params graphql.Params) *graphql.Result {
+	result := graphql.Do(params)
 	if len(result.Errors) > 0 {
 		server.Logger.Printf(errorServicePrefix+"wrong result, unexpected errors: %v\n", result.Errors)
 	}
