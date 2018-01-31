@@ -7,6 +7,24 @@ import (
 	"github.com/graphql-go/graphql"
 )
 
+var enumStateType = graphql.NewEnum(graphql.EnumConfig{
+	Name: "State",
+	Values: graphql.EnumValueConfigMap{
+		"Alive": &graphql.EnumValueConfig{
+			Value: api.StateAlive,
+		},
+		"Suspect": &graphql.EnumValueConfig{
+			Value: api.StateSuspect,
+		},
+		"Dead": &graphql.EnumValueConfig{
+			Value: api.StateDead,
+		},
+		"All": &graphql.EnumValueConfig{
+			Value: api.StateAll,
+		},
+	},
+})
+
 var riffType = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Riff",
 	Fields: graphql.Fields{
@@ -51,7 +69,7 @@ var nestServiceType = graphql.NewObject(graphql.ObjectConfig{
 			Description: "port of service",
 		},
 		"state": &graphql.Field{
-			Type:        graphql.String,
+			Type:        enumStateType,
 			Description: "state of service (Alive,Suspect,Dead)",
 		},
 		"config": &graphql.Field{
@@ -81,7 +99,7 @@ var nodeType = graphql.NewObject(graphql.ObjectConfig{
 			Description: "port of node",
 		},
 		"state": &graphql.Field{
-			Type:        graphql.String,
+			Type:        enumStateType,
 			Description: "state of node (Alive,Suspect,Dead)",
 		},
 		"version": &graphql.Field{
@@ -115,7 +133,7 @@ var nestNodeType = graphql.NewObject(graphql.ObjectConfig{
 			Description: "port of node",
 		},
 		"state": &graphql.Field{
-			Type:        graphql.String,
+			Type:        enumStateType,
 			Description: "state of node (Alive,Suspect,Dead)",
 		},
 		"version": &graphql.Field{
@@ -168,23 +186,6 @@ func init() {
 	})
 }
 
-var enumStateType = graphql.NewEnum(graphql.EnumConfig{
-	Name: "State",
-	Values: graphql.EnumValueConfigMap{
-		"Alive": &graphql.EnumValueConfig{
-			Value: api.StateAlive,
-		},
-		"Suspect": &graphql.EnumValueConfig{
-			Value: api.StateSuspect,
-		},
-		"Dead": &graphql.EnumValueConfig{
-			Value: api.StateDead,
-		},
-		"All": &graphql.EnumValueConfig{
-			Value: api.StateAll,
-		},
-	},
-})
 var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Query",
 	Fields: graphql.Fields{
