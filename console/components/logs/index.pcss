@@ -37,6 +37,9 @@
       align-items: center;
       padding-left: 2px;
       color: var(--mainRed);
+      &.ie {
+        color: var(--darkBlack);
+      }
     }
     & svg {
       width: 16px;
@@ -62,5 +65,12 @@
       }
     }
   }
+  & .iframe-logs {
+    border:none;
+    height: 300px;
+    width: 100%;
+    & pre {
 
+    }
+  }
 }
