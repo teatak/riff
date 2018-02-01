@@ -60,10 +60,6 @@ var nestServiceType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.String,
 			Description: "name of service",
 		},
-		"ip": &graphql.Field{
-			Type:        graphql.String,
-			Description: "ip of service",
-		},
 		"port": &graphql.Field{
 			Type:        graphql.Int,
 			Description: "port of service",

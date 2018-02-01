@@ -32,10 +32,6 @@ type Services []*Service
 
 type Service struct {
 	Name string `json:"name"`
-	//IP        string    `json:"ip,omitempty"`
-	//Port      int       `json:"port,omitempty"`
-	//State     StateType `json:"state,omitempty"`
-	//Config    string    `json:"config,omitempty"`
 	NestNodes `json:"nodes,omitempty"`
 }
 
@@ -43,7 +39,6 @@ type NestServices []*NestService
 
 type NestService struct {
 	Name   string    `json:"name"`
-	IP     string    `json:"ip,omitempty"`
 	Port   int       `json:"port,omitempty"`
 	State  StateType `json:"state,omitempty"`
 	Config string    `json:"config,omitempty"`

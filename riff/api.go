@@ -43,7 +43,6 @@ func (a *API) makeService(s *Service) *api.Service {
 func (a *API) makeNestService(s *Service) *api.NestService {
 	service := &api.NestService{
 		Name:   s.Name,
-		IP:     s.IP,
 		Port:   s.Port,
 		State:  s.State,
 		Config: s.Config,

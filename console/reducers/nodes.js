@@ -55,7 +55,6 @@ export const getNode = (nodeName) => (dispatch, getState) => {
         version
         services {
             name
-            ip
             port
             state
             config

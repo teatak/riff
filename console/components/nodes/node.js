@@ -89,7 +89,7 @@ class Node extends React.Component {
             return <div>
                 <div className="title">
                     <span className="name">{nodes.data.name}</span>
-                    <span className="ipport">{nodes.data.ip}:{nodes.data.port}</span>
+                    <span className="ipport">{nodes.data.ip}</span>
                 </div>
                 {this.renderList()}
             </div>
