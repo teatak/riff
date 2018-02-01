@@ -47,7 +47,6 @@ type Service struct {
 
 type ServiceConfig struct {
 	Name       string   `yaml:"name,omitempty"`
-	IP         string   `yaml:"ip,omitempty"`
 	Port       int      `yaml:"port,omitempty"`
 	Env        []string `yaml:"env,omitempty"`
 	Command    []string `yaml:"command,omitempty"`
@@ -307,7 +306,7 @@ func (s *Service) SetVersion(version string) {
 }
 
 func (s *Service) Address() string {
-	return net.JoinHostPort(s.IP, strconv.Itoa(int(s.Port)))
+	return net.JoinHostPort("", strconv.Itoa(int(s.Port)))
 }
 
 func (s *Services) Keys() []string {

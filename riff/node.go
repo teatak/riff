@@ -89,7 +89,7 @@ func (s *Server) GetService(findName string) interface{} {
 	nodes := []string{}
 	for _, key := range keys {
 		if n := s.GetNode(key); n != nil {
-			for name, n := range n.Services {
+			for name, s := range n.Services {
 				if name == findName {
 					if service == nil {
 						service = map[string]interface{}{
@@ -97,7 +97,7 @@ func (s *Server) GetService(findName string) interface{} {
 						}
 					}
 					if n.State == api.StateAlive {
-						nodes = append(nodes, n.Address())
+						nodes = append(nodes, s.Address())
 					}
 				}
 			}
