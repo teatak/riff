@@ -33,7 +33,7 @@ if (/rv:11.0/i.test(navigator.userAgent)) {
     isIe = true;
 }
 if (/Edge\/\d./i.test(navigator.userAgent)) {
-    isIe = true;
+    isIe = false;
 }
 
 class Logs extends React.Component {
