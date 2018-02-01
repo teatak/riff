@@ -6,21 +6,57 @@ import (
 
 type API struct{}
 
+func (a *API) makeNode(n *Node) *api.Node {
+	node := &api.Node{
+		Name:       n.Name,
+		DataCenter: n.DataCenter,
+		IP:         n.IP,
+		Port:       n.Port,
+		State:      n.State,
+		SnapShot:   n.SnapShot,
+		IsSelf:     n.IsSelf,
+		Version:    int(n.Version),
+	}
+	return node
+}
+func (a *API) makeNestNode(n *Node, s *Service, resolveState api.StateType) *api.NestNode {
+	node := &api.NestNode{
+		Name:       n.Name,
+		DataCenter: n.DataCenter,
+		IP:         n.IP,
+		Port:       s.Port,
+		State:      resolveState,
+		Version:    int(n.Version),
+		SnapShot:   n.SnapShot,
+		IsSelf:     n.IsSelf,
+		Config:     s.Config,
+	}
+	return node
+}
+
+func (a *API) makeService(s *Service) *api.Service {
+	return &api.Service{
+		Name: s.Name,
+	}
+}
+
+func (a *API) makeNestService(s *Service) *api.NestService {
+	service := &api.NestService{
+		Name:   s.Name,
+		IP:     s.IP,
+		Port:   s.Port,
+		State:  s.State,
+		Config: s.Config,
+	}
+	return service
+}
+
 func (a *API) Nodes() api.Nodes {
 	keys := server.Keys()
 	nodes := make([]*api.Node, 0, len(keys))
 	for _, key := range keys {
 		if n := server.GetNode(key); n != nil {
-			node := &api.Node{
-				Name:       n.Name,
-				DataCenter: n.DataCenter,
-				IP:         n.IP,
-				Port:       n.Port,
-				State:      n.State,
-				SnapShot:   n.SnapShot,
-				Version:    int(n.Version),
-			}
-			nodes = append(nodes, node)
+			nodes = append(nodes, a.makeNode(n))
 		}
 	}
 	return nodes
@@ -28,25 +64,10 @@ func (a *API) Nodes() api.Nodes {
 
 func (a *API) Node(name string) *api.Node {
 	if n := server.GetNode(name); n != nil {
-		node := &api.Node{
-			Name:       n.Name,
-			DataCenter: n.DataCenter,
-			IP:         n.IP,
-			Port:       n.Port,
-			State:      n.State,
-			SnapShot:   n.SnapShot,
-			Version:    int(n.Version),
-		}
+		node := a.makeNode(n)
 		for _, key := range n.Services.Keys() {
 			s := n.Services[key]
-			service := &api.NestService{
-				Name:   s.Name,
-				IP:     s.IP,
-				Port:   s.Port,
-				State:  s.State,
-				Config: s.Config,
-			}
-			node.NestServices = append(node.NestServices, service)
+			node.NestServices = append(node.NestServices, a.makeNestService(s))
 		}
 		return node
 	}
@@ -62,9 +83,7 @@ func (a *API) Services() api.Services {
 			for _, skey := range n.Services.Keys() {
 				if _, ok := helper[skey]; !ok {
 					helper[skey] = skey
-					service := &api.Service{
-						Name: n.Services[skey].Name,
-					}
+					service := a.makeService(n.Services[skey])
 					services = append(services, service)
 				}
 			}
@@ -95,16 +114,7 @@ func (a *API) Service(name string, state api.StateType) *api.Service {
 					}
 
 					if resolveState&state == resolveState {
-						node := &api.NestNode{
-							Name:       n.Name,
-							DataCenter: n.DataCenter,
-							IP:         n.IP,
-							Port:       s.Port,
-							State:      resolveState,
-							Version:    int(n.Version),
-							SnapShot:   n.SnapShot,
-							Config:     s.Config,
-						}
+						node := a.makeNestNode(n, s, resolveState)
 						nodes = append(nodes, node)
 					}
 				}

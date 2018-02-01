@@ -4,6 +4,7 @@ import {connect} from 'react-redux'
 import {getNode} from "../../reducers/nodes";
 import ArrowDown from '../icons/arrowDown'
 import ArrowUp from '../icons/arrowUp'
+import Star from '../icons/star'
 
 const mapStateToProps = (state, ownProps) => {
     return {

@@ -110,6 +110,10 @@ var nodeType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.String,
 			Description: "snapshot of node",
 		},
+		"isSelf": &graphql.Field{
+			Type:        graphql.Boolean,
+			Description: "isSelf of node",
+		},
 	},
 })
 
@@ -143,6 +147,10 @@ var nestNodeType = graphql.NewObject(graphql.ObjectConfig{
 		"snapShot": &graphql.Field{
 			Type:        graphql.String,
 			Description: "snapshot of node",
+		},
+		"isSelf": &graphql.Field{
+			Type:        graphql.Boolean,
+			Description: "isSelf of node",
 		},
 		"config": &graphql.Field{
 			Type:        graphql.String,

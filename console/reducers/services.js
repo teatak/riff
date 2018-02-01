@@ -44,6 +44,7 @@ export const getService = (serviceName,state) => (dispatch, getState) => {
             ip
             port
             state
+            isSelf
             config
         } 
     }

@@ -17,6 +17,7 @@ export const getList = () => (dispatch, getState) => {
         port
         dataCenter
         state
+        isSelf
         version
     }
 }`;
@@ -50,6 +51,7 @@ export const getNode = (nodeName) => (dispatch, getState) => {
         dataCenter
         snapShot
         state
+        isSelf
         version
         services {
             name

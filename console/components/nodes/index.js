@@ -4,6 +4,7 @@ import {NavLink, Route, Switch} from 'react-router-dom'
 import {getList} from '../../reducers/nodes'
 import Node from './node'
 import Search from '../icons/search'
+import Star from '../icons/star'
 
 import './index.pcss'
 
