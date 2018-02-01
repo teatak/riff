@@ -10,7 +10,7 @@ export const NODE_FAILURE = 'NODE_FAILURE';
 
 //获取Product
 export const getList = () => (dispatch, getState) => {
-    const query = `query{
+    const query = `{
     nodes {
         name
         ip
@@ -43,7 +43,7 @@ export const getList = () => (dispatch, getState) => {
 
 export const getNode = (nodeName) => (dispatch, getState) => {
     let node = (nodeName === undefined) ? "node:server" : "node(name:\"" + nodeName + "\")";
-    let query = `query{
+    let query = `{
     ` + node + ` {
         name
         ip

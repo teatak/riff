@@ -10,7 +10,7 @@ export const SERVICE_FAILURE = 'SERVICE_FAILURE';
 
 //获取Product
 export const getList = () => (dispatch, getState) => {
-    const query = `query{
+    const query = `{
     services {
         name
     }
@@ -35,9 +35,9 @@ export const getList = () => (dispatch, getState) => {
     })
 };
 
-export const getService = (serviceName,state) => (dispatch, getState) => {
-    let query = `query{
-    service(name:"`+serviceName+`",state:All) {
+export const getService = (serviceName, state) => (dispatch, getState) => {
+    let query = `{
+    service(name:"` + serviceName + `",state:All) {
         name
         nodes {
             name
