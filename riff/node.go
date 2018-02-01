@@ -142,7 +142,7 @@ func (s *Server) RemoveNodeDelay(n *Node) {
 				n.timeoutFn = nil
 			}
 		}
-		timeout := 10 * time.Second
+		timeout := 5 * 60 * time.Second
 		n.timer = time.AfterFunc(timeout, n.timeoutFn)
 	}
 }

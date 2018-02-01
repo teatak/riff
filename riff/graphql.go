@@ -287,11 +287,3 @@ var schema, _ = graphql.NewSchema(graphql.SchemaConfig{
 		nestServiceType,
 	},
 })
-
-func executeQuery(params graphql.Params) *graphql.Result {
-	result := graphql.Do(params)
-	if len(result.Errors) > 0 {
-		server.Logger.Printf(errorServicePrefix+"wrong result, unexpected errors: %v\n", result.Errors)
-	}
-	return result
-}

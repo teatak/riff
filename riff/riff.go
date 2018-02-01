@@ -125,59 +125,6 @@ func (s *Server) MergeDiff(diffs []*Node) (reDiffs []*Node) {
 	s.Logger.Printf(infoServerPrefix+"server %s merge %d nodes return %d nodes\n", s.Self.Name, count, len(reDiffs))
 	s.Shutter()
 	return
-	//reDiff = make([]*Node, 0)
-	//for _, d := range diff {
-	//	n := s.GetNode(d.Name) //find in server nodes
-	//	if n == nil {
-	//		if d.State != stateDead {
-	//			//exclude dead node
-	//			d.IsSelf = false //remove is self
-	//			s.SetNode(d)     //if not find then add node
-	//		}
-	//	} else {
-	//		if d.SnapShot == n.SnapShot {
-	//			continue
-	//		}
-	//		if d.SnapShot == "" {
-	//			//need update this
-	//			reDiff = append(reDiff, n)
-	//			continue
-	//		}
-	//		if d.IsSelf {
-	//			//if remote node is self then overwrite server node
-	//			switch d.State {
-	//			case stateAlive:
-	//				s.SetState(n, stateAlive)
-	//				break
-	//			case stateDead:
-	//				n.State = stateDead
-	//				n.VersionSet(d.Version)
-	//				s.SetNode(n)
-	//				s.RemoveNode(n)
-	//				break
-	//			}
-	//			reDiff = append(reDiff, n)
-	//			//reDiff[n.Name] = n //shot out new version
-	//		} else {
-	//			if d.VersionGet() > n.VersionGet() {
-	//				if n.IsSelf {
-	//					//only update version
-	//					n.VersionSet(d.Version)
-	//					n.Shutter()
-	//				} else {
-	//					*n = *d
-	//					s.SetNode(n)
-	//				}
-	//			} else if d.VersionGet() != n.VersionGet() {
-	//				//take my node
-	//				reDiff = append(reDiff, n)
-	//			}
-	//		}
-	//	}
-	//}
-	//s.Logger.Printf(infoNodePrefix+"server %s merge %d nodes return %d nodes\n", s.Self.Name, len(diff), len(reDiff))
-	//s.Shutter()
-	//return
 }
 
 // it's real true node state

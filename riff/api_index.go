@@ -39,7 +39,7 @@ func (a *httpAPI) Index(r *cart.Router) {
 	r.Route("/api", a.apiIndex)
 }
 
-func getFromForm(values url.Values) *RequestOptions {
+func (a *httpAPI) getFromForm(values url.Values) *RequestOptions {
 	query := values.Get("query")
 	if query != "" {
 		// get variables map
@@ -57,8 +57,8 @@ func getFromForm(values url.Values) *RequestOptions {
 	return nil
 }
 
-func NewRequestOptions(r *http.Request) *RequestOptions {
-	if reqOpt := getFromForm(r.URL.Query()); reqOpt != nil {
+func (a *httpAPI) newRequestOptions(r *http.Request) *RequestOptions {
+	if reqOpt := a.getFromForm(r.URL.Query()); reqOpt != nil {
 		return reqOpt
 	}
 
@@ -89,7 +89,7 @@ func NewRequestOptions(r *http.Request) *RequestOptions {
 			return &RequestOptions{}
 		}
 
-		if reqOpt := getFromForm(r.PostForm); reqOpt != nil {
+		if reqOpt := a.getFromForm(r.PostForm); reqOpt != nil {
 			return reqOpt
 		}
 
@@ -118,7 +118,7 @@ func NewRequestOptions(r *http.Request) *RequestOptions {
 func (a *httpAPI) apiIndex(r *cart.Router) {
 	r.ANY(func(c *cart.Context, next cart.Next) {
 		//var reqOpt *RequestOptions
-		opts := NewRequestOptions(c.Request)
+		opts := a.newRequestOptions(c.Request)
 
 		params := graphql.Params{
 			Schema:         schema,
@@ -127,8 +127,9 @@ func (a *httpAPI) apiIndex(r *cart.Router) {
 			OperationName:  opts.OperationName,
 			Context:        c.Request.Context(),
 		}
-		result := executeQuery(params)
+		result := graphql.Do(params)
 		if len(result.Errors) > 0 {
+			server.Logger.Printf(errorServicePrefix+"wrong result, unexpected errors: %v\n", result.Errors)
 			c.IndentedJSON(500, result)
 		} else {
 			c.IndentedJSON(200, result)
