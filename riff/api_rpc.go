@@ -3,6 +3,7 @@ package riff
 import (
 	"fmt"
 	"github.com/gimke/riff/api"
+	"strings"
 )
 
 type Query struct{}
@@ -48,7 +49,7 @@ func (q *Query) Service(p api.ParamService, service *api.Service) error {
 type Mutation struct{}
 
 func (q *Mutation) Service(p api.ParamServiceMutation, reply *bool) (err error) {
-	server.Logger.Printf(infoServerPrefix+"client %s service %s", p.Cmd.String(), p.Name)
+	server.Logger.Printf(infoServerPrefix+"client %s service %s", strings.ToLower(p.Cmd.String()), p.Name)
 	s := server.Self.Services[p.Name]
 	if s == nil {
 		*reply = false
