@@ -1,6 +1,6 @@
 // +build windows
 
-package start
+package run
 
 import (
 	"fmt"

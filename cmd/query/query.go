@@ -98,7 +98,7 @@ func (c *cmd) Run(args []string) int {
 func (c *cmd) SnapShot() {
 	conn, err := net.DialTimeout("tcp", c.rpc, time.Second*10)
 	if err != nil {
-		fmt.Println("error", err)
+		fmt.Println(err)
 		return
 	}
 	codec := api.NewGobClientCodec(conn)
@@ -114,7 +114,7 @@ func (c *cmd) SnapShot() {
 func (c *cmd) Nodes() {
 	conn, err := net.DialTimeout("tcp", c.rpc, time.Second*10)
 	if err != nil {
-		fmt.Println("error", err)
+		fmt.Println(err)
 		return
 	}
 	codec := api.NewGobClientCodec(conn)
@@ -146,7 +146,7 @@ func (c *cmd) Nodes() {
 func (c *cmd) Node(name string) {
 	conn, err := net.DialTimeout("tcp", c.rpc, time.Second*10)
 	if err != nil {
-		fmt.Println("error", err)
+		fmt.Println(err)
 		return
 	}
 	codec := api.NewGobClientCodec(conn)
@@ -157,26 +157,52 @@ func (c *cmd) Node(name string) {
 		fmt.Println(err)
 		return
 	}
-	results := make([]string, 0, 1)
-	header := "Node|Address|Status|DC|SnapShot"
-	results = append(results, header)
+	info := make([]string, 0, 5)
+	//header := "Node|Address|Status|DC|SnapShot"
+	//results = append(results, header)
 
-	line := fmt.Sprintf("%s|%s|%s|%s|%s",
-		node.Name,
-		net.JoinHostPort(node.IP, strconv.Itoa(node.Port)),
-		node.State.String(),
-		node.DataCenter,
-		node.SnapShot[0:9]+"...")
-	results = append(results, line)
+	info = append(info, "Node:|"+node.Name)
+	info = append(info, "Address:|"+net.JoinHostPort(node.IP, strconv.Itoa(node.Port)))
+	info = append(info, "Status:|"+node.State.String())
+	info = append(info, "DC:|"+node.DataCenter)
+	info = append(info, "SnapShot:|"+node.SnapShot)
 
-	output := columnize.SimpleFormat(results)
+	//line := fmt.Sprintf("%s|%s|%s|%s|%s",
+	//	node.Name,
+	//	net.JoinHostPort(node.IP, strconv.Itoa(node.Port)),
+	//	node.State.String(),
+	//	node.DataCenter,
+	//	node.SnapShot[0:9]+"...")
+	//results = append(results, line)
+
+	output := columnize.SimpleFormat(info)
+
 	fmt.Println(output)
+
+	if len(node.NestServices) > 0 {
+		fmt.Println("")
+		//output service
+		results := make([]string, 0, len(node.NestServices))
+		header := "Service|Port|Status"
+		results = append(results, header)
+
+		for _, s := range node.NestServices {
+			line := fmt.Sprintf("%s|%s|%s",
+				s.Name,
+				net.JoinHostPort("", strconv.Itoa(s.Port)),
+				s.State.String())
+			results = append(results, line)
+		}
+
+		output = columnize.SimpleFormat(results)
+		fmt.Println(output)
+	}
 }
 
 func (c *cmd) Services() {
 	conn, err := net.DialTimeout("tcp", c.rpc, time.Second*10)
 	if err != nil {
-		fmt.Println("error", err)
+		fmt.Println(err)
 		return
 	}
 	codec := api.NewGobClientCodec(conn)
@@ -201,7 +227,7 @@ func (c *cmd) Services() {
 func (c *cmd) Service(name string) {
 	conn, err := net.DialTimeout("tcp", c.rpc, time.Second*10)
 	if err != nil {
-		fmt.Println("error", err)
+		fmt.Println(err)
 		return
 	}
 	codec := api.NewGobClientCodec(conn)

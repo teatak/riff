@@ -17,7 +17,7 @@ const (
 	ContentTypeFormURLEncoded = "application/x-www-form-urlencoded"
 )
 
-type httpAPI struct{}
+type Http struct{}
 
 type RequestOptions struct {
 	Query         string                 `json:"query" url:"query" schema:"query"`
@@ -32,14 +32,14 @@ type requestOptionsCompatibility struct {
 	OperationName string `json:"operationName" url:"operationName" schema:"operationName"`
 }
 
-func (a *httpAPI) Index(r *cart.Router) {
+func (h *Http) Index(r *cart.Router) {
 	r.Route("/").GET(func(c *cart.Context) {
 		c.Redirect(302, "/console/")
 	})
-	r.Route("/api", a.apiIndex)
+	r.Route("/api", h.apiIndex)
 }
 
-func (a *httpAPI) getFromForm(values url.Values) *RequestOptions {
+func (h *Http) getFromForm(values url.Values) *RequestOptions {
 	query := values.Get("query")
 	if query != "" {
 		// get variables map
@@ -57,8 +57,8 @@ func (a *httpAPI) getFromForm(values url.Values) *RequestOptions {
 	return nil
 }
 
-func (a *httpAPI) newRequestOptions(r *http.Request) *RequestOptions {
-	if reqOpt := a.getFromForm(r.URL.Query()); reqOpt != nil {
+func (h *Http) newRequestOptions(r *http.Request) *RequestOptions {
+	if reqOpt := h.getFromForm(r.URL.Query()); reqOpt != nil {
 		return reqOpt
 	}
 
@@ -89,7 +89,7 @@ func (a *httpAPI) newRequestOptions(r *http.Request) *RequestOptions {
 			return &RequestOptions{}
 		}
 
-		if reqOpt := a.getFromForm(r.PostForm); reqOpt != nil {
+		if reqOpt := h.getFromForm(r.PostForm); reqOpt != nil {
 			return reqOpt
 		}
 
@@ -115,10 +115,10 @@ func (a *httpAPI) newRequestOptions(r *http.Request) *RequestOptions {
 	}
 }
 
-func (a *httpAPI) apiIndex(r *cart.Router) {
+func (h *Http) apiIndex(r *cart.Router) {
 	r.ANY(func(c *cart.Context, next cart.Next) {
 		//var reqOpt *RequestOptions
-		opts := a.newRequestOptions(c.Request)
+		opts := h.newRequestOptions(c.Request)
 
 		params := graphql.Params{
 			Schema:         schema,
@@ -135,7 +135,7 @@ func (a *httpAPI) apiIndex(r *cart.Router) {
 			c.IndentedJSON(200, result)
 		}
 	})
-	r.Route("/logs").GET(a.logs)
+	r.Route("/logs").GET(h.logs)
 }
 
 type httpLogHandler struct {
@@ -149,7 +149,7 @@ func (h *httpLogHandler) HandleLog(log string) {
 	}
 }
 
-func (a httpAPI) logs(c *cart.Context) {
+func (h Http) logs(c *cart.Context) {
 	resp := c.Response
 	clientGone := resp.(http.CloseNotifier).CloseNotify()
 

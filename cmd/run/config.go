@@ -1,4 +1,4 @@
-package start
+package run
 
 import (
 	"github.com/gimke/riff/common"

@@ -18,8 +18,9 @@ func registerEndpoint(fn factory) {
 }
 
 func init() {
-	registerEndpoint(func(s *Server) interface{} { return &Query{} })
 	registerEndpoint(func(s *Server) interface{} { return &Riff{} })
+	registerEndpoint(func(s *Server) interface{} { return &Query{} })
+	registerEndpoint(func(s *Server) interface{} { return &Mutation{} })
 }
 
 func (s *Server) listenHttp() {

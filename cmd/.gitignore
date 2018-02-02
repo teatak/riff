@@ -1,5 +1,5 @@
 cmd
 riff
 config/
-run/
 logs/
+run/*.pid

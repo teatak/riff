@@ -149,8 +149,8 @@ func (s *Server) setupCart() error {
 	//debug
 	r.Use("/console/*file", cart.File("../static/dist/console.html"))
 	r.Use("/static/*file", cart.Static("../static", false))
-	a := httpAPI{}
-	r.Route("/", a.Index)
+	h := Http{}
+	r.Route("/", h.Index)
 	s.httpServer = r.ServerKeepAlive(s.config.Addresses.Http + ":" + strconv.Itoa(s.config.Ports.Http))
 	return nil
 }

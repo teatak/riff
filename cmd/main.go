@@ -3,8 +3,11 @@ package main
 import (
 	"fmt"
 	"github.com/gimke/riff/cli"
+	"github.com/gimke/riff/cmd/run"
 	"github.com/gimke/riff/cmd/query"
-	"github.com/gimke/riff/cmd/start"
+	"github.com/gimke/riff/cmd/service/restart"
+	"github.com/gimke/riff/cmd/service/start"
+	"github.com/gimke/riff/cmd/service/stop"
 	"github.com/gimke/riff/cmd/version"
 	"github.com/gimke/riff/common"
 	"os"
@@ -15,8 +18,11 @@ var Commands cli.Commands
 func init() {
 	Commands = cli.Commands{
 		"version": version.New(common.Version),
-		"start":   start.New(),
+		"run":     run.New(),
 		"query":   query.New(),
+		"start":   start.New(),
+		"stop":    stop.New(),
+		"restart": restart.New(),
 	}
 }
 func main() {

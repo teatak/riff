@@ -1,4 +1,4 @@
-package start
+package run
 
 import (
 	"flag"
@@ -6,17 +6,16 @@ import (
 	"strings"
 )
 
-const synopsis = "Start Riff service"
-const help = `Usage: start [options]
+const synopsis = "Run Riff"
+const help = `Usage: run [options]
 
-  Start riff service
+  Run riff service
 
 Options:
 
   -name       Node name
   -dc         DataCenter name
   -http       Http address of riff (-http 127.0.0.1:8610)
-  -dns        Dns address of riff (-dns 127.0.0.1:8620)
   -rpc        RPC address of riff (-rpc [::]:8630)
   -join       Join RPC address (-join 192.168.1.1:8630,192.168.1.2:8630,192.168.1.3:8630)
 `
