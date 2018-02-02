@@ -2,12 +2,11 @@ package main
 
 import (
 	"fmt"
+	"github.com/gimke/riff/api"
 	"github.com/gimke/riff/cli"
 	"github.com/gimke/riff/cmd/query"
 	"github.com/gimke/riff/cmd/run"
-	"github.com/gimke/riff/cmd/service/restart"
-	"github.com/gimke/riff/cmd/service/start"
-	"github.com/gimke/riff/cmd/service/stop"
+	"github.com/gimke/riff/cmd/service"
 	"github.com/gimke/riff/cmd/version"
 	"github.com/gimke/riff/common"
 	"os"
@@ -20,9 +19,9 @@ func init() {
 		"version": version.New(common.Version),
 		"run":     run.New(),
 		"query":   query.New(),
-		"start":   start.New(),
-		"stop":    stop.New(),
-		"restart": restart.New(),
+		"start":   service.New(api.CmdStart),
+		"stop":    service.New(api.CmdStop),
+		"restart": service.New(api.CmdRestart),
 	}
 }
 func main() {

@@ -1,4 +1,4 @@
-package restart
+package service
 
 import (
 	"flag"
@@ -8,12 +8,13 @@ import (
 	"net"
 	"net/rpc"
 	"strconv"
+	"strings"
 	"time"
 )
 
-const help = `Usage: riff restart <name> [options]
+var help = `Usage: riff %s <name> [options]
 
-  restart service
+  %s service
 
 Options:
 
@@ -23,16 +24,19 @@ Options:
 type cmd struct {
 	flags *flag.FlagSet
 	// flags
-	rpc string
+	rpc     string
+	cmdType api.CmdType
 }
 
-func New() *cmd {
-	c := &cmd{}
+func New(cmdType api.CmdType) *cmd {
+	c := &cmd{
+		cmdType: cmdType,
+	}
 	c.init()
 	return c
 }
 func (c *cmd) init() {
-	c.flags = flag.NewFlagSet("restart", flag.ContinueOnError)
+	c.flags = flag.NewFlagSet("start", flag.ContinueOnError)
 	c.flags.StringVar(&c.rpc, "rpc", "", "usage")
 
 	c.flags.Usage = func() {
@@ -58,11 +62,11 @@ func (c *cmd) Run(args []string) int {
 
 	//get args 0
 	name := args[0]
-	c.ReStart(name)
+	c.Cmd(name)
 	return 0
 }
 
-func (c *cmd) ReStart(name string) {
+func (c *cmd) Cmd(name string) {
 	conn, err := net.DialTimeout("tcp", c.rpc, time.Second*10)
 	if err != nil {
 		fmt.Println(err)
@@ -73,20 +77,21 @@ func (c *cmd) ReStart(name string) {
 	var result bool
 	err = cmd.Call("Mutation.Service", api.ParamServiceMutation{
 		Name: name,
-		Cmd:  api.CmdRestart,
+		Cmd:  c.cmdType,
 	}, &result)
 	if err != nil {
 		fmt.Println(err)
 	}
 	if result {
-		fmt.Printf("service %s restart success\n", name)
+		fmt.Printf("service %s %s success\n", name, strings.ToLower(c.cmdType.String()))
 	}
 }
 
 func (c *cmd) Synopsis() string {
-	return "Restart service"
+	return c.cmdType.String() + " service"
 }
 
 func (c *cmd) Help() string {
-	return help
+	cmdName := strings.ToLower(c.cmdType.String())
+	return fmt.Sprintf(help, cmdName, cmdName)
 }
