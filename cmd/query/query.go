@@ -158,22 +158,12 @@ func (c *cmd) Node(name string) {
 		return
 	}
 	info := make([]string, 0, 5)
-	//header := "Node|Address|Status|DC|SnapShot"
-	//results = append(results, header)
 
 	info = append(info, "Node:|"+node.Name)
 	info = append(info, "Address:|"+net.JoinHostPort(node.IP, strconv.Itoa(node.Port)))
 	info = append(info, "Status:|"+node.State.String())
 	info = append(info, "DC:|"+node.DataCenter)
 	info = append(info, "SnapShot:|"+node.SnapShot)
-
-	//line := fmt.Sprintf("%s|%s|%s|%s|%s",
-	//	node.Name,
-	//	net.JoinHostPort(node.IP, strconv.Itoa(node.Port)),
-	//	node.State.String(),
-	//	node.DataCenter,
-	//	node.SnapShot[0:9]+"...")
-	//results = append(results, line)
 
 	output := columnize.SimpleFormat(info)
 
