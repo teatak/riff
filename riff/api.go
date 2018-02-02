@@ -159,27 +159,3 @@ func (a *API) Restart(name string) bool {
 	}
 	return true
 }
-
-//func (a *API) cloneNode(n *Node) (node *api.Node) {
-//	node = &api.Node{
-//		Name:       n.Name,
-//		DataCenter: n.DataCenter,
-//		IP:         n.IP,
-//		Port:       n.Port,
-//		State:      n.State,
-//		SnapShot:   n.SnapShot,
-//		Version:    int(n.Version),
-//	}
-//	return
-//}
-
-//func (a *API) cloneService(s *Service) (service *api.NestService) {
-//	service = &api.NestService{
-//		Name:   s.Name,
-//		IP:     s.IP,
-//		Port:   s.Port,
-//		State:  s.State,
-//		Config: s.Config,
-//	}
-//	return service
-//}

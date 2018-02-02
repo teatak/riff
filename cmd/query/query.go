@@ -73,7 +73,13 @@ func (c *cmd) Run(args []string) int {
 		c.Nodes()
 		return 0
 		break
+	case "node":
+		name := args[1]
+		c.Node(name)
+		return 0
+		break
 	}
+
 	return 0
 }
 
@@ -104,7 +110,7 @@ func (c *cmd) Nodes() {
 	var nodes api.Nodes
 	err = cmd.Call("Query.Nodes", struct{}{}, &nodes)
 	if err != nil {
-		fmt.Println("error", err)
+		fmt.Println(err)
 		return
 	}
 	results := make([]string, 0, len(nodes)+1)
@@ -120,6 +126,36 @@ func (c *cmd) Nodes() {
 			n.SnapShot[0:9]+"...")
 		results = append(results, line)
 	}
+
+	output := columnize.SimpleFormat(results)
+	fmt.Println(output)
+}
+
+func (c *cmd) Node(name string) {
+	conn, err := net.DialTimeout("tcp", c.rpc, time.Second*10)
+	if err != nil {
+		fmt.Println("error", err)
+		return
+	}
+	codec := api.NewGobClientCodec(conn)
+	cmd := rpc.NewClientWithCodec(codec)
+	var node api.Node
+	err = cmd.Call("Query.Node", api.Node{Name:name}, &node)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	results := make([]string, 0, 1)
+	header := "Node|Address|Status|DC|SnapShot"
+	results = append(results, header)
+
+	line := fmt.Sprintf("%s|%s|%s|%s|%s",
+		node.Name,
+		net.JoinHostPort(node.IP, strconv.Itoa(node.Port)),
+		node.State.String(),
+		node.DataCenter,
+		node.SnapShot[0:9]+"...")
+	results = append(results, line)
 
 	output := columnize.SimpleFormat(results)
 	fmt.Println(output)
