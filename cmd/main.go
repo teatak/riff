@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"github.com/gimke/riff/cli"
-	"github.com/gimke/riff/cmd/run"
 	"github.com/gimke/riff/cmd/query"
+	"github.com/gimke/riff/cmd/run"
 	"github.com/gimke/riff/cmd/service/restart"
 	"github.com/gimke/riff/cmd/service/start"
 	"github.com/gimke/riff/cmd/service/stop"
