@@ -18,8 +18,11 @@ const help = `Usage: riff query <command> [options]
 
 Available subcommands are:
 
-  nodes       Get nodes list
   snap        Get snap short.
+  nodes       Get nodes.
+  node        Get node [name].
+  services    Get services.
+  service     Get service [name].
 
 Options:
 
@@ -76,6 +79,15 @@ func (c *cmd) Run(args []string) int {
 	case "node":
 		name := args[1]
 		c.Node(name)
+		return 0
+		break
+	case "services":
+		c.Services()
+		return 0
+		break
+	case "service":
+		name := args[1]
+		c.Service(name)
 		return 0
 		break
 	}
@@ -140,7 +152,7 @@ func (c *cmd) Node(name string) {
 	codec := api.NewGobClientCodec(conn)
 	cmd := rpc.NewClientWithCodec(codec)
 	var node api.Node
-	err = cmd.Call("Query.Node", api.Node{Name:name}, &node)
+	err = cmd.Call("Query.Node", api.Node{Name: name}, &node)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -161,8 +173,65 @@ func (c *cmd) Node(name string) {
 	fmt.Println(output)
 }
 
+func (c *cmd) Services() {
+	conn, err := net.DialTimeout("tcp", c.rpc, time.Second*10)
+	if err != nil {
+		fmt.Println("error", err)
+		return
+	}
+	codec := api.NewGobClientCodec(conn)
+	cmd := rpc.NewClientWithCodec(codec)
+	var services api.Services
+	err = cmd.Call("Query.Services", struct{}{}, &services)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	results := make([]string, 0, len(services)+1)
+
+	for _, s := range services {
+		line := fmt.Sprintf("%s", s.Name)
+		results = append(results, line)
+	}
+
+	output := columnize.SimpleFormat(results)
+	fmt.Println(output)
+}
+
+func (c *cmd) Service(name string) {
+	conn, err := net.DialTimeout("tcp", c.rpc, time.Second*10)
+	if err != nil {
+		fmt.Println("error", err)
+		return
+	}
+	codec := api.NewGobClientCodec(conn)
+	cmd := rpc.NewClientWithCodec(codec)
+	var service api.Service
+	err = cmd.Call("Query.Service", api.ParamService{Name: name, State: api.StateAll}, &service)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	results := make([]string, 0, len(service.NestNodes)+1)
+	header := "Node|Address|Status|DC|SnapShot"
+	results = append(results, header)
+
+	for _, n := range service.NestNodes {
+		line := fmt.Sprintf("%s|%s|%s|%s|%s",
+			n.Name,
+			net.JoinHostPort(n.IP, strconv.Itoa(n.Port)),
+			n.State.String(),
+			n.DataCenter,
+			n.SnapShot[0:9]+"...")
+		results = append(results, line)
+	}
+
+	output := columnize.SimpleFormat(results)
+	fmt.Println(output)
+}
+
 func (c *cmd) Synopsis() string {
-	return "Query nodes"
+	return "Query"
 }
 
 func (c *cmd) Help() string {

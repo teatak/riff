@@ -45,11 +45,10 @@ type NestService struct {
 }
 
 type ParamNode struct {
-	Name  string    `json:"name"`
-	State StateType `json:"state,omitempty"`
+	Name string `json:"name"`
 }
 
-type ParamServices struct {
+type ParamService struct {
 	Name  string    `json:"name"`
 	State StateType `json:"state,omitempty"`
 }
