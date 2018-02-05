@@ -115,6 +115,18 @@ func (h *Http) newRequestOptions(r *http.Request) *RequestOptions {
 	}
 }
 
+
+type httpServiceHandler struct {
+	serviceCh chan string
+}
+
+func (h *httpServiceHandler) HandleService(log string) {
+	// Do a non-blocking send
+	select {
+	case h.serviceCh <- log:
+	}
+}
+
 func (h *Http) apiIndex(r *cart.Router) {
 	r.ANY(func(c *cart.Context, next cart.Next) {
 		//var reqOpt *RequestOptions

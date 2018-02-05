@@ -76,6 +76,27 @@
       color: var(--darkBlack);
       display: flex;
       align-items: center;
+      & svg {
+        height: 24px;
+        width: 24px;
+        fill: var(--lightBlack);
+        margin-right: 8px;
+        cursor: pointer;
+        &.checked {
+          fill: var(--mainGreen);
+        }
+        &.start {
+          fill: var(--mainGreen);
+        }
+        &.stop {
+          fill: var(--mainRed);
+        }
+        &.restart {
+          height: 20px;
+          width: 20px;
+          fill: var(--mainBlue);
+        }
+      }
       & .name {
         font-size: 24px;
         padding-right: 16px;
@@ -88,6 +109,18 @@
         margin-left: auto;
         font-size: 12px;
         color: var(--lightBlack);
+      }
+      & .tools {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        & svg:last-child {
+          margin-right: 0;
+        }
+        & img {
+          height: 18px;
+          width: 18px;
+        }
       }
     }
     & .nestservices {
@@ -118,6 +151,15 @@
         & .basic {
           display: flex;
           align-items: center;
+          & svg {
+            height: 16px;
+            width: 16px;
+            cursor: pointer;
+            fill: var(--lightBlack);
+            &.checked {
+              fill: var(--mainGreen);
+            }
+          }
           & .name {
             margin-left: 4px;
           }

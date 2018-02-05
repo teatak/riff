@@ -351,32 +351,38 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.NewList(mutationServiceType),
 			Description: "mutation service",
 			Args: graphql.FieldConfigArgument{
-				"nodes": &graphql.ArgumentConfig{
+				"services": &graphql.ArgumentConfig{
 					Type: graphql.NewList(mutationServiceInputType),
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				nodes, ok := p.Args["nodes"].([]interface{})
+				services, ok := p.Args["services"].([]interface{})
 				if ok {
 					var results = []interface{}{}
-					for _, node := range nodes {
-						n := node.(map[string]interface{})
-						name := n["name"].(string)
-						ip := n["ip"].(string)
-						port := n["port"].(int)
-						cmd := n["cmd"].(api.CmdType)
+					hasError := false
+					for _, service := range services {
+						s := service.(map[string]interface{})
+						name := s["name"].(string)
+						ip := s["ip"].(string)
+						port := s["port"].(int)
+						cmd := s["cmd"].(api.CmdType)
 						var result = map[string]interface{}{}
-						result = n
+						result = s
 						if err := mutationService(name, net.JoinHostPort(ip, strconv.Itoa(port)), cmd); err != nil {
 							result["error"] = err.Error()
 							result["success"] = false
+							hasError = true
 						} else {
 							result["error"] = ""
 							result["success"] = true
 						}
 						results = append(results, result)
 					}
-					return results, nil
+					if hasError {
+						return results, fmt.Errorf("has error")
+					} else {
+						return results, nil
+					}
 				} else {
 					return nil, nil
 				}
