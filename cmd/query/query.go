@@ -203,7 +203,7 @@ func (c *cmd) Services() {
 	}
 	codec := api.NewGobClientCodec(conn)
 	client := rpc.NewClientWithCodec(codec)
-	defer cmd.Close()
+	defer client.Close()
 
 	var services api.Services
 	err = client.Call("Query.Services", struct{}{}, &services)

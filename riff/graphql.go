@@ -308,7 +308,7 @@ var mutationServiceInputType = graphql.NewInputObject(graphql.InputObjectConfig{
 			Description: "port of service",
 		},
 		"cmd": &graphql.InputObjectFieldConfig{
-			Type:         enumCmdype,
+			Type:        enumCmdype,
 			Description: "cmd service",
 		},
 	},
@@ -334,7 +334,7 @@ var mutationServiceType = graphql.NewObject(graphql.ObjectConfig{
 			Description: "error of service",
 		},
 		"success": &graphql.Field{
-			Type:         graphql.Boolean,
+			Type:        graphql.Boolean,
 			Description: "result service",
 		},
 	},
@@ -355,22 +355,22 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 				nodes, ok := p.Args["nodes"].([]interface{})
 				if ok {
 					var results = []interface{}{}
-					for _,node := range nodes {
+					for _, node := range nodes {
 						n := node.(map[string]interface{})
-						name :=  n["name"].(string)
-						ip :=  n["ip"].(string)
-						port :=  n["port"].(int)
+						name := n["name"].(string)
+						ip := n["ip"].(string)
+						port := n["port"].(int)
 						cmd := n["cmd"].(api.CmdType)
 						var result = map[string]interface{}{}
 						result = n
-						if err := mutationService(name,net.JoinHostPort(ip,strconv.Itoa(port)),cmd);err!=nil {
+						if err := mutationService(name, net.JoinHostPort(ip, strconv.Itoa(port)), cmd); err != nil {
 							result["error"] = err.Error()
 							result["success"] = false
 						} else {
 							result["error"] = ""
 							result["success"] = true
 						}
-						results = append(results,result)
+						results = append(results, result)
 					}
 					return results, nil
 				} else {

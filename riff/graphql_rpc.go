@@ -1,16 +1,16 @@
 package riff
 
 import (
-	"net"
-	"time"
 	"github.com/gimke/riff/api"
+	"net"
 	"net/rpc"
+	"time"
 )
 
-func mutationService(name,address string,cmd api.CmdType) error {
+func mutationService(name, address string, cmd api.CmdType) error {
 	conn, err := net.DialTimeout("tcp", address, time.Second*10)
 	if err != nil {
-		server.Logger.Printf(errorServerPrefix+"%v\n",err)
+		server.Logger.Printf(errorServerPrefix+"%v\n", err)
 		return err
 	}
 	codec := api.NewGobClientCodec(conn)
@@ -23,7 +23,7 @@ func mutationService(name,address string,cmd api.CmdType) error {
 		Cmd:  cmd,
 	}, &result)
 	if err != nil {
-		server.Logger.Printf(errorServerPrefix+"%v\n",err)
+		server.Logger.Printf(errorServerPrefix+"%v\n", err)
 		return err
 	}
 	return nil
