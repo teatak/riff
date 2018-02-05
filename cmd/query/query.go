@@ -102,9 +102,11 @@ func (c *cmd) SnapShot() {
 		return
 	}
 	codec := api.NewGobClientCodec(conn)
-	cmd := rpc.NewClientWithCodec(codec)
+	client := rpc.NewClientWithCodec(codec)
+	defer client.Close()
+
 	var snapshot string
-	err = cmd.Call("Query.SnapShot", struct{}{}, &snapshot)
+	err = client.Call("Query.SnapShot", struct{}{}, &snapshot)
 	if err != nil {
 		fmt.Println("error", err)
 	}
@@ -118,9 +120,11 @@ func (c *cmd) Nodes() {
 		return
 	}
 	codec := api.NewGobClientCodec(conn)
-	cmd := rpc.NewClientWithCodec(codec)
+	client := rpc.NewClientWithCodec(codec)
+	defer client.Close()
+
 	var nodes api.Nodes
-	err = cmd.Call("Query.Nodes", struct{}{}, &nodes)
+	err = client.Call("Query.Nodes", struct{}{}, &nodes)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -150,9 +154,11 @@ func (c *cmd) Node(name string) {
 		return
 	}
 	codec := api.NewGobClientCodec(conn)
-	cmd := rpc.NewClientWithCodec(codec)
+	client := rpc.NewClientWithCodec(codec)
+	defer client.Close()
+
 	var node api.Node
-	err = cmd.Call("Query.Node", api.Node{Name: name}, &node)
+	err = client.Call("Query.Node", api.Node{Name: name}, &node)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -196,9 +202,11 @@ func (c *cmd) Services() {
 		return
 	}
 	codec := api.NewGobClientCodec(conn)
-	cmd := rpc.NewClientWithCodec(codec)
+	client := rpc.NewClientWithCodec(codec)
+	defer cmd.Close()
+
 	var services api.Services
-	err = cmd.Call("Query.Services", struct{}{}, &services)
+	err = client.Call("Query.Services", struct{}{}, &services)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -221,9 +229,11 @@ func (c *cmd) Service(name string) {
 		return
 	}
 	codec := api.NewGobClientCodec(conn)
-	cmd := rpc.NewClientWithCodec(codec)
+	client := rpc.NewClientWithCodec(codec)
+	defer client.Close()
+
 	var service api.Service
-	err = cmd.Call("Query.Service", api.ParamService{Name: name, State: api.StateAll}, &service)
+	err = client.Call("Query.Service", api.ParamService{Name: name, State: api.StateAll}, &service)
 	if err != nil {
 		fmt.Println(err)
 		return

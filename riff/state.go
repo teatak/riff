@@ -92,13 +92,13 @@ func (s *Server) requestLeave(peer string) error {
 		return fmt.Errorf("%v", err)
 	}
 	codec := api.NewGobClientCodec(conn)
-	cmd := rpc.NewClientWithCodec(codec)
-	defer cmd.Close()
+	client := rpc.NewClientWithCodec(codec)
+	defer client.Close()
 
 	diff := []*Node{s.Self}
 
 	var reDiff []*Node
-	err = cmd.Call("Riff.PushDiff", diff, &reDiff)
+	err = client.Call("Riff.PushDiff", diff, &reDiff)
 
 	return err
 }
@@ -109,11 +109,11 @@ func (s *Server) requestPeer(peer string) error {
 		return fmt.Errorf("%v", err)
 	}
 	codec := api.NewGobClientCodec(conn)
-	cmd := rpc.NewClientWithCodec(codec)
-	defer cmd.Close()
+	client := rpc.NewClientWithCodec(codec)
+	defer client.Close()
 
 	var digests []*Digest
-	err = cmd.Call("Riff.Request", s.SnapShot, &digests)
+	err = client.Call("Riff.Request", s.SnapShot, &digests)
 	if err != nil {
 		return fmt.Errorf("peer: %s error: %v", peer, err)
 	}
@@ -122,7 +122,7 @@ func (s *Server) requestPeer(peer string) error {
 		diff := s.MakeDiffNodes(digests)
 		if len(diff) != 0 {
 			var reDiff []*Node
-			err = cmd.Call("Riff.PushDiff", diff, &reDiff)
+			err = client.Call("Riff.PushDiff", diff, &reDiff)
 			if len(reDiff) != 0 {
 				s.MergeDiff(reDiff)
 			}

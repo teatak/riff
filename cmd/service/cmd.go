@@ -73,9 +73,11 @@ func (c *cmd) Cmd(name string) {
 		return
 	}
 	codec := api.NewGobClientCodec(conn)
-	cmd := rpc.NewClientWithCodec(codec)
+	client := rpc.NewClientWithCodec(codec)
+	defer client.Close()
+
 	var result bool
-	err = cmd.Call("Mutation.Service", api.ParamServiceMutation{
+	err = client.Call("Mutation.Service", api.ParamServiceMutation{
 		Name: name,
 		Cmd:  c.cmdType,
 	}, &result)

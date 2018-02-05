@@ -5,6 +5,8 @@ import (
 	"github.com/gimke/riff/api"
 	"github.com/gimke/riff/common"
 	"github.com/graphql-go/graphql"
+	"net"
+	"strconv"
 )
 
 var enumStateType = graphql.NewEnum(graphql.EnumConfig{
@@ -21,6 +23,21 @@ var enumStateType = graphql.NewEnum(graphql.EnumConfig{
 		},
 		"All": &graphql.EnumValueConfig{
 			Value: api.StateAll,
+		},
+	},
+})
+
+var enumCmdype = graphql.NewEnum(graphql.EnumConfig{
+	Name: "Cmd",
+	Values: graphql.EnumValueConfigMap{
+		"Start": &graphql.EnumValueConfig{
+			Value: api.CmdStart,
+		},
+		"Stop": &graphql.EnumValueConfig{
+			Value: api.CmdStop,
+		},
+		"Restart": &graphql.EnumValueConfig{
+			Value: api.CmdRestart,
 		},
 	},
 })
@@ -275,9 +292,98 @@ var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
+var mutationServiceInputType = graphql.NewInputObject(graphql.InputObjectConfig{
+	Name: "MutationServiceInput",
+	Fields: graphql.InputObjectConfigFieldMap{
+		"name": &graphql.InputObjectFieldConfig{
+			Type:        graphql.String,
+			Description: "name of service",
+		},
+		"ip": &graphql.InputObjectFieldConfig{
+			Type:        graphql.String,
+			Description: "ip of service",
+		},
+		"port": &graphql.InputObjectFieldConfig{
+			Type:        graphql.Int,
+			Description: "port of service",
+		},
+		"cmd": &graphql.InputObjectFieldConfig{
+			Type:         enumCmdype,
+			Description: "cmd service",
+		},
+	},
+})
+
+var mutationServiceType = graphql.NewObject(graphql.ObjectConfig{
+	Name: "MutationService",
+	Fields: graphql.Fields{
+		"name": &graphql.Field{
+			Type:        graphql.String,
+			Description: "name of service",
+		},
+		"ip": &graphql.Field{
+			Type:        graphql.String,
+			Description: "ip of service",
+		},
+		"port": &graphql.Field{
+			Type:        graphql.Int,
+			Description: "port of service",
+		},
+		"error": &graphql.Field{
+			Type:        graphql.String,
+			Description: "error of service",
+		},
+		"success": &graphql.Field{
+			Type:         graphql.Boolean,
+			Description: "result service",
+		},
+	},
+})
+
+var rootMutation = graphql.NewObject(graphql.ObjectConfig{
+	Name: "Mutation",
+	Fields: graphql.Fields{
+		"mutationService": &graphql.Field{
+			Type:        graphql.NewList(mutationServiceType),
+			Description: "Mutation Service",
+			Args: graphql.FieldConfigArgument{
+				"nodes": &graphql.ArgumentConfig{
+					Type: graphql.NewList(mutationServiceInputType),
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				nodes, ok := p.Args["nodes"].([]interface{})
+				if ok {
+					var results = []interface{}{}
+					for _,node := range nodes {
+						n := node.(map[string]interface{})
+						name :=  n["name"].(string)
+						ip :=  n["ip"].(string)
+						port :=  n["port"].(int)
+						cmd := n["cmd"].(api.CmdType)
+						var result = map[string]interface{}{}
+						result = n
+						if err := mutationService(name,net.JoinHostPort(ip,strconv.Itoa(port)),cmd);err!=nil {
+							result["error"] = err.Error()
+							result["success"] = false
+						} else {
+							result["error"] = ""
+							result["success"] = true
+						}
+						results = append(results,result)
+					}
+					return results, nil
+				} else {
+					return nil, nil
+				}
+			},
+		},
+	},
+})
+
 var schema, _ = graphql.NewSchema(graphql.SchemaConfig{
-	Query: rootQuery,
-	//Mutation: rootMutation,
+	Query:    rootQuery,
+	Mutation: rootMutation,
 	Types: []graphql.Type{
 		nestNodeType,
 		nestServiceType,
