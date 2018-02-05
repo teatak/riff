@@ -349,7 +349,7 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 	Fields: graphql.Fields{
 		"mutationService": &graphql.Field{
 			Type:        graphql.NewList(mutationServiceType),
-			Description: "Mutation Service",
+			Description: "mutation service",
 			Args: graphql.FieldConfigArgument{
 				"nodes": &graphql.ArgumentConfig{
 					Type: graphql.NewList(mutationServiceInputType),
