@@ -329,6 +329,10 @@ var mutationServiceType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.Int,
 			Description: "port of service",
 		},
+		"cmd": &graphql.Field{
+			Type:        enumCmdype,
+			Description: "cmd service",
+		},
 		"error": &graphql.Field{
 			Type:        graphql.String,
 			Description: "error of service",
