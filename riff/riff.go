@@ -88,10 +88,6 @@ func (s *Server) MergeDiff(diffs []*Node) (reDiffs []*Node) {
 				//exclude dead node
 				d.IsSelf = false //remove is self
 				s.AddNode(d)     //if not find then add node
-				s.watch.Dispatch(WatchParam{
-					Name:d.Name,
-					WatchType:NodeChanged,
-				})
 				count++
 			}
 		} else {
@@ -122,10 +118,6 @@ func (s *Server) MergeDiff(diffs []*Node) (reDiffs []*Node) {
 				reDiffs = append(reDiffs, reDiff)
 			}
 			if merged {
-				s.watch.Dispatch(WatchParam{
-					Name:d.Name,
-					WatchType:NodeChanged,
-				})
 				count++
 			}
 		}
@@ -141,21 +133,23 @@ func (s *Server) trueNode(d, n *Node) (merged bool, reDiff *Node) {
 	switch d.State {
 	case api.StateAlive:
 		if d.VersionGet() == 0 { //if d is new online
-			v := s.SetState(n, api.StateAlive)
+			//v := s.SetState(n, api.StateAlive)
+			v := n.VersionGet()
+			s.ExchangeNode(n,d)
+			n.VersionSet(v)
+			v = s.SetState(n, api.StateAlive)
 			if v > 1 {
 				reDiff = n //shot out my version
 			}
 		} else {
 			//if remote node service changes .... take remote node
-			*n = *d
-			n.IsSelf = false
+			s.ExchangeNode(n,d)
 		}
 		merged = true
 		break
 	case api.StateDead:
 		if n.State != api.StateDead {
-			*n = *d
-			n.IsSelf = false
+			s.ExchangeNode(n,d)
 			s.RemoveNodeDelay(n)
 			merged = true
 		}
@@ -172,12 +166,10 @@ func (s *Server) gossipNode(d, n *Node) (merged bool, reDiff *Node) {
 			n.Shutter()
 		} else {
 			if n.State != api.StateDead && d.State == api.StateDead {
-				*n = *d
-				n.IsSelf = false
+				s.ExchangeNode(n,d)
 				s.RemoveNodeDelay(n)
 			} else {
-				*n = *d
-				n.IsSelf = false
+				s.ExchangeNode(n,d)
 			}
 		}
 		merged = true
@@ -186,4 +178,54 @@ func (s *Server) gossipNode(d, n *Node) (merged bool, reDiff *Node) {
 		reDiff = n
 	}
 	return
+}
+
+func (s *Server) ExchangeNode(n,d *Node) {
+	//discover diff
+	if n.SnapShot == d.SnapShot || n.Name != d.Name {
+		return
+	}
+
+	s.walkService(n,d)
+
+	if n.IsSelf {
+		*n = *d
+	} else {
+		*n = *d
+		n.IsSelf = false
+	}
+
+	s.watch.Dispatch(WatchParam{
+		Name:n.Name,
+		WatchType:NodeChanged,
+	})
+}
+
+func (s *Server) walkService(n,d *Node) {
+	walked := make(map[string]bool)
+	for _,sv := range n.Services {
+		//find in diff service
+		walked[sv.Name] = true
+		if d.Services[sv.Name] == nil {
+			s.watch.Dispatch(WatchParam{
+				Name:sv.Name,
+				WatchType:ServiceChanged,
+			})
+		} else {
+			if d.Services[sv.Name].State != sv.State {
+				s.watch.Dispatch(WatchParam{
+					Name:sv.Name,
+					WatchType:ServiceChanged,
+				})
+			}
+		}
+	}
+	for _,sv := range d.Services {
+		if !walked[sv.Name] {
+			s.watch.Dispatch(WatchParam{
+				Name:sv.Name,
+				WatchType:ServiceChanged,
+			})
+		}
+	}
 }

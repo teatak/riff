@@ -167,8 +167,8 @@ func (h *Http) watch(c *cart.Context, next cart.Next) {
 
 	handler := &httpServiceHandler{
 		WatchParam: &WatchParam{
-			Name:"node1",
-			WatchType:NodeChanged,
+			Name:"mongod",
+			WatchType:ServiceChanged,
 		},
 		serviceCh: make(chan bool, 512),
 	}

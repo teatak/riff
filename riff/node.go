@@ -125,10 +125,22 @@ func (s *Server) GetNode(key string) *Node {
 func (s *Server) AddNode(n *Node) {
 	n.Shutter()
 	s.nodes.Store(n.Name, n)
+
+	//watch
+	s.watch.Dispatch(WatchParam{
+		Name:n.Name,
+		WatchType:NodeChanged,
+	})
 }
 
 func (s *Server) DeleteNode(key string) {
 	s.nodes.Delete(key)
+
+	//watch
+	s.watch.Dispatch(WatchParam{
+		Name:key,
+		WatchType:NodeChanged,
+	})
 }
 
 func (s *Server) RemoveNodeDelay(n *Node) {
