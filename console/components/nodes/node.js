@@ -1,14 +1,16 @@
 import React from 'react'
 import {NavLink, withRouter} from 'react-router-dom'
 import {connect} from 'react-redux'
-import {getNode,cancelNode} from "../../reducers/nodes";
+import {cancelWatch, getNode, isWatch} from '../../reducers/nodes';
 import {mutationService} from "../../reducers/mutation";
 import ArrowDown from '../icons/arrowDown'
 import ArrowUp from '../icons/arrowUp'
 import CheckCircle from '../icons/checkCircle'
 import Play from '../icons/play'
 import Stop from '../icons/stop'
-import Replay from "../icons/replay";
+import Replay from '../icons/replay';
+import Visibility from '../icons/visibility'
+import Refresh from '../icons/refresh'
 
 const mapStateToProps = (state, ownProps) => {
     return {
@@ -22,8 +24,11 @@ const mapDispatchToProps = (dispatch) => {
         getNode: (nodeName) => {
             dispatch(getNode(nodeName));
         },
-        cancelNode : () => {
-            dispatch(cancelNode());
+        cancelWatch: () => {
+            dispatch(cancelWatch());
+        },
+        isWatch: (nodeName) => {
+            dispatch(isWatch(nodeName));
         },
         mutationService: (services, cmd) => {
             dispatch(mutationService(services, cmd));
@@ -35,22 +40,25 @@ class Node extends React.Component {
     constructor(props) {
         super(props);
         this.state = {toggle: {}, check: {}};
+        this.nodeName = "";
     }
 
     componentWillMount() {
-        let nodeName = this.props.match.params.nodeName;
-        this.props.getNode(nodeName)
+        this.nodeName = this.props.match.params.nodeName;
+        this.props.getNode(this.nodeName)
     }
 
     componentWillReceiveProps(nextProps) {
         const locationChanged = nextProps.location !== this.props.location;
         if (locationChanged) {
             this.setState({toggle: {}, check: {}});
-            this.props.getNode(nextProps.match.params.nodeName)
+            this.nodeName = nextProps.match.params.nodeName;
+            this.props.getNode(this.nodeName)
         }
     }
+
     componentWillUnmount() {
-        this.props.cancelNode()
+        this.props.cancelWatch()
     }
 
     toggle = (name) => {
@@ -103,12 +111,23 @@ class Node extends React.Component {
             this.setState({check: check});
         }
     };
-
+    handleWatch = () => {
+        this.props.isWatch(this.nodeName);
+    };
+    handleRefresh = () => {
+        this.props.getNode(this.nodeName);
+    };
     renderList() {
         const {nodes} = this.props;
         if (nodes.data.services) {
+            let isWatch = "";
+            if (nodes.isWatch) {
+                isWatch = "iswatch"
+            }
             return <ul className="nestservices">
-                <li className="title">Services</li>
+                <li className="nesttitle">Services <Visibility onClick={()=>{
+                    this.handleWatch();
+                }} className={isWatch} />{nodes.fetchNode.status === 500?<div className="error">{nodes.fetchNode.error}<Refresh className="refresh" onClick={this.handleRefresh}/></div>:null}</li>
                 {nodes.data.services.map((service, index) => {
                     let className = "item " + service.state.toLowerCase();
                     return <li className={className} key={service.name}>
@@ -138,49 +157,40 @@ class Node extends React.Component {
 
     render() {
         const {nodes, mutation} = this.props;
-        if (nodes.fetchNode.status === 404) {
-            return <div className="error">Not Found</div>
-        }
-        if (nodes.fetchNode.status === 500) {
-            return <div className="error">{nodes.fetchNode.error}</div>
-        }
-        if (nodes.fetchNode.status === 200) {
-            return <div>
-                <div className="title">
-                    <CheckCircle
-                        className={Object.keys(this.state.check).length === nodes.data.services.length ? "checked" : ""}
-                        onClick={() => {
-                            this.checkAll();
-                        }}
+
+        return <div>
+            <div className="title">
+                {nodes.data.services?<CheckCircle
+                    className={Object.keys(this.state.check).length === nodes.data.services.length ? "checked" : ""}
+                    onClick={() => {
+                        this.checkAll();
+                    }}
+                />:null}
+                <span className="name">{nodes.data.name}</span>
+                <span className="ipport">{nodes.data.ip}</span>
+                {mutation.mutationService.loading ? <span className="tools">
+                    <img src="/static/images/spinner.svg"/>
+                    </span> :
+                    (Object.keys(this.state.check).length > 0 ? <span className="tools">
+                    <Play className="start"
+                          onClick={() => {
+                              this.mutationService("Start");
+                          }}
                     />
-                    <span className="name">{nodes.data.name}</span>
-                    <span className="ipport">{nodes.data.ip}</span>
-                    {mutation.mutationService.loading ? <span className="tools">
-                        <img src="/static/images/spinner.svg"/>
-                        </span> :
-                        (Object.keys(this.state.check).length > 0 ? <span className="tools">
-                        <Play className="start"
-                              onClick={() => {
-                                  this.mutationService("Start");
-                              }}
-                        />
-                        <Stop className="stop"
-                              onClick={() => {
-                                  this.mutationService("Stop");
-                              }}
-                        />
-                        <Replay className="restart"
-                                onClick={() => {
-                                    this.mutationService("Restart");
-                                }}
-                        /></span> : null)
-                    }
-                </div>
-                {this.renderList()}
+                    <Stop className="stop"
+                          onClick={() => {
+                              this.mutationService("Stop");
+                          }}
+                    />
+                    <Replay className="restart"
+                            onClick={() => {
+                                this.mutationService("Restart");
+                            }}
+                    /></span> : null)
+                }
             </div>
-        } else {
-            return null
-        }
+            {this.renderList()}
+        </div>
     }
 }
 

@@ -165,10 +165,26 @@ func (h *Http) watch(c *cart.Context, next cart.Next) {
 	resp.Header().Set("Transfer-Encoding", "chunked")
 	resp.Header().Set("X-Content-Type-Options", "nosniff")
 
+	//get type and name
+	name := c.Request.URL.Query().Get("name")
+	watch := c.Request.URL.Query().Get("type")
+	watchType := NodeChanged
+	if name == "" {
+		name = server.Self.Name
+	}
+	switch watch {
+	case "node":
+		watchType = NodeChanged
+		break
+	case "service":
+		watchType = ServiceChanged
+		break
+	}
+
 	handler := &httpServiceHandler{
 		WatchParam: &WatchParam{
-			Name:      "node1",
-			WatchType: NodeChanged,
+			Name:      name,
+			WatchType: watchType,
 		},
 		serviceCh: make(chan bool, 512),
 	}

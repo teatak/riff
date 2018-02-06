@@ -6,6 +6,7 @@ export const NODES_SUCCESS = 'NODES_SUCCESS';
 export const NODES_FAILURE = 'NODES_FAILURE';
 
 
+export const NODE_WATCH = 'NODE_WATCH';
 export const NODE_RESET = 'NODE_RESET';
 export const NODE_REQUEST = 'NODE_REQUEST';
 export const NODE_SUCCESS = 'NODE_SUCCESS';
@@ -44,9 +45,19 @@ export const getList = () => (dispatch, getState) => {
     })
 };
 
+
+export const isWatch = (nodeName) => (dispatch, getState) => {
+    let state = getState();
+    dispatch({
+        type: NODE_WATCH,
+        isWatch:!state.nodes.isWatch,
+    });
+    dispatch(getNode(nodeName));
+};
+
 let initReader = null;
 
-export const cancelNode = () => (dispatch, getState) => {
+export const cancelWatch = () => (dispatch, getState) => {
     let state = getState();
     if (state.nodes.fetchNode.loading) {
         if (initReader !== null) {
@@ -56,8 +67,12 @@ export const cancelNode = () => (dispatch, getState) => {
         }
     }
 };
-
 export const getNode = (nodeName) => (dispatch, getState) => {
+    let state = getState();
+    if(state.nodes.isWatch) {
+        dispatch(watchNode(nodeName));
+        return;
+    }
     let node = (nodeName === undefined) ? "node:server" : "node(name:\"" + nodeName + "\")";
     let query = `{
     ` + node + ` {
@@ -77,7 +92,48 @@ export const getNode = (nodeName) => (dispatch, getState) => {
         } 
     }
 }`;
-    dispatch(cancelNode());
+    dispatch(cancelWatch());
+    dispatch({type: NODE_REQUEST});
+
+    Common.fetch({query}, (json, error, status) => {
+        if (status === 200) {
+            dispatch({
+                type: NODE_SUCCESS,
+                status: status,
+                json,
+                receivedAt: Date.now()
+            });
+        } else {
+            dispatch({
+                type: NODE_FAILURE,
+                status: status,
+                error: error,
+                receivedAt: Date.now()
+            });
+        }
+    })
+};
+const watchNode = (nodeName) => (dispatch, getState) => {
+    let node = (nodeName === undefined) ? "node:server" : "node(name:\"" + nodeName + "\")";
+    let query = `{
+    ` + node + ` {
+        name
+        ip
+        port
+        dataCenter
+        snapShot
+        state
+        isSelf
+        version
+        services {
+            name
+            port
+            state
+            config
+        } 
+    }
+}`;
+    dispatch(cancelWatch());
     dispatch({type: NODE_REQUEST});
 
     let consume = (reader) => {
@@ -107,8 +163,8 @@ export const getNode = (nodeName) => (dispatch, getState) => {
             pump()
         })
     };
-
-    fetch(Config.api + "/watch", {
+    let param = nodeName === undefined ? "type=node":"type=node&name="+nodeName;
+    fetch(Config.api + "/watch?"+param, {
         method: 'post',
         headers: {'connection': 'keep-alive'},
         credentials: 'include',
@@ -124,29 +180,13 @@ export const getNode = (nodeName) => (dispatch, getState) => {
         });
         throw error
     })
-    // Common.fetch({query}, (json, error, status) => {
-    //     if (status === 200) {
-    //         dispatch({
-    //             type: NODE_SUCCESS,
-    //             status: status,
-    //             json,
-    //             receivedAt: Date.now()
-    //         });
-    //     } else {
-    //         dispatch({
-    //             type: NODE_FAILURE,
-    //             status: status,
-    //             error: error,
-    //             receivedAt: Date.now()
-    //         });
-    //     }
-    // })
 };
 
 const nodes = (state = {
     fetchNodes: Common.initRequest,
     fetchNode: Common.initRequest,
     list: [],                   //数据
+    isWatch: true,
     data: {}
 }, action) => {
     switch (action.type) {
@@ -192,6 +232,11 @@ const nodes = (state = {
                     status: 0,
                     error: null,
                 }
+            };
+        case NODE_WATCH:
+            return {
+                ...state,
+                isWatch: action.isWatch
             };
         case NODE_REQUEST:
             return {

@@ -124,10 +124,33 @@
       }
     }
     & .nestservices {
-      & .title {
+      & .nesttitle {
+        display: flex;
+        align-items: center;
         color: var(--darkBlack);
         font-size: 16px;
         margin-bottom: 8px;
+        height: 18px;
+        line-height: 18px;
+        & svg {
+          width: 16px;
+          height: 16px;
+          margin-left: 8px;
+          cursor: pointer;
+          &.iswatch {
+            fill: var(--mainGreen);
+          }
+        }
+        & .error {
+          display: flex;
+          align-items: center;
+          padding-left: 2px;
+          color: var(--mainRed);
+          font-size: 12px;
+          & svg {
+            margin-left: 2px;
+          }
+        }
       }
       & .item {
         font-size: 14px;

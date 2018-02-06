@@ -45,7 +45,7 @@ class Common  {
                 if(error.response) {
                     cb(null, error.message, error.response.status);
                 } else {
-                    throw error;
+                    cb(null, error.message, 500);
                 }
             });
     };
