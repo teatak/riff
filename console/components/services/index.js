@@ -69,7 +69,7 @@ class Services extends React.Component {
             {this.renderList()}
             <div className="detail">
                 <Switch>
-                    <Route path="/services/:serviceName" component={Service}/>
+                    <Route path="/services/:serviceName?" component={Service}/>
                 </Switch>
             </div>
         </div>

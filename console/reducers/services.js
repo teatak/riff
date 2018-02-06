@@ -1,9 +1,12 @@
 import Common from './common'
+import Config from 'config'
 
 export const SERVICES_REQUEST = 'SERVICES_REQUEST';
 export const SERVICES_SUCCESS = 'SERVICES_SUCCESS';
 export const SERVICES_FAILURE = 'SERVICES_FAILURE';
 
+export const SERVICE_WATCH = 'SERVICE_WATCH';
+export const SERVICE_RESET = 'SERVICE_RESET';
 export const SERVICE_REQUEST = 'SERVICE_REQUEST';
 export const SERVICE_SUCCESS = 'SERVICE_SUCCESS';
 export const SERVICE_FAILURE = 'SERVICE_FAILURE';
@@ -35,7 +38,29 @@ export const getList = () => (dispatch, getState) => {
     })
 };
 
-export const getService = (serviceName, state) => (dispatch, getState) => {
+export const isWatch = (serviceName) => (dispatch, getState) => {
+    let state = getState();
+    dispatch({
+        type: SERVICE_WATCH,
+        isWatch: !state.services.isWatch,
+    });
+    dispatch(getService(serviceName));
+};
+
+let initReader = null;
+
+export const cancelWatch = () => (dispatch, getState) => {
+    let state = getState();
+    if (state.services.fetchService.loading) {
+        if (initReader !== null) {
+            initReader.cancel();
+            initReader = null;
+            dispatch({type: SERVICE_RESET});
+        }
+    }
+};
+
+const buildQuery = (serviceName) => {
     let query = `{
     service(name:"` + serviceName + `",state:All) {
         name
@@ -43,12 +68,25 @@ export const getService = (serviceName, state) => (dispatch, getState) => {
             name
             ip
             port
+            rpcPort
             state
             isSelf
             config
         } 
     }
 }`;
+    return query;
+};
+
+export const getService = (serviceName, state) => (dispatch, getState) => {
+    let state = getState();
+    if (state.services.isWatch) {
+        dispatch(watchService(serviceName, state));
+        return;
+    }
+    let query = buildQuery(serviceName);
+
+    dispatch(cancelWatch());
     dispatch({type: SERVICE_REQUEST});
     Common.fetch({query}, (json, error, status) => {
         if (status === 200) {
@@ -69,9 +107,66 @@ export const getService = (serviceName, state) => (dispatch, getState) => {
     })
 };
 
+
+const watchService = (serviceName, state) => (dispatch, getState) => {
+    let query = buildQuery(serviceName);
+    dispatch(cancelWatch());
+    dispatch({type: SERVICE_REQUEST});
+
+    let consume = (reader) => {
+        initReader = reader;
+        let total = 0;
+        return new Promise((resolve, reject) => {
+            function pump() {
+                reader.read().then(({done, value}) => {
+                    if (done) {
+                        resolve();
+                        return
+                    }
+                    total += value.byteLength;
+                    //console.log(`received ${value.byteLength} bytes (${total} bytes in total)`)
+                    let arr = Common.utf8ArrayToStr(value).split("\n");
+                    arr.map((text) => {
+                        if (text !== "") {
+                            let json = JSON.parse(text);
+                            dispatch({
+                                type: SERVICE_SUCCESS,
+                                status: 200,
+                                json,
+                                receivedAt: Date.now()
+                            });
+                        }
+                    });
+                    pump()
+                }).catch(reject)
+            }
+
+            pump()
+        })
+    };
+    let param = serviceName === undefined ? "type=service" : "type=service&name=" + serviceName;
+    fetch(Config.api + "/watch?" + param, {
+        method: 'post',
+        headers: {'connection': 'keep-alive'},
+        credentials: 'include',
+        body: JSON.stringify({query})
+    }).then((response) => {
+        return consume(response.body.getReader())
+    }).catch((error) => {
+        dispatch({
+            type: SERVICE_FAILURE,
+            status: 500,
+            error: error.message,
+            receivedAt: Date.now()
+        });
+        throw error
+    })
+};
+
 const services = (state = {
     fetchServices: Common.initRequest,
     fetchService: Common.initRequest,
+    isWatch: true,
     list: [],                   //数据
     data: {}
 }, action) => {
@@ -109,6 +204,21 @@ const services = (state = {
                     lastUpdated: action.receivedAt
                 },
             };
+        case SERVICE_RESET:
+            return {
+                ...state,
+                fetchService: {
+                    ...state.fetchService,
+                    loading: false,
+                    status: 0,
+                    error: null,
+                }
+            };
+        case SERVICE_WATCH:
+            return {
+                ...state,
+                isWatch: action.isWatch
+            };
         case SERVICE_REQUEST:
             return {
                 ...state,
@@ -124,7 +234,7 @@ const services = (state = {
                 ...state,
                 fetchService: {
                     ...state.fetchService,
-                    loading: false,
+                    loading: true,
                     status: 200,
                     error: null,
                     lastUpdated: action.receivedAt

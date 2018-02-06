@@ -149,6 +149,10 @@ var nestNodeType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.Int,
 			Description: "port of node",
 		},
+		"rpcPort": &graphql.Field{
+			Type:        graphql.Int,
+			Description: "rpc port of node",
+		},
 		"state": &graphql.Field{
 			Type:        enumStateType,
 			Description: "state of node (Alive,Suspect,Dead)",

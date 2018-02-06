@@ -44,12 +44,11 @@ export const getList = () => (dispatch, getState) => {
     })
 };
 
-
 export const isWatch = (nodeName) => (dispatch, getState) => {
     let state = getState();
     dispatch({
         type: NODE_WATCH,
-        isWatch:!state.nodes.isWatch,
+        isWatch: !state.nodes.isWatch,
     });
     dispatch(getNode(nodeName));
 };
@@ -92,7 +91,7 @@ const buildQuery = (nodeName) => {
 
 export const getNode = (nodeName) => (dispatch, getState) => {
     let state = getState();
-    if(state.nodes.isWatch) {
+    if (state.nodes.isWatch) {
         dispatch(watchNode(nodeName));
         return;
     }
@@ -137,13 +136,17 @@ const watchNode = (nodeName) => (dispatch, getState) => {
                     }
                     total += value.byteLength;
                     //console.log(`received ${value.byteLength} bytes (${total} bytes in total)`)
-                    let text = Common.utf8ArrayToStr(value);
-                    let json = JSON.parse(text);
-                    dispatch({
-                        type: NODE_SUCCESS,
-                        status: 200,
-                        json,
-                        receivedAt: Date.now()
+                    let arr = Common.utf8ArrayToStr(value).split("\n");
+                    arr.map((text) => {
+                        if (text !== "") {
+                            let json = JSON.parse(text);
+                            dispatch({
+                                type: NODE_SUCCESS,
+                                status: 200,
+                                json,
+                                receivedAt: Date.now()
+                            });
+                        }
                     });
                     pump()
                 }).catch(reject)
@@ -152,8 +155,8 @@ const watchNode = (nodeName) => (dispatch, getState) => {
             pump()
         })
     };
-    let param = nodeName === undefined ? "type=node":"type=node&name="+nodeName;
-    fetch(Config.api + "/watch?"+param, {
+    let param = nodeName === undefined ? "type=node" : "type=node&name=" + nodeName;
+    fetch(Config.api + "/watch?" + param, {
         method: 'post',
         headers: {'connection': 'keep-alive'},
         credentials: 'include',
@@ -174,8 +177,8 @@ const watchNode = (nodeName) => (dispatch, getState) => {
 const nodes = (state = {
     fetchNodes: Common.initRequest,
     fetchNode: Common.initRequest,
-    list: [],                   //数据
     isWatch: true,
+    list: [],                   //数据
     data: {}
 }, action) => {
     switch (action.type) {

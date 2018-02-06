@@ -1,8 +1,8 @@
 import React from 'react'
 import {NavLink, withRouter} from 'react-router-dom'
 import {connect} from 'react-redux'
-import {cancelWatch, getNode, isWatch} from '../../reducers/nodes';
-import {mutationService} from "../../reducers/mutation";
+import {cancelWatch, getNode, isWatch} from '../../reducers/nodes'
+import {mutationService} from '../../reducers/mutation'
 import ArrowDown from '../icons/arrowDown'
 import ArrowUp from '../icons/arrowUp'
 import CheckCircle from '../icons/checkCircle'
@@ -91,9 +91,11 @@ class Node extends React.Component {
             this.setState({check: check});
         }
     };
+
     mutationService = (cmd) => {
         this.props.mutationService(this.state.check, cmd);
     };
+
     checkAll = () => {
         const {nodes} = this.props;
         if (Object.keys(this.state.check).length === nodes.data.services.length) {
@@ -111,12 +113,15 @@ class Node extends React.Component {
             this.setState({check: check});
         }
     };
+
     handleWatch = () => {
         this.props.isWatch(this.nodeName);
     };
+
     handleRefresh = () => {
         this.props.getNode(this.nodeName);
     };
+
     renderList() {
         const {nodes} = this.props;
         if (nodes.data.services) {
@@ -125,9 +130,17 @@ class Node extends React.Component {
                 isWatch = "iswatch"
             }
             return <ul className="nestservices">
-                <li className="nesttitle">Services <Visibility onClick={()=>{
+                <li className="nesttitle">Services <Visibility onClick={() => {
                     this.handleWatch();
-                }} className={isWatch} />{nodes.fetchNode.status === 500?<div className="error">{nodes.fetchNode.error}<Refresh className="refresh" onClick={this.handleRefresh}/></div>:null}</li>
+                }} className={isWatch}/>
+                    {
+                        nodes.fetchNode.status === 500 ?
+                            <div className="error">{nodes.fetchNode.error}
+                                <Refresh className="refresh"
+                                         onClick={this.handleRefresh}/></div>
+                            : null
+                    }
+                </li>
                 {nodes.data.services.map((service, index) => {
                     let className = "item " + service.state.toLowerCase();
                     return <li className={className} key={service.name}>
@@ -160,12 +173,12 @@ class Node extends React.Component {
 
         return <div>
             <div className="title">
-                {nodes.data.services?<CheckCircle
+                {nodes.data.services ? <CheckCircle
                     className={Object.keys(this.state.check).length === nodes.data.services.length ? "checked" : ""}
                     onClick={() => {
                         this.checkAll();
                     }}
-                />:null}
+                /> : null}
                 <span className="name">{nodes.data.name}</span>
                 <span className="ipport">{nodes.data.ip}</span>
                 {mutation.mutationService.loading ? <span className="tools">
