@@ -5,7 +5,6 @@ export const NODES_REQUEST = 'NODES_REQUEST';
 export const NODES_SUCCESS = 'NODES_SUCCESS';
 export const NODES_FAILURE = 'NODES_FAILURE';
 
-
 export const NODE_WATCH = 'NODE_WATCH';
 export const NODE_RESET = 'NODE_RESET';
 export const NODE_REQUEST = 'NODE_REQUEST';
