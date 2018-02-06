@@ -173,7 +173,7 @@ class Node extends React.Component {
 
         return <div>
             <div className="title">
-                {nodes.data.services ? <CheckCircle
+                {nodes.data.services && nodes.data.services.length > 0 ? <CheckCircle
                     className={Object.keys(this.state.check).length === nodes.data.services.length ? "checked" : ""}
                     onClick={() => {
                         this.checkAll();
