@@ -88,6 +88,10 @@ func (s *Server) MergeDiff(diffs []*Node) (reDiffs []*Node) {
 				//exclude dead node
 				d.IsSelf = false //remove is self
 				s.AddNode(d)     //if not find then add node
+				s.watch.Dispatch(WatchParam{
+					Name:d.Name,
+					WatchType:NodeChanged,
+				})
 				count++
 			}
 		} else {
@@ -118,6 +122,10 @@ func (s *Server) MergeDiff(diffs []*Node) (reDiffs []*Node) {
 				reDiffs = append(reDiffs, reDiff)
 			}
 			if merged {
+				s.watch.Dispatch(WatchParam{
+					Name:d.Name,
+					WatchType:NodeChanged,
+				})
 				count++
 			}
 		}

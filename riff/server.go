@@ -33,6 +33,7 @@ type Server struct {
 	httpServer   *http.Server
 	rpcServer    *rpc.Server
 	logWriter    *LogWriter
+	watch        *Watch
 	config       *Config
 	shutdown     bool
 	shutdownLock sync.Mutex
@@ -44,6 +45,7 @@ func NewServer(config *Config) (*Server, error) {
 
 	server = &Server{
 		logWriter:  NewLogWriter(512),
+		watch:      NewWatch(),
 		rpcServer:  rpc.NewServer(),
 		api:        &API{},
 		config:     config,

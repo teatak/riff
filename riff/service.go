@@ -91,6 +91,10 @@ func (s *Server) handleServices() {
 				s.Self.VersionInc()
 				s.Self.Shutter()
 				s.Shutter()
+				s.watch.Dispatch(WatchParam{
+					Name:s.Self.Name,
+					WatchType:NodeChanged,
+				})
 			}
 			time.Sleep(1 * time.Second)
 		}
@@ -112,6 +116,10 @@ func (s *Server) handleServices() {
 			nowSnap := s.Self.SnapShot
 			if preSnap != nowSnap {
 				s.Shutter()
+				s.watch.Dispatch(WatchParam{
+					Name:s.Self.Name,
+					WatchType:NodeChanged,
+				})
 			}
 			time.Sleep(30 * time.Second)
 		}

@@ -115,39 +115,93 @@ func (h *Http) newRequestOptions(r *http.Request) *RequestOptions {
 	}
 }
 
-
 type httpServiceHandler struct {
-	serviceCh chan string
+	*WatchParam
+	serviceCh chan bool
 }
 
-func (h *httpServiceHandler) HandleService(log string) {
+func (h *httpServiceHandler) HandleWatch() {
 	// Do a non-blocking send
 	select {
-	case h.serviceCh <- log:
+	case h.serviceCh <- true:
 	}
 }
 
-func (h *Http) apiIndex(r *cart.Router) {
-	r.ANY(func(c *cart.Context, next cart.Next) {
-		//var reqOpt *RequestOptions
-		opts := h.newRequestOptions(c.Request)
+func (h *httpServiceHandler) GetParam() *WatchParam{
+	return h.WatchParam
+}
 
-		params := graphql.Params{
-			Schema:         schema,
-			RequestString:  opts.Query,
-			VariableValues: opts.Variables,
-			OperationName:  opts.OperationName,
-			Context:        c.Request.Context(),
-		}
-		result := graphql.Do(params)
-		if len(result.Errors) > 0 {
-			server.Logger.Printf(errorServicePrefix+"wrong result, unexpected errors: %v\n", result.Errors)
-			c.IndentedJSON(500, result)
-		} else {
-			c.IndentedJSON(200, result)
-		}
-	})
+func (h *Http) apiIndex(r *cart.Router) {
+	r.ANY(h.api)
+	r.Route("/watch").ANY(h.watch)
 	r.Route("/logs").GET(h.logs)
+}
+
+func (h *Http) api(c *cart.Context, next cart.Next) {
+	//var reqOpt *RequestOptions
+	opts := h.newRequestOptions(c.Request)
+	params := graphql.Params{
+		Schema:         schema,
+		RequestString:  opts.Query,
+		VariableValues: opts.Variables,
+		OperationName:  opts.OperationName,
+		Context:        c.Request.Context(),
+	}
+	result := graphql.Do(params)
+	if len(result.Errors) > 0 {
+		server.Logger.Printf(errorServicePrefix+"wrong result, unexpected errors: %v\n", result.Errors)
+		c.IndentedJSON(500, result)
+	} else {
+		c.IndentedJSON(200, result)
+	}
+}
+
+func (h *Http) watch(c *cart.Context, next cart.Next) {
+	resp := c.Response
+	clientGone := resp.(http.CloseNotifier).CloseNotify()
+
+	resp.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	resp.Header().Set("Connection", "Keep-Alive")
+	resp.Header().Set("Transfer-Encoding", "chunked")
+	resp.Header().Set("X-Content-Type-Options", "nosniff")
+
+	handler := &httpServiceHandler{
+		WatchParam: &WatchParam{
+			Name:"node1",
+			WatchType:NodeChanged,
+		},
+		serviceCh: make(chan bool, 512),
+	}
+	server.watch.RegisterHandler(handler)
+	defer server.watch.DeregisterHandler(handler)
+
+	opts := h.newRequestOptions(c.Request)
+	params := graphql.Params{
+		Schema:         schema,
+		RequestString:  opts.Query,
+		VariableValues: opts.Variables,
+		OperationName:  opts.OperationName,
+		Context:        c.Request.Context(),
+	}
+	flusher, ok := resp.(http.Flusher)
+	if !ok {
+		server.Logger.Println("Streaming not supported")
+	}
+
+	flusher.Flush()
+	for {
+		select {
+		case <-clientGone:
+			return
+		case <-handler.serviceCh:
+
+			result := graphql.Do(params)
+			b, _ := json.Marshal(result)
+			fmt.Fprintln(resp, string(b))
+
+			flusher.Flush()
+		}
+	}
 }
 
 type httpLogHandler struct {
@@ -161,7 +215,7 @@ func (h *httpLogHandler) HandleLog(log string) {
 	}
 }
 
-func (h Http) logs(c *cart.Context) {
+func (h *Http) logs(c *cart.Context) {
 	resp := c.Response
 	clientGone := resp.(http.CloseNotifier).CloseNotify()
 
