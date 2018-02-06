@@ -25,7 +25,7 @@ func (a *API) makeNestNode(n *Node, s *Service, resolveState api.StateType) *api
 		DataCenter: n.DataCenter,
 		IP:         n.IP,
 		Port:       s.Port,
-		RpcPort:	n.Port,
+		RpcPort:    n.Port,
 		State:      resolveState,
 		Version:    int(n.Version),
 		SnapShot:   n.SnapShot,

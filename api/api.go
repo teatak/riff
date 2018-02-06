@@ -3,10 +3,10 @@ package api
 type StateType int
 
 const (
-	StateAlive   StateType = 1 << iota
+	StateAlive StateType = 1 << iota
 	StateSuspect
 	StateDead
-	StateAll     = StateAlive | StateSuspect | StateDead
+	StateAll = StateAlive | StateSuspect | StateDead
 )
 
 func (s StateType) String() string {
@@ -30,7 +30,7 @@ func (s StateType) String() string {
 type CmdType int
 
 const (
-	CmdStart   CmdType = 1 << iota
+	CmdStart CmdType = 1 << iota
 	CmdStop
 	CmdRestart
 )
@@ -53,15 +53,15 @@ func (c CmdType) String() string {
 type Nodes []*Node
 
 type Node struct {
-	Name       string    `json:"name"`
-	DataCenter string    `json:"dataCenter"`
-	IP         string    `json:"ip"`
-	Port       int       `json:"port,omitempty"`
-	Version    int       `json:"version"`
-	State      StateType `json:"state"`
-	SnapShot   string    `json:"snapShot,omitempty"`
-	IsSelf     bool      `json:"isSelf,omitempty"`
-	NestServices         `json:"services,omitempty"`
+	Name         string    `json:"name"`
+	DataCenter   string    `json:"dataCenter"`
+	IP           string    `json:"ip"`
+	Port         int       `json:"port,omitempty"`
+	Version      int       `json:"version"`
+	State        StateType `json:"state"`
+	SnapShot     string    `json:"snapShot,omitempty"`
+	IsSelf       bool      `json:"isSelf,omitempty"`
+	NestServices `json:"services,omitempty"`
 }
 
 type NestNodes []*NestNode
@@ -82,8 +82,8 @@ type NestNode struct {
 type Services []*Service
 
 type Service struct {
-	Name string `json:"name"`
-	NestNodes   `json:"nodes,omitempty"`
+	Name      string `json:"name"`
+	NestNodes `json:"nodes,omitempty"`
 }
 
 type NestServices []*NestService
