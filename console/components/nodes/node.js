@@ -1,7 +1,7 @@
 import React from 'react'
 import {NavLink, withRouter} from 'react-router-dom'
 import {connect} from 'react-redux'
-import {getNode} from "../../reducers/nodes";
+import {getNode,cancelNode} from "../../reducers/nodes";
 import {mutationService} from "../../reducers/mutation";
 import ArrowDown from '../icons/arrowDown'
 import ArrowUp from '../icons/arrowUp'
@@ -21,6 +21,9 @@ const mapDispatchToProps = (dispatch) => {
     return {
         getNode: (nodeName) => {
             dispatch(getNode(nodeName));
+        },
+        cancelNode : () => {
+            dispatch(cancelNode());
         },
         mutationService: (services, cmd) => {
             dispatch(mutationService(services, cmd));
@@ -45,6 +48,9 @@ class Node extends React.Component {
             this.setState({toggle: {}, check: {}});
             this.props.getNode(nextProps.match.params.nodeName)
         }
+    }
+    componentWillUnmount() {
+        this.props.cancelNode()
     }
 
     toggle = (name) => {

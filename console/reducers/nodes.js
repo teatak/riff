@@ -1,9 +1,12 @@
 import Common from './common'
+import Config from 'config'
 
 export const NODES_REQUEST = 'NODES_REQUEST';
 export const NODES_SUCCESS = 'NODES_SUCCESS';
 export const NODES_FAILURE = 'NODES_FAILURE';
 
+
+export const NODE_RESET = 'NODE_RESET';
 export const NODE_REQUEST = 'NODE_REQUEST';
 export const NODE_SUCCESS = 'NODE_SUCCESS';
 export const NODE_FAILURE = 'NODE_FAILURE';
@@ -41,6 +44,19 @@ export const getList = () => (dispatch, getState) => {
     })
 };
 
+let initReader = null;
+
+export const cancelNode = () => (dispatch, getState) => {
+    let state = getState();
+    if (state.nodes.fetchNode.loading) {
+        if (initReader !== null) {
+            initReader.cancel();
+            initReader = null;
+            dispatch({type: NODE_RESET});
+        }
+    }
+};
+
 export const getNode = (nodeName) => (dispatch, getState) => {
     let node = (nodeName === undefined) ? "node:server" : "node(name:\"" + nodeName + "\")";
     let query = `{
@@ -61,24 +77,70 @@ export const getNode = (nodeName) => (dispatch, getState) => {
         } 
     }
 }`;
+    dispatch(cancelNode());
     dispatch({type: NODE_REQUEST});
-    Common.fetch({query}, (json, error, status) => {
-        if (status === 200) {
-            dispatch({
-                type: NODE_SUCCESS,
-                status: status,
-                json,
-                receivedAt: Date.now()
-            });
-        } else {
-            dispatch({
-                type: NODE_FAILURE,
-                status: status,
-                error: error,
-                receivedAt: Date.now()
-            });
-        }
+
+    let consume = (reader) => {
+        initReader = reader;
+        let total = 0;
+        return new Promise((resolve, reject) => {
+            function pump() {
+                reader.read().then(({done, value}) => {
+                    if (done) {
+                        resolve();
+                        return
+                    }
+                    total += value.byteLength;
+                    //console.log(`received ${value.byteLength} bytes (${total} bytes in total)`)
+                    let text = Common.utf8ArrayToStr(value);
+                    let json = JSON.parse(text);
+                    dispatch({
+                        type: NODE_SUCCESS,
+                        status: 200,
+                        json,
+                        receivedAt: Date.now()
+                    });
+                    pump()
+                }).catch(reject)
+            }
+
+            pump()
+        })
+    };
+
+    fetch(Config.api + "/watch", {
+        method: 'post',
+        headers: {'connection': 'keep-alive'},
+        credentials: 'include',
+        body: JSON.stringify({query})
+    }).then((response) => {
+        return consume(response.body.getReader())
+    }).catch((error) => {
+        dispatch({
+            type: NODE_FAILURE,
+            status: 500,
+            error: error.message,
+            receivedAt: Date.now()
+        });
+        throw error
     })
+    // Common.fetch({query}, (json, error, status) => {
+    //     if (status === 200) {
+    //         dispatch({
+    //             type: NODE_SUCCESS,
+    //             status: status,
+    //             json,
+    //             receivedAt: Date.now()
+    //         });
+    //     } else {
+    //         dispatch({
+    //             type: NODE_FAILURE,
+    //             status: status,
+    //             error: error,
+    //             receivedAt: Date.now()
+    //         });
+    //     }
+    // })
 };
 
 const nodes = (state = {
@@ -121,6 +183,16 @@ const nodes = (state = {
                     lastUpdated: action.receivedAt
                 },
             };
+        case NODE_RESET:
+            return {
+                ...state,
+                fetchNode: {
+                    ...state.fetchNode,
+                    loading: false,
+                    status: 0,
+                    error: null,
+                }
+            };
         case NODE_REQUEST:
             return {
                 ...state,
@@ -136,7 +208,7 @@ const nodes = (state = {
                 ...state,
                 fetchNode: {
                     ...state.fetchNode,
-                    loading: false,
+                    loading: true,
                     status: 200,
                     error: null,
                     lastUpdated: action.receivedAt

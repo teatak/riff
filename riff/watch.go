@@ -11,7 +11,7 @@ const (
 	ServiceChanged
 )
 
-type WatchParam struct{
+type WatchParam struct {
 	Name string
 	WatchType
 }

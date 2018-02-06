@@ -4,7 +4,6 @@ import {NavLink, Route, Switch} from 'react-router-dom'
 import {getList} from '../../reducers/nodes'
 import Node from './node'
 import Search from '../icons/search'
-import Star from '../icons/star'
 
 import './index.pcss'
 
@@ -67,6 +66,7 @@ class Nodes extends React.Component {
     }
 
     render() {
+        const {nodes} = this.props;
         return <div className="nodes">
             {this.renderList()}
             <div className="detail">

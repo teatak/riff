@@ -128,8 +128,8 @@ func (s *Server) AddNode(n *Node) {
 
 	//watch
 	s.watch.Dispatch(WatchParam{
-		Name:n.Name,
-		WatchType:NodeChanged,
+		Name:      n.Name,
+		WatchType: NodeChanged,
 	})
 }
 
@@ -138,8 +138,8 @@ func (s *Server) DeleteNode(key string) {
 
 	//watch
 	s.watch.Dispatch(WatchParam{
-		Name:key,
-		WatchType:NodeChanged,
+		Name:      key,
+		WatchType: NodeChanged,
 	})
 }
 

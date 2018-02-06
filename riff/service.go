@@ -92,8 +92,8 @@ func (s *Server) handleServices() {
 				s.Self.Shutter()
 				s.Shutter()
 				s.watch.Dispatch(WatchParam{
-					Name:s.Self.Name,
-					WatchType:NodeChanged,
+					Name:      s.Self.Name,
+					WatchType: NodeChanged,
 				})
 			}
 			time.Sleep(1 * time.Second)
@@ -117,8 +117,8 @@ func (s *Server) handleServices() {
 			if preSnap != nowSnap {
 				s.Shutter()
 				s.watch.Dispatch(WatchParam{
-					Name:s.Self.Name,
-					WatchType:NodeChanged,
+					Name:      s.Self.Name,
+					WatchType: NodeChanged,
 				})
 			}
 			time.Sleep(30 * time.Second)
@@ -130,16 +130,16 @@ func (s *Service) checkState() {
 	if pid := s.GetPid(); pid == 0 {
 		if s.State != api.StateDead {
 			server.watch.Dispatch(WatchParam{
-				Name:s.Name,
-				WatchType:ServiceChanged,
+				Name:      s.Name,
+				WatchType: ServiceChanged,
 			})
 		}
 		s.State = api.StateDead
 	} else {
 		if s.State != api.StateAlive {
 			server.watch.Dispatch(WatchParam{
-				Name:s.Name,
-				WatchType:ServiceChanged,
+				Name:      s.Name,
+				WatchType: ServiceChanged,
 			})
 		}
 		s.State = api.StateAlive

@@ -135,7 +135,7 @@ func (s *Server) trueNode(d, n *Node) (merged bool, reDiff *Node) {
 		if d.VersionGet() == 0 { //if d is new online
 			//v := s.SetState(n, api.StateAlive)
 			v := n.VersionGet()
-			s.ExchangeNode(n,d)
+			s.ExchangeNode(n, d)
 			n.VersionSet(v)
 			v = s.SetState(n, api.StateAlive)
 			if v > 1 {
@@ -143,13 +143,13 @@ func (s *Server) trueNode(d, n *Node) (merged bool, reDiff *Node) {
 			}
 		} else {
 			//if remote node service changes .... take remote node
-			s.ExchangeNode(n,d)
+			s.ExchangeNode(n, d)
 		}
 		merged = true
 		break
 	case api.StateDead:
 		if n.State != api.StateDead {
-			s.ExchangeNode(n,d)
+			s.ExchangeNode(n, d)
 			s.RemoveNodeDelay(n)
 			merged = true
 		}
@@ -166,10 +166,10 @@ func (s *Server) gossipNode(d, n *Node) (merged bool, reDiff *Node) {
 			n.Shutter()
 		} else {
 			if n.State != api.StateDead && d.State == api.StateDead {
-				s.ExchangeNode(n,d)
+				s.ExchangeNode(n, d)
 				s.RemoveNodeDelay(n)
 			} else {
-				s.ExchangeNode(n,d)
+				s.ExchangeNode(n, d)
 			}
 		}
 		merged = true
@@ -180,13 +180,13 @@ func (s *Server) gossipNode(d, n *Node) (merged bool, reDiff *Node) {
 	return
 }
 
-func (s *Server) ExchangeNode(n,d *Node) {
+func (s *Server) ExchangeNode(n, d *Node) {
 	//discover diff
 	if n.SnapShot == d.SnapShot || n.Name != d.Name {
 		return
 	}
 
-	s.walkService(n,d)
+	s.walkService(n, d)
 
 	if n.IsSelf {
 		*n = *d
@@ -196,35 +196,35 @@ func (s *Server) ExchangeNode(n,d *Node) {
 	}
 
 	s.watch.Dispatch(WatchParam{
-		Name:n.Name,
-		WatchType:NodeChanged,
+		Name:      n.Name,
+		WatchType: NodeChanged,
 	})
 }
 
-func (s *Server) walkService(n,d *Node) {
+func (s *Server) walkService(n, d *Node) {
 	walked := make(map[string]bool)
-	for _,sv := range n.Services {
+	for _, sv := range n.Services {
 		//find in diff service
 		walked[sv.Name] = true
 		if d.Services[sv.Name] == nil {
 			s.watch.Dispatch(WatchParam{
-				Name:sv.Name,
-				WatchType:ServiceChanged,
+				Name:      sv.Name,
+				WatchType: ServiceChanged,
 			})
 		} else {
 			if d.Services[sv.Name].State != sv.State {
 				s.watch.Dispatch(WatchParam{
-					Name:sv.Name,
-					WatchType:ServiceChanged,
+					Name:      sv.Name,
+					WatchType: ServiceChanged,
 				})
 			}
 		}
 	}
-	for _,sv := range d.Services {
+	for _, sv := range d.Services {
 		if !walked[sv.Name] {
 			s.watch.Dispatch(WatchParam{
-				Name:sv.Name,
-				WatchType:ServiceChanged,
+				Name:      sv.Name,
+				WatchType: ServiceChanged,
 			})
 		}
 	}

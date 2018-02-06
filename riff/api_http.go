@@ -127,7 +127,7 @@ func (h *httpServiceHandler) HandleWatch() {
 	}
 }
 
-func (h *httpServiceHandler) GetParam() *WatchParam{
+func (h *httpServiceHandler) GetParam() *WatchParam {
 	return h.WatchParam
 }
 
@@ -160,15 +160,15 @@ func (h *Http) watch(c *cart.Context, next cart.Next) {
 	resp := c.Response
 	clientGone := resp.(http.CloseNotifier).CloseNotify()
 
-	resp.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	resp.Header().Set("Content-Type", "application/json; charset=utf-8")
 	resp.Header().Set("Connection", "Keep-Alive")
 	resp.Header().Set("Transfer-Encoding", "chunked")
 	resp.Header().Set("X-Content-Type-Options", "nosniff")
 
 	handler := &httpServiceHandler{
 		WatchParam: &WatchParam{
-			Name:"mongod",
-			WatchType:ServiceChanged,
+			Name:      "node1",
+			WatchType: NodeChanged,
 		},
 		serviceCh: make(chan bool, 512),
 	}
@@ -183,12 +183,11 @@ func (h *Http) watch(c *cart.Context, next cart.Next) {
 		OperationName:  opts.OperationName,
 		Context:        c.Request.Context(),
 	}
+
 	flusher, ok := resp.(http.Flusher)
 	if !ok {
 		server.Logger.Println("Streaming not supported")
 	}
-
-	flusher.Flush()
 	for {
 		select {
 		case <-clientGone:
@@ -196,6 +195,9 @@ func (h *Http) watch(c *cart.Context, next cart.Next) {
 		case <-handler.serviceCh:
 
 			result := graphql.Do(params)
+			if len(result.Errors) > 0 {
+				server.Logger.Printf(errorServicePrefix+"wrong result, unexpected errors: %v\n", result.Errors)
+			}
 			b, _ := json.Marshal(result)
 			fmt.Fprintln(resp, string(b))
 
