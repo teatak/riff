@@ -66,12 +66,8 @@ export const cancelWatch = () => (dispatch, getState) => {
         }
     }
 };
-export const getNode = (nodeName) => (dispatch, getState) => {
-    let state = getState();
-    if(state.nodes.isWatch) {
-        dispatch(watchNode(nodeName));
-        return;
-    }
+
+const buildQuery = (nodeName) => {
     let node = (nodeName === undefined) ? "node:server" : "node(name:\"" + nodeName + "\")";
     let query = `{
     ` + node + ` {
@@ -91,6 +87,17 @@ export const getNode = (nodeName) => (dispatch, getState) => {
         } 
     }
 }`;
+    return query;
+};
+
+export const getNode = (nodeName) => (dispatch, getState) => {
+    let state = getState();
+    if(state.nodes.isWatch) {
+        dispatch(watchNode(nodeName));
+        return;
+    }
+    let query = buildQuery(nodeName);
+
     dispatch(cancelWatch());
     dispatch({type: NODE_REQUEST});
 
@@ -112,26 +119,9 @@ export const getNode = (nodeName) => (dispatch, getState) => {
         }
     })
 };
+
 const watchNode = (nodeName) => (dispatch, getState) => {
-    let node = (nodeName === undefined) ? "node:server" : "node(name:\"" + nodeName + "\")";
-    let query = `{
-    ` + node + ` {
-        name
-        ip
-        port
-        dataCenter
-        snapShot
-        state
-        isSelf
-        version
-        services {
-            name
-            port
-            state
-            config
-        } 
-    }
-}`;
+    let query = buildQuery(nodeName);
     dispatch(cancelWatch());
     dispatch({type: NODE_REQUEST});
 
