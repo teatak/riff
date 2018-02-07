@@ -89,7 +89,7 @@ curl --request GET \
 ```
 ### watch
 
-> POST /api/watch?name={$watchName}&type={node|service}
+> POST /api/watch?name={watchName}&type={node|service}
 
 watch node or service
 
