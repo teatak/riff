@@ -56,6 +56,49 @@ Options:
   -join       Join RPC address (-join 192.168.1.1:8630,192.168.1.2:8630,192.168.1.3:8630)
 
 ```
+## API
+
+### graphql 
+> POST /api
+
+```graphql
+{
+  service(name: "mongod") {
+    name
+    nodes {
+      name
+    }
+  }
+}
+
+```
+```bash
+curl --request POST \
+  --url http://localhost:8610/api \
+  --header 'content-type: application/json' \
+  --data '{"query":"{\n  service(name: \"mongod\") {\n    name\n    nodes {\n      name\n    }\n  }\n}\n"}'
+```
+### logs
+
+> GET /api/logs
+
+watch logs
+```bash
+curl --request GET \
+  --url http://localhost:8610/api/logs
+```
+### watch
+
+> POST /api/watch?name={$watchName}&type={node|service}
+
+watch node or service
+
+```bash
+curl --request POST \
+  --url 'http://localhost:8610/api/watch?type=service&name=mongod' \
+  --header 'content-type: application/json' \
+  --data '{"query":"{\n  service(name: \"mongod\") {\n    name\n    nodes {\n      name\n    }\n  }\n}\n"}'
+```
 
 ## Web Console
 
