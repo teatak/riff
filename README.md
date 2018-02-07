@@ -61,6 +61,8 @@ Options:
 ### graphql 
 > POST /api
 
+you can use explorer in Web Console to discover api
+
 ```graphql
 {
   service(name: "mongod") {
