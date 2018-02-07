@@ -11,7 +11,7 @@ default: tools webpack assets
 	@echo "--> Running build"
 	@sh -c "$(CURDIR)/scripts/build.sh"
 
-dev: webpack assets
+dev: assets
 	@echo "--> Running build"
 	@DEV=1 sh -c "'$(CURDIR)/scripts/build.sh'"
 
