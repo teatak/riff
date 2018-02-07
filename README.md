@@ -58,3 +58,5 @@ Options:
 ```
 
 ## Web Console
+
+![Riff console](https://raw.githubusercontent.com/gimke/riff/gh-pages/images/screen.png)
