@@ -61,9 +61,14 @@ func (c *cmd) Run(args []string) int {
 	c.rpc = net.JoinHostPort(host, strconv.Itoa(port))
 
 	//get args 0
-	name := args[0]
-	c.Cmd(name)
-	return 0
+	if len(args) == 0 {
+		c.flags.Usage()
+		return 0
+	} else {
+		name := args[0]
+		c.Cmd(name)
+		return 0
+	}
 }
 
 func (c *cmd) Cmd(name string) {
