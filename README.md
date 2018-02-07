@@ -61,7 +61,7 @@ Options:
 ### graphql 
 > POST /api
 
-you can use explorer in Web Console to discover api
+you can use explorer in Web console to discover api
 
 ```graphql
 {
