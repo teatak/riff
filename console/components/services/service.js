@@ -156,12 +156,11 @@ class Service extends React.Component {
                                     {node.name}
                                 </NavLink>
                             </span>
+                            <span className="ipport">{node.ip + (node.port !== 0 ? ":" + node.port : "")}</span>
                             <div className="toggle" onClick={() => {
                                 this.toggle(node.name)
                             }}>{this.state.toggle[node.name] ? <ArrowUp/> : <ArrowDown/>}</div>
-                            <span className="ipport">{node.ip + (node.port !== 0 ? ":" + node.port : "")}</span>
                         </div>
-
                         {this.state.toggle[node.name] ? <pre>
                             {node.config}
                         </pre> : null}
