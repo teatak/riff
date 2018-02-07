@@ -104,6 +104,8 @@ curl --request POST \
 
 ## Web Console
 
+> http://localhost:8610
+
 ![Riff console](https://raw.githubusercontent.com/gimke/riff/gh-pages/images/screen.png)
 
 ## Service Config
