@@ -59,14 +59,14 @@ func (s *Server) handleConn(conn net.Conn) {
 	}
 	typ := api.RPCType(buf[0])
 	switch typ {
-	case api.RPCRiff:
-		s.handleRpc(conn)
-	case api.RPCLog:
-		s.handleLog(conn)
+	case api.RPCGob:
+		s.handleGobRpc(conn)
+	case api.RPCJson:
+		s.handleJsonRpc(conn)
 	}
 }
 
-func (s *Server) handleRpc(conn net.Conn) {
+func (s *Server) handleGobRpc(conn net.Conn) {
 	codec := api.NewGobServerCodec(conn)
 	for {
 		select {
@@ -84,8 +84,8 @@ func (s *Server) handleRpc(conn net.Conn) {
 	}
 }
 
-func (s *Server) handleLog(conn net.Conn) {
-	codec := api.NewGobServerCodec(conn)
+func (s *Server) handleJsonRpc(conn net.Conn) {
+	codec := api.NewJsonServerCodec(conn)
 	for {
 		select {
 		case <-s.ShutdownCh:

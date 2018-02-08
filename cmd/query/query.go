@@ -110,7 +110,7 @@ func (c *cmd) SnapShot() {
 }
 
 func (c *cmd) Nodes() {
-	client,err := api.NewClient(c.rpc)
+	client,err := api.NewJsonClient(c.rpc)
 	if err != nil {
 		fmt.Println(err)
 		return
