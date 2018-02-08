@@ -170,7 +170,7 @@ const watchNode = (nodeName) => (dispatch, getState) => {
             retryCount++;
             setTimeout(() => {
                 dispatch(watchNode(nodeName));
-            }, retryCount*1000);
+            }, retryCount * 1000);
         } else {
             dispatch({
                 type: NODE_FAILURE,

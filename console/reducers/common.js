@@ -1,7 +1,7 @@
 import Config from 'config'
 import React from 'react';
 
-class Common  {
+class Common {
     initRequest = {
         loading: false,
         status: 0,
@@ -21,10 +21,10 @@ class Common  {
     parseJSON = (response) => {
         return response.json()
     };
-    fetch = (cmd,cb) => {
+    fetch = (cmd, cb) => {
         fetch(Config.api, {
             method: 'post',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {'Content-Type': 'application/json'},
             credentials: "include",
             body: JSON.stringify(cmd),
         })
@@ -42,7 +42,7 @@ class Common  {
                 }
             })
             .catch(error => {
-                if(error.response) {
+                if (error.response) {
                     cb(null, error.message, error.response.status);
                 } else {
                     cb(null, error.message, 500);

@@ -158,7 +158,7 @@ const watchService = (serviceName, state) => (dispatch, getState) => {
             retryCount++;
             setTimeout(() => {
                 dispatch(watchService(serviceName, state));
-            }, retryCount*1000);
+            }, retryCount * 1000);
         } else {
             dispatch({
                 type: SERVICE_FAILURE,

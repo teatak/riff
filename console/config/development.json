@@ -1,7 +1,7 @@
 {
-  "name":"development",
-  "api":"/api",
-  "public":"/public",
-  "headers":{},
-  "titleSuffix":"Riff"
+  "name": "development",
+  "api": "/api",
+  "public": "/public",
+  "headers": {},
+  "titleSuffix": "Riff"
 }

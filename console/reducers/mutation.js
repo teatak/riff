@@ -5,15 +5,15 @@ export const MUTATIONSERVICE_SUCCESS = 'MUTATIONSERVICE_SUCCESS';
 export const MUTATIONSERVICE_FAILURE = 'MUTATIONSERVICE_FAILURE';
 
 //获取Product
-export const mutationService = (services,cmd) => (dispatch, getState) => {
+export const mutationService = (services, cmd) => (dispatch, getState) => {
     let servicesList = [];
     Object.keys(services).map((key, index) => {
-       let service = services[key];
-        servicesList.push(`    {name:"`+service.name+`",ip:"`+service.ip+`",port:`+service.port+`,cmd:`+cmd+`},`);
+        let service = services[key];
+        servicesList.push(`    {name:"` + service.name + `",ip:"` + service.ip + `",port:` + service.port + `,cmd:` + cmd + `},`);
     });
     const query = `mutation {
   mutationService(services:[
-`+servicesList.join('\n')+`
+` + servicesList.join('\n') + `
   ]){
     name,
     ip,
