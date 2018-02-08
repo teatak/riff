@@ -3,8 +3,6 @@ package riff
 import (
 	"fmt"
 	"github.com/gimke/riff/api"
-	"net"
-	"net/rpc"
 	"strings"
 	"time"
 )
@@ -87,12 +85,10 @@ func (s *Server) fanoutLeave() {
 }
 
 func (s *Server) requestLeave(peer string) error {
-	conn, err := net.DialTimeout("tcp", peer, time.Second*10)
+	client,err := api.NewClient(peer)
 	if err != nil {
 		return fmt.Errorf("%v", err)
 	}
-	codec := api.NewGobClientCodec(conn)
-	client := rpc.NewClientWithCodec(codec)
 	defer client.Close()
 
 	diff := []*Node{s.Self}
@@ -104,12 +100,10 @@ func (s *Server) requestLeave(peer string) error {
 }
 
 func (s *Server) requestPeer(peer string) error {
-	conn, err := net.DialTimeout("tcp", peer, time.Second*10)
+	client,err := api.NewClient(peer)
 	if err != nil {
 		return fmt.Errorf("%v", err)
 	}
-	codec := api.NewGobClientCodec(conn)
-	client := rpc.NewClientWithCodec(codec)
 	defer client.Close()
 
 	var digests []*Digest

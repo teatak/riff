@@ -9,8 +9,8 @@ import (
 type Query struct{}
 
 func (q *Query) SnapShot(_ struct{}, snap *string) error {
-	server.Logger.Printf(infoServerPrefix+"client get snapshot: %s", *snap)
 	*snap = server.SnapShot
+	server.Logger.Printf(infoServerPrefix+"client get snapshot: %s", *snap)
 	return nil
 }
 

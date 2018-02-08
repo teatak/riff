@@ -6,10 +6,8 @@ import (
 	"github.com/gimke/riff/api"
 	"github.com/gimke/riff/common"
 	"net"
-	"net/rpc"
 	"strconv"
 	"strings"
-	"time"
 )
 
 var help = `Usage: riff %s <name> [options]
@@ -72,13 +70,11 @@ func (c *cmd) Run(args []string) int {
 }
 
 func (c *cmd) Cmd(name string) {
-	conn, err := net.DialTimeout("tcp", c.rpc, time.Second*10)
+	client,err := api.NewClient(c.rpc)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	codec := api.NewGobClientCodec(conn)
-	client := rpc.NewClientWithCodec(codec)
 	defer client.Close()
 
 	var result bool

@@ -49,6 +49,42 @@ func (s *Server) listenRpc() {
 
 func (s *Server) handleConn(conn net.Conn) {
 	defer conn.Close()
+	buf := make([]byte, 1)
+	if _, err := conn.Read(buf); err != nil {
+		if err != io.EOF {
+			s.Logger.Printf(errorServerPrefix+"failed to read conn: %v\n", err)
+		}
+		conn.Close()
+		return
+	}
+	typ := api.RPCType(buf[0])
+	switch typ {
+	case api.RPCRiff:
+		s.handleRpc(conn)
+	case api.RPCLog:
+		s.handleLog(conn)
+	}
+}
+
+func (s *Server) handleRpc(conn net.Conn) {
+	codec := api.NewGobServerCodec(conn)
+	for {
+		select {
+		case <-s.ShutdownCh:
+			return
+		default:
+		}
+		if err := s.rpcServer.ServeRequest(codec); err != nil {
+			if err == io.EOF {
+			} else {
+				s.Logger.Printf(errorServerPrefix+"%v %s\n", err, conn.RemoteAddr().String())
+			}
+			return
+		}
+	}
+}
+
+func (s *Server) handleLog(conn net.Conn) {
 	codec := api.NewGobServerCodec(conn)
 	for {
 		select {

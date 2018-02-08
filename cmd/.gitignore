@@ -3,3 +3,4 @@ riff
 config/
 logs/
 run/*.pid
+run/*.ver

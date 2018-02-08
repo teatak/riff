@@ -7,9 +7,7 @@ import (
 	"github.com/gimke/riff/common"
 	"github.com/ryanuber/columnize"
 	"net"
-	"net/rpc"
 	"strconv"
-	"time"
 )
 
 const help = `Usage: riff query <command> [options]
@@ -96,13 +94,11 @@ func (c *cmd) Run(args []string) int {
 }
 
 func (c *cmd) SnapShot() {
-	conn, err := net.DialTimeout("tcp", c.rpc, time.Second*10)
+	client,err := api.NewClient(c.rpc)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	codec := api.NewGobClientCodec(conn)
-	client := rpc.NewClientWithCodec(codec)
 	defer client.Close()
 
 	var snapshot string
@@ -114,13 +110,11 @@ func (c *cmd) SnapShot() {
 }
 
 func (c *cmd) Nodes() {
-	conn, err := net.DialTimeout("tcp", c.rpc, time.Second*10)
+	client,err := api.NewClient(c.rpc)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	codec := api.NewGobClientCodec(conn)
-	client := rpc.NewClientWithCodec(codec)
 	defer client.Close()
 
 	var nodes api.Nodes
@@ -148,13 +142,11 @@ func (c *cmd) Nodes() {
 }
 
 func (c *cmd) Node(name string) {
-	conn, err := net.DialTimeout("tcp", c.rpc, time.Second*10)
+	client,err := api.NewClient(c.rpc)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	codec := api.NewGobClientCodec(conn)
-	client := rpc.NewClientWithCodec(codec)
 	defer client.Close()
 
 	var node api.Node
@@ -196,13 +188,11 @@ func (c *cmd) Node(name string) {
 }
 
 func (c *cmd) Services() {
-	conn, err := net.DialTimeout("tcp", c.rpc, time.Second*10)
+	client,err := api.NewClient(c.rpc)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	codec := api.NewGobClientCodec(conn)
-	client := rpc.NewClientWithCodec(codec)
 	defer client.Close()
 
 	var services api.Services
@@ -223,13 +213,11 @@ func (c *cmd) Services() {
 }
 
 func (c *cmd) Service(name string) {
-	conn, err := net.DialTimeout("tcp", c.rpc, time.Second*10)
+	client,err := api.NewClient(c.rpc)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	codec := api.NewGobClientCodec(conn)
-	client := rpc.NewClientWithCodec(codec)
 	defer client.Close()
 
 	var service api.Service

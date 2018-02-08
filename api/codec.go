@@ -6,9 +6,28 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net"
 	"net/rpc"
 	"time"
 )
+
+type RPCType byte
+
+const (
+	RPCRiff RPCType = 0
+	RPCLog          = 1
+)
+
+func NewClient(address string) (*rpc.Client, error) {
+	conn, err := net.DialTimeout("tcp", address, time.Second*10)
+	if err != nil {
+		return nil, err
+	}
+	conn.Write([]byte{byte(RPCRiff)})
+	codec := NewGobClientCodec(conn)
+	client := rpc.NewClientWithCodec(codec)
+	return client, nil
+}
 
 func TimeoutCoder(f func(interface{}) error, e interface{}, msg string) error {
 	endChan := make(chan error, 1)

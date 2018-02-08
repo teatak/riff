@@ -2,19 +2,13 @@ package riff
 
 import (
 	"github.com/gimke/riff/api"
-	"net"
-	"net/rpc"
-	"time"
 )
 
 func mutationService(name, address string, cmd api.CmdType) error {
-	conn, err := net.DialTimeout("tcp", address, time.Second*10)
+	client,err := api.NewClient(address)
 	if err != nil {
-		server.Logger.Printf(errorServerPrefix+"%v\n", err)
 		return err
 	}
-	codec := api.NewGobClientCodec(conn)
-	client := rpc.NewClientWithCodec(codec)
 	defer client.Close()
 
 	var result bool
