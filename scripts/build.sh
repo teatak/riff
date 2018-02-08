@@ -5,6 +5,7 @@ cd `dirname $0`
 cd ..
 
 BIN="riff"
+Type="release"
 VERSION="$(cat version)"
 GITSHA="$(git rev-parse HEAD)"
 GITBRANCH="$(git rev-parse --abbrev-ref HEAD)"
@@ -12,7 +13,7 @@ GITBRANCH="$(git rev-parse --abbrev-ref HEAD)"
 # Determine the arch/os combos we're building for
 XC_OS=${XC_OS:-"linux darwin windows freebsd openbsd solaris"}
 XC_ARCH=${XC_ARCH:-"386 amd64 arm"}
-LDFLAGS="-X github.com/gimke/riff/common.GitSha=${GITSHA} -X github.com/gimke/riff/common.GitBranch=${GITBRANCH} -X github.com/gimke/riff/common.Version=${VERSION}"
+LDFLAGS="-X github.com/gimke/riff/common.Type=${Type} -X github.com/gimke/riff/common.GitSha=${GITSHA} -X github.com/gimke/riff/common.GitBranch=${GITBRANCH} -X github.com/gimke/riff/common.Version=${VERSION}"
 
 # Delete the old dir
 rm -rf bin/*

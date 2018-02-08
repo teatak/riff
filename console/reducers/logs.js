@@ -1,4 +1,4 @@
-import Common from './common'
+import Common from '../common'
 import Config from 'config'
 
 export const LOG_RESET = 'LOG_RESET';

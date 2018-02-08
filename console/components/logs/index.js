@@ -4,6 +4,7 @@ import {cancelLogs, getLogs} from "../../reducers/logs"
 import Close from '../icons/close'
 import SwapHoriz from '../icons/swapHoriz'
 import Refresh from '../icons/refresh'
+import Common from '../../common'
 
 import './index.pcss'
 
@@ -24,18 +25,6 @@ const mapDispatchToProps = (dispatch) => {
     }
 };
 
-let isIe = false;
-
-if (/MSIE/i.test(navigator.userAgent)) {
-    isIe = true;
-}
-if (/rv:11.0/i.test(navigator.userAgent)) {
-    isIe = true;
-}
-if (/Edge\/\d./i.test(navigator.userAgent)) {
-    isIe = false;
-}
-
 class Logs extends React.Component {
     constructor(props) {
         super(props);
@@ -43,7 +32,7 @@ class Logs extends React.Component {
     }
 
     componentWillMount() {
-        if (isIe) {
+        if (Common.isIe()) {
             return
         }
         this.props.getLogs();
@@ -51,7 +40,7 @@ class Logs extends React.Component {
 
     componentDidMount() {
         this.el = document.getElementById("logs");
-        if (isIe) {
+        if (Common.isIe()) {
 
         } else {
             this.handleScroll();
@@ -59,20 +48,20 @@ class Logs extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (isIe) {
+        if (Common.isIe()) {
             return
         }
         this.handleScroll();
     }
 
     handleRefresh = () => {
-        if (isIe) {
+        if (Common.isIe()) {
             return
         }
         this.props.getLogs();
     };
     handleScroll = () => {
-        if (isIe) {
+        if (Common.isIe()) {
             return
         }
         if (this.el) {
@@ -89,7 +78,7 @@ class Logs extends React.Component {
     };
 
     handleClose = () => {
-        if (isIe) {
+        if (Common.isIe()) {
 
         } else {
             this.props.cancelLogs();
@@ -100,7 +89,7 @@ class Logs extends React.Component {
     };
 
     renderList() {
-        if (isIe) {
+        if (Common.isIe()) {
             return <iframe className="iframe-logs" src="/api/logs" id="logs"/>
         } else {
             const {logs} = this.props;
@@ -125,7 +114,7 @@ class Logs extends React.Component {
             error = logs.fetchLogs.error;
         }
         let renderIe = "";
-        if (isIe) {
+        if (Common.isIe()) {
             renderIe = "This is an iframe under IE or Edge";
         }
         return <div className="logs">

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gimke/cart"
 	"github.com/gimke/riff/api"
+	"github.com/gimke/riff/common"
 	"io"
 	"log"
 	"net"
@@ -131,27 +132,30 @@ func (s *Server) setupCart() error {
 			c.Response.Write(b)
 		}
 	})
-	//r.Use("/console/*file", func(c *cart.Context, next cart.Next) {
-	//	b, err := assetFS().Asset("static/dist/console.html")
-	//	if err != nil {
-	//		s.Logger.Printf(errorServerPrefix+"error: %v\n", err)
-	//		next()
-	//	} else {
-	//		c.Response.WriteHeader(200)
-	//		c.Response.Write(b)
-	//	}
-	//})
-	//r.Use("/static/*file", func(c *cart.Context, next cart.Next) {
-	//	http.StripPrefix("/static/", http.FileServer(assetFS())).ServeHTTP(c.Response, c.Request)
-	//	if c.Response.Status() == 404 {
-	//		c.Response.WriteHeader(200) //reset status
-	//		next()
-	//	}
-	//})
-	//debug
 
-	r.Use("/console/*file", cart.File("../static/dist/console.html"))
-	r.Use("/static/*file", cart.Static("../static", false))
+	if common.IsRelease() {
+		r.Use("/console/*file", func(c *cart.Context, next cart.Next) {
+			b, err := assetFS().Asset("static/dist/console.html")
+			if err != nil {
+				s.Logger.Printf(errorServerPrefix+"error: %v\n", err)
+				next()
+			} else {
+				c.Response.WriteHeader(200)
+				c.Response.Write(b)
+			}
+		})
+		r.Use("/static/*file", func(c *cart.Context, next cart.Next) {
+			http.StripPrefix("/static/", http.FileServer(assetFS())).ServeHTTP(c.Response, c.Request)
+			if c.Response.Status() == 404 {
+				c.Response.WriteHeader(200) //reset status
+				next()
+			}
+		})
+	} else {
+		//debug
+		r.Use("/console/*file", cart.File("../static/dist/console.html"))
+		r.Use("/static/*file", cart.Static("../static", false))
+	}
 	h := Http{}
 	r.Route("/", h.Index)
 	s.httpServer = r.ServerKeepAlive(s.config.Addresses.Http + ":" + strconv.Itoa(s.config.Ports.Http))

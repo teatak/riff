@@ -1,6 +1,18 @@
 import Config from 'config'
 import React from 'react';
 
+let isIe = false;
+
+if (/MSIE/i.test(navigator.userAgent)) {
+    isIe = true;
+}
+if (/rv:11.0/i.test(navigator.userAgent)) {
+    isIe = true;
+}
+if (/Edge\/\d./i.test(navigator.userAgent)) {
+    isIe = false;
+}
+
 class Common {
     initRequest = {
         loading: false,
@@ -88,6 +100,9 @@ class Common {
         }
 
         return out;
+    };
+    isIe = () => {
+        return isIe
     };
 }
 

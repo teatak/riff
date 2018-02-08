@@ -14,7 +14,7 @@ func New(version string) *cmd {
 }
 
 func (c *cmd) Run(_ []string) int {
-	fmt.Printf("Riff version %s, build %s-%s\n", c.version, common.GitBranch, common.GitSha)
+	fmt.Printf("Riff version %s, %s build %s-%s\n", c.version, common.Type, common.GitBranch, common.GitSha)
 	return 0
 }
 

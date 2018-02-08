@@ -11,6 +11,7 @@ import Stop from '../icons/stop'
 import Replay from '../icons/replay';
 import Visibility from '../icons/visibility'
 import Refresh from '../icons/refresh'
+import Common from "../../common";
 
 const mapStateToProps = (state, ownProps) => {
     return {
@@ -130,9 +131,12 @@ class Node extends React.Component {
                 isWatch = "iswatch"
             }
             return <ul className="nestservices">
-                <li className="nesttitle">Services <Visibility onClick={() => {
-                    this.handleWatch();
-                }} className={isWatch}/>
+                <li className="nesttitle">Services
+                    {
+                        Common.isIe() ? null : <Visibility onClick={() => {
+                            this.handleWatch();
+                        }} className={isWatch}/>
+                    }
                     {
                         nodes.fetchNode.status === 500 ?
                             <div className="error">{nodes.fetchNode.error}

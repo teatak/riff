@@ -1,4 +1,4 @@
-import Common from './common'
+import Common from '../common'
 import Config from 'config'
 
 export const SERVICES_REQUEST = 'SERVICES_REQUEST';
@@ -79,10 +79,12 @@ const buildQuery = (serviceName) => {
 };
 
 export const getService = (serviceName, state) => (dispatch, getState) => {
-    let state = getState();
-    if (state.services.isWatch) {
-        dispatch(watchService(serviceName, state));
-        return;
+    if (!Common.isIe()) {
+        let state = getState();
+        if (state.services.isWatch) {
+            dispatch(watchService(serviceName, state));
+            return;
+        }
     }
     let query = buildQuery(serviceName);
 

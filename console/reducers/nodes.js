@@ -1,4 +1,4 @@
-import Common from './common'
+import Common from '../common'
 import Config from 'config'
 
 export const NODES_REQUEST = 'NODES_REQUEST';
@@ -90,10 +90,12 @@ const buildQuery = (nodeName) => {
 };
 
 export const getNode = (nodeName) => (dispatch, getState) => {
-    let state = getState();
-    if (state.nodes.isWatch) {
-        dispatch(watchNode(nodeName));
-        return;
+    if (!Common.isIe()) {
+        let state = getState();
+        if (state.nodes.isWatch) {
+            dispatch(watchNode(nodeName));
+            return;
+        }
     }
     let query = buildQuery(nodeName);
 

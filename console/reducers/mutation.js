@@ -1,4 +1,4 @@
-import Common from './common'
+import Common from '../common'
 
 export const MUTATIONSERVICE_REQUEST = 'MUTATIONSERVICE_REQUEST';
 export const MUTATIONSERVICE_SUCCESS = 'MUTATIONSERVICE_SUCCESS';
