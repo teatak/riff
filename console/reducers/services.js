@@ -107,7 +107,7 @@ export const getService = (serviceName, state) => (dispatch, getState) => {
     })
 };
 
-
+let retryCount = 0;
 const watchService = (serviceName, state) => (dispatch, getState) => {
     let query = buildQuery(serviceName);
     dispatch(cancelWatch());
@@ -124,7 +124,6 @@ const watchService = (serviceName, state) => (dispatch, getState) => {
                         return
                     }
                     total += value.byteLength;
-                    //console.log(`received ${value.byteLength} bytes (${total} bytes in total)`)
                     let arr = Common.utf8ArrayToStr(value).split("\n");
                     arr.map((text) => {
                         if (text !== "") {
@@ -151,15 +150,23 @@ const watchService = (serviceName, state) => (dispatch, getState) => {
         credentials: 'include',
         body: JSON.stringify({query})
     }).then((response) => {
+        retryCount = 0;
         return consume(response.body.getReader())
     }).catch((error) => {
-        dispatch({
-            type: SERVICE_FAILURE,
-            status: 500,
-            error: error.message,
-            receivedAt: Date.now()
-        });
-        throw error
+        //throw error
+        if (retryCount < 3) {
+            retryCount++;
+            setTimeout(() => {
+                dispatch(watchService(serviceName, state));
+            }, retryCount*1000);
+        } else {
+            dispatch({
+                type: SERVICE_FAILURE,
+                status: 500,
+                error: error.message,
+                receivedAt: Date.now()
+            });
+        }
     })
 };
 

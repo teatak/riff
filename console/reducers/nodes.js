@@ -119,6 +119,7 @@ export const getNode = (nodeName) => (dispatch, getState) => {
     })
 };
 
+let retryCount = 0;
 const watchNode = (nodeName) => (dispatch, getState) => {
     let query = buildQuery(nodeName);
     dispatch(cancelWatch());
@@ -135,7 +136,6 @@ const watchNode = (nodeName) => (dispatch, getState) => {
                         return
                     }
                     total += value.byteLength;
-                    //console.log(`received ${value.byteLength} bytes (${total} bytes in total)`)
                     let arr = Common.utf8ArrayToStr(value).split("\n");
                     arr.map((text) => {
                         if (text !== "") {
@@ -162,15 +162,23 @@ const watchNode = (nodeName) => (dispatch, getState) => {
         credentials: 'include',
         body: JSON.stringify({query})
     }).then((response) => {
+        retryCount = 0;
         return consume(response.body.getReader())
     }).catch((error) => {
-        dispatch({
-            type: NODE_FAILURE,
-            status: 500,
-            error: error.message,
-            receivedAt: Date.now()
-        });
-        throw error
+        //throw error;
+        if (retryCount < 3) {
+            retryCount++;
+            setTimeout(() => {
+                dispatch(watchNode(nodeName));
+            }, retryCount*1000);
+        } else {
+            dispatch({
+                type: NODE_FAILURE,
+                status: 500,
+                error: error.message,
+                receivedAt: Date.now()
+            });
+        }
     })
 };
 
