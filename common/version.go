@@ -3,6 +3,7 @@ package common
 /*
 	defined in ../scripts/build.sh
 
+	TYPE="release"
 	VERSION="$(cat version)"
 	GITSHA="$(git rev-parse HEAD)"
 	GITBRANCH="$(git rev-parse --abbrev-ref HEAD)"
