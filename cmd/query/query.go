@@ -64,6 +64,10 @@ func (c *cmd) Run(args []string) int {
 	c.rpc = net.JoinHostPort(host, strconv.Itoa(port))
 
 	//get args 0
+	if len(args) == 0 {
+		c.flags.Usage()
+		return 0
+	}
 	command := args[0]
 	switch command {
 	case "snap":
@@ -73,6 +77,10 @@ func (c *cmd) Run(args []string) int {
 		c.Nodes()
 		break
 	case "node":
+		if len(args) < 2 {
+			c.flags.Usage()
+			return 0
+		}
 		name := args[1]
 		c.Node(name)
 		break
@@ -80,6 +88,10 @@ func (c *cmd) Run(args []string) int {
 		c.Services()
 		break
 	case "service":
+		if len(args) < 2 {
+			c.flags.Usage()
+			return 0
+		}
 		name := args[1]
 		c.Service(name)
 		break
