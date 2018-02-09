@@ -13,6 +13,7 @@ export const cancelLogs = () => (dispatch, getState) => {
     if (state.logs.fetchLogs.loading) {
         if (initReader !== null) {
             initReader.cancel();
+            initReader = null;
             dispatch({type: LOG_RESET});
         }
     }
@@ -59,12 +60,14 @@ export const getLogs = () => (dispatch, getState) => {
     }).then((response) => {
         return consume(response.body.getReader())
     }).then(() => {
-        dispatch({
-            type: LOG_FAILURE,
-            status: 500,
-            error: "Server connect closed",
-            receivedAt: Date.now()
-        });
+        if (initReader != null) {
+            dispatch({
+                type: LOG_FAILURE,
+                status: 500,
+                error: "Server connect closed",
+                receivedAt: Date.now()
+            });
+        }
     }).catch((error) => {
         dispatch({
             type: LOG_FAILURE,
