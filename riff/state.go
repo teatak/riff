@@ -85,7 +85,7 @@ func (s *Server) fanoutLeave() {
 }
 
 func (s *Server) requestLeave(peer string) error {
-	client,err := api.NewClient(peer)
+	client, err := api.NewClient(peer)
 	if err != nil {
 		return fmt.Errorf("%v", err)
 	}
@@ -100,7 +100,7 @@ func (s *Server) requestLeave(peer string) error {
 }
 
 func (s *Server) requestPeer(peer string) error {
-	client,err := api.NewClient(peer)
+	client, err := api.NewClient(peer)
 	if err != nil {
 		return fmt.Errorf("%v", err)
 	}

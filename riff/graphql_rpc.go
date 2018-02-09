@@ -5,7 +5,7 @@ import (
 )
 
 func mutationService(name, address string, cmd api.CmdType) error {
-	client,err := api.NewClient(address)
+	client, err := api.NewClient(address)
 	if err != nil {
 		return err
 	}

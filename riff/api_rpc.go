@@ -30,7 +30,7 @@ func (q *Query) Node(p api.ParamNode, node *api.Node) error {
 	return nil
 }
 
-func (q *Query) Services(p api.ParamNode, services *api.Services) error {
+func (q *Query) Services(_ struct{}, services *api.Services) error {
 	server.Logger.Printf(infoServerPrefix + "client get services")
 	*services = server.api.Services()
 	return nil

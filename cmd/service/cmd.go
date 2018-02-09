@@ -70,7 +70,7 @@ func (c *cmd) Run(args []string) int {
 }
 
 func (c *cmd) Cmd(name string) {
-	client,err := api.NewClient(c.rpc)
+	client, err := api.NewClient(c.rpc)
 	if err != nil {
 		fmt.Println(err)
 		return

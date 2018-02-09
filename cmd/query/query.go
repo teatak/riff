@@ -94,7 +94,7 @@ func (c *cmd) Run(args []string) int {
 }
 
 func (c *cmd) SnapShot() {
-	client,err := api.NewClient(c.rpc)
+	client, err := api.NewClient(c.rpc)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -110,7 +110,7 @@ func (c *cmd) SnapShot() {
 }
 
 func (c *cmd) Nodes() {
-	client,err := api.NewJsonClient(c.rpc)
+	client, err := api.NewJsonClient(c.rpc)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -142,7 +142,7 @@ func (c *cmd) Nodes() {
 }
 
 func (c *cmd) Node(name string) {
-	client,err := api.NewClient(c.rpc)
+	client, err := api.NewClient(c.rpc)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -150,7 +150,7 @@ func (c *cmd) Node(name string) {
 	defer client.Close()
 
 	var node api.Node
-	err = client.Call("Query.Node", api.Node{Name: name}, &node)
+	err = client.Call("Query.Node", api.ParamNode{Name: name}, &node)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -188,7 +188,7 @@ func (c *cmd) Node(name string) {
 }
 
 func (c *cmd) Services() {
-	client,err := api.NewClient(c.rpc)
+	client, err := api.NewClient(c.rpc)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -213,7 +213,7 @@ func (c *cmd) Services() {
 }
 
 func (c *cmd) Service(name string) {
-	client,err := api.NewClient(c.rpc)
+	client, err := api.NewClient(c.rpc)
 	if err != nil {
 		fmt.Println(err)
 		return
