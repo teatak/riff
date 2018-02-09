@@ -68,26 +68,23 @@ func (c *cmd) Run(args []string) int {
 	switch command {
 	case "snap":
 		c.SnapShot()
-		return 0
 		break
 	case "nodes":
 		c.Nodes()
-		return 0
 		break
 	case "node":
 		name := args[1]
 		c.Node(name)
-		return 0
 		break
 	case "services":
 		c.Services()
-		return 0
 		break
 	case "service":
 		name := args[1]
 		c.Service(name)
-		return 0
 		break
+	default:
+		c.flags.Usage()
 	}
 
 	return 0
