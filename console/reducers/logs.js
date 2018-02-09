@@ -58,6 +58,13 @@ export const getLogs = () => (dispatch, getState) => {
         credentials: 'include'
     }).then((response) => {
         return consume(response.body.getReader())
+    }).then(() => {
+        dispatch({
+            type: LOG_FAILURE,
+            status: 500,
+            error: "Server connect closed",
+            receivedAt: Date.now()
+        });
     }).catch((error) => {
         dispatch({
             type: LOG_FAILURE,

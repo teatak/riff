@@ -166,6 +166,13 @@ const watchNode = (nodeName) => (dispatch, getState) => {
     }).then((response) => {
         retryCount = 0;
         return consume(response.body.getReader())
+    }).then(() => {
+        dispatch({
+            type: NODE_FAILURE,
+            status: 500,
+            error: "Server connect closed",
+            receivedAt: Date.now()
+        });
     }).catch((error) => {
         //throw error;
         if (retryCount < 3) {
