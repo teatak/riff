@@ -134,7 +134,7 @@ func (h *httpServiceHandler) GetParam() *WatchParam {
 func (h *Http) apiIndex(r *cart.Router) {
 	r.ANY(h.api)
 	r.Route("/watch").ANY(h.watch)
-	r.Route("/logs").GET(h.logs)
+	r.Route("/logs").ANY(h.logs)
 }
 
 func (h *Http) api(c *cart.Context, next cart.Next) {
@@ -233,11 +233,11 @@ func (h *httpLogHandler) HandleLog(log string) {
 	}
 }
 
-func (h *Http) logs(c *cart.Context) {
+func (h *Http) logs(c *cart.Context, next cart.Next) {
 	resp := c.Response
 	clientGone := resp.(http.CloseNotifier).CloseNotify()
 
-	resp.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	resp.Header().Set("Content-Type", "application/json; charset=utf-8")
 	resp.Header().Set("Connection", "Keep-Alive")
 	resp.Header().Set("Transfer-Encoding", "chunked")
 	resp.Header().Set("X-Content-Type-Options", "nosniff")

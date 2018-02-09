@@ -24,8 +24,8 @@ export const getLogs = () => (dispatch, getState) => {
     if (state.logs.fetchLogs.loading) {
         return
     }
+    dispatch(cancelLogs());
     dispatch({type: LOG_REQUEST});
-
     let consume = (reader) => {
         initReader = reader;
         let total = 0;
@@ -54,7 +54,7 @@ export const getLogs = () => (dispatch, getState) => {
     };
 
     fetch(Config.api + "/logs", {
-        method: 'get',
+        method: 'post',
         headers: {'connection': 'keep-alive'},
         credentials: 'include'
     }).then((response) => {
