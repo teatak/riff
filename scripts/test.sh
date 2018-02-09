@@ -4,12 +4,12 @@ cd `dirname $0`
 cd ..
 cd bin
 
-for((i=1;i<=40;i++));do
+for((i=1;i<=9;i++));do
 
 httpPort=$(expr $i \+ 8000);
 rpcPort=$(expr $i \+ 9000);
 
-rm -rf config/riff.yml && ./riff start -name node$i -rpc :$rpcPort -http :$httpPort -join 192.168.3.2:9001,192.168.3.2:9002,192.168.3.2:9003 &
+rm -rf config/riff.yml && ./riff run -name node$i -rpc :$rpcPort -http :$httpPort -join 192.168.1.8:9001,192.168.1.8:9002,192.168.1.8:9003 &
 #sleep 1
 
 done
