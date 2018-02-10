@@ -11,9 +11,20 @@ const (
 	ServiceChanged
 )
 
+func (w WatchType) String() string {
+	switch w {
+	case NodeChanged:
+		return "NodeChanged"
+	case ServiceChanged:
+		return "ServiceChanged"
+	default:
+		return "Unknow"
+	}
+}
+
 type WatchParam struct {
-	Name string
-	WatchType
+	Name      string `json:"name"`
+	WatchType `json:"watchType"`
 }
 
 type WatchHandler interface {

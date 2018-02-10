@@ -3,9 +3,8 @@ package riff
 import (
 	"github.com/gimke/cart"
 	"github.com/gorilla/websocket"
-	"time"
 	"github.com/graphql-go/graphql"
-	"fmt"
+	"time"
 )
 
 var upgrader = websocket.Upgrader{
@@ -48,7 +47,6 @@ func (h *Http) handleWriter(ws *websocket.Conn) {
 	for {
 		select {
 		case <-ticker.C:
-			fmt.Println("ping")
 			ws.SetWriteDeadline(time.Now().Add(writeWait))
 			err := ws.WriteMessage(websocket.PingMessage, []byte{})
 			if err != nil {
@@ -58,18 +56,57 @@ func (h *Http) handleWriter(ws *websocket.Conn) {
 	}
 }
 
+type WsResponse struct {
+	Event   string              `json:"event"`
+	Body    interface{}         `json:"body"`
+}
+
+type BodyWatch struct {
+	Name  string `json:"name"`
+	Type  string `json:"type"`
+	Query string `json:"query"`
+}
+type WsRequest struct {
+	Event string    `json:"event"`
+	Body  BodyWatch `json:"body"`
+}
+
 func (h *Http) handleReader(ws *websocket.Conn) {
 	defer ws.Close()
 	ws.SetReadLimit(maxMessageSize)
 	ws.SetReadDeadline(time.Now().Add(pongWait))
 	ws.SetPongHandler(func(string) error { ws.SetReadDeadline(time.Now().Add(pongWait)); return nil })
 
-	name := ""
-	watch := ""
-	watchType := NodeChanged
-	if name == "" {
-		name = server.Self.Name
+	//name := server.Self.Name
+	//handler := h.buildHttpServiceHandler(name,"node")
+
+	var handler *httpServiceHandler
+
+	for {
+		var request WsRequest
+		err := ws.ReadJSON(&request)
+		if err != nil {
+			server.Logger.Printf(errorServerPrefix+"error %v\n", err)
+			break
+		}
+		ws.SetWriteDeadline(time.Now().Add(writeWait))
+		switch request.Event {
+		case "Watch":
+			watch := request.Body
+			//clear handler
+			if handler != nil {
+				close(handler.exitCh)
+			}
+			handler = h.buildHttpServiceHandler(watch.Name, watch.Type)
+			go h.handleWatch(ws, handler, watch.Query)
+			//ws.WriteJSON()
+		}
 	}
+}
+
+func (h *Http) buildHttpServiceHandler(name string, watch string) *httpServiceHandler {
+
+	watchType := NodeChanged
 	switch watch {
 	case "node":
 		watchType = NodeChanged
@@ -79,51 +116,54 @@ func (h *Http) handleReader(ws *websocket.Conn) {
 		break
 	}
 
+	if watchType == NodeChanged && name == "" {
+		name = server.Self.Name
+	}
+
 	handler := &httpServiceHandler{
 		WatchParam: &WatchParam{
 			Name:      name,
 			WatchType: watchType,
 		},
 		serviceCh: make(chan bool, 512),
+		exitCh:    make(chan bool, 1),
 	}
+	return handler
+}
+
+func (h *Http) handleWatch(ws *websocket.Conn, handler *httpServiceHandler, query string) {
 
 	server.watch.RegisterHandler(handler)
 	defer server.watch.DeregisterHandler(handler)
 
 	params := graphql.Params{
-		Schema:         schema,
-		RequestString:  `{
-  node(name:"node1") {
-    name
-  }
-}`,
+		Schema:        schema,
+		RequestString: query,
 	}
-	go func() {
-		for{
-			select {
-			case <-handler.serviceCh:
-				result := graphql.Do(params)
-				if len(result.Errors) > 0 {
-					server.Logger.Printf(errorServicePrefix+"wrong result, unexpected errors: %v\n", result.Errors)
-				}
-				ws.SetWriteDeadline(time.Now().Add(writeWait))
-				ws.WriteJSON(result)
-				//b, _ := json.Marshal(result)
-			}
-		}
-	}()
-
-
 	for {
-		_, _, err := ws.ReadMessage()
-		if err != nil {
-			break
+		select {
+		case <-handler.serviceCh:
+			result := graphql.Do(params)
+			if len(result.Errors) > 0 {
+				server.Logger.Printf(errorServicePrefix+"wrong result, unexpected errors: %v\n", result.Errors)
+			}
+			ws.SetWriteDeadline(time.Now().Add(writeWait))
+			if handler.WatchParam.WatchType == NodeChanged {
+				ws.WriteJSON(&WsResponse{
+					Event:   "NodeChange",
+					Body:    result,
+				})
+			} else {
+				ws.WriteJSON(&WsResponse{
+					Event:   "ServiceChange",
+					Body:    result,
+				})
+			}
+
+		case <-handler.exitCh:
+			server.Logger.Printf(infoServicePrefix + "exit handler\n")
+			return
+			//b, _ := json.Marshal(result)
 		}
-		ws.SetWriteDeadline(time.Now().Add(writeWait))
-		ws.WriteJSON(struct {
-			Name string
-		}{
-			Name:"aaa",
-		})
 	}
 }

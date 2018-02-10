@@ -1,7 +1,7 @@
 import React from 'react'
 import {NavLink, withRouter} from 'react-router-dom'
 import {connect} from 'react-redux'
-import {cancelWatch, getService, isWatch} from '../../reducers/services'
+import {getService,} from '../../reducers/services'
 import {mutationService} from '../../reducers/mutation'
 import ArrowDown from '../icons/arrowDown'
 import ArrowUp from '../icons/arrowUp'
@@ -9,9 +9,6 @@ import CheckCircle from '../icons/checkCircle'
 import Play from '../icons/play'
 import Stop from '../icons/stop'
 import Replay from '../icons/replay';
-import Visibility from '../icons/visibility'
-import Refresh from '../icons/refresh'
-import Common from "../../common";
 
 const mapStateToProps = (state, ownProps) => {
     return {
@@ -25,12 +22,7 @@ const mapDispatchToProps = (dispatch) => {
         getService: (nodeName) => {
             dispatch(getService(nodeName));
         },
-        cancelWatch: () => {
-            dispatch(cancelWatch());
-        },
-        isWatch: (nodeName) => {
-            dispatch(isWatch(nodeName));
-        },
+
         mutationService: (services, cmd) => {
             dispatch(mutationService(services, cmd));
         },
@@ -61,7 +53,6 @@ class Service extends React.Component {
     }
 
     componentWillUnmount() {
-        this.props.cancelWatch()
     }
 
     toggle = (name) => {
@@ -117,36 +108,12 @@ class Service extends React.Component {
         }
     };
 
-    handleWatch = () => {
-        this.props.isWatch(this.serviceName);
-    };
-
-    handleRefresh = () => {
-        this.props.getService(this.serviceName);
-    };
-
     renderList() {
         const {services} = this.props;
         if (services.data.nodes) {
-            let isWatch = "";
-            if (services.isWatch) {
-                isWatch = "iswatch"
-            }
+
             return <ul className="nestnodes">
-                <li className="nesttitle">Nodes
-                    {
-                        Common.isIe() ? null : <Visibility onClick={() => {
-                            this.handleWatch();
-                        }} className={isWatch}/>
-                    }
-                    {
-                        services.fetchService.status === 500 ?
-                            <div className="error">{services.fetchService.error}
-                                <Refresh className="refresh"
-                                         onClick={this.handleRefresh}/></div>
-                            : null
-                    }
-                </li>
+                <li className="nesttitle">Nodes</li>
                 {services.data.nodes.map((node, index) => {
                     let className = "item " + node.state.toLowerCase();
                     return <li className={className} key={node.name}>

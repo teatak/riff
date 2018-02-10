@@ -1,41 +1,31 @@
 import React from 'react'
+import {connect} from 'react-redux'
 import {Redirect, Route, Switch} from 'react-router-dom'
 import Menu from './components/menu'
 import Nodes from './components/nodes'
 import Services from './components/services'
 import Explorer from './components/explorer'
 import Logs from './components/logs'
+import Ws from './reducers/ws'
+
+const mapStateToProps = (state, ownProps) => {
+    return {}
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        start: () => {
+            dispatch(Ws.start());
+        }
+    }
+};
 
 class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {logs: false};
-
-        let loc = window.location, uri = "";
-        if (loc.protocol === "https:") {
-            uri = "wss:";
-        } else {
-            uri = "ws:";
-        }
-        uri += "//" + loc.host+"/ws";
-        this.start(uri)
+        this.props.start()
     }
-
-     start = (url) => {
-        let ws = new WebSocket(url);
-        ws.onmessage = (evt) => { console.log(evt) };
-        ws.onclose = () => {
-            setTimeout(() => {this.start(url)}, 5000);
-        };
-        ws.onopen = (evt) => {
-            console.log(evt);
-            setTimeout(() => {ws.send(
-                JSON.stringify({
-                    text:"create"
-                })
-            )});
-        };
-    };
 
     toggleLogs = () => {
         this.setState({logs: !this.state.logs});
@@ -60,4 +50,4 @@ class App extends React.Component {
     }
 }
 
-export default App
+export default connect(mapStateToProps, mapDispatchToProps)(App)

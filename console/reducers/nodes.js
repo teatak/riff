@@ -1,12 +1,10 @@
 import Common from '../common'
-import Config from 'config'
+import Ws from './ws'
 
 export const NODES_REQUEST = 'NODES_REQUEST';
 export const NODES_SUCCESS = 'NODES_SUCCESS';
 export const NODES_FAILURE = 'NODES_FAILURE';
 
-export const NODE_WATCH = 'NODE_WATCH';
-export const NODE_RESET = 'NODE_RESET';
 export const NODE_REQUEST = 'NODE_REQUEST';
 export const NODE_SUCCESS = 'NODE_SUCCESS';
 export const NODE_FAILURE = 'NODE_FAILURE';
@@ -44,28 +42,6 @@ export const getList = () => (dispatch, getState) => {
     })
 };
 
-export const isWatch = (nodeName) => (dispatch, getState) => {
-    let state = getState();
-    dispatch({
-        type: NODE_WATCH,
-        isWatch: !state.nodes.isWatch,
-    });
-    dispatch(getNode(nodeName));
-};
-
-let initReader = null;
-
-export const cancelWatch = () => (dispatch, getState) => {
-    let state = getState();
-    if (state.nodes.fetchNode.loading) {
-        if (initReader !== null) {
-            initReader.cancel();
-            initReader = null;
-            dispatch({type: NODE_RESET});
-        }
-    }
-};
-
 const buildQuery = (nodeName) => {
     let node = (nodeName === undefined) ? "node:server" : "node(name:\"" + nodeName + "\")";
     let query = `{
@@ -89,19 +65,18 @@ const buildQuery = (nodeName) => {
     return query;
 };
 
+export const changeNode = (json) => (dispatch, getState) => {
+    dispatch({
+        type: NODE_SUCCESS,
+        status: status,
+        json,
+        receivedAt: Date.now()
+    });
+};
+
 export const getNode = (nodeName) => (dispatch, getState) => {
-    if (!Common.isIe()) {
-        let state = getState();
-        if (state.nodes.isWatch) {
-            dispatch(watchNode(nodeName));
-            return;
-        }
-    }
-    let query = buildQuery(nodeName);
-
-    dispatch(cancelWatch());
     dispatch({type: NODE_REQUEST});
-
+    let query = buildQuery(nodeName);
     Common.fetch({query}, (json, error, status) => {
         if (status === 200) {
             dispatch({
@@ -110,6 +85,15 @@ export const getNode = (nodeName) => (dispatch, getState) => {
                 json,
                 receivedAt: Date.now()
             });
+            let name = nodeName === undefined ? "" : nodeName;
+            dispatch(Ws.send({
+                event: "Watch",
+                body: {
+                    name: name,
+                    type: "node",
+                    query: query
+                }
+            }))
         } else {
             dispatch({
                 type: NODE_FAILURE,
@@ -121,82 +105,9 @@ export const getNode = (nodeName) => (dispatch, getState) => {
     })
 };
 
-let retryCount = 0;
-const watchNode = (nodeName) => (dispatch, getState) => {
-    let query = buildQuery(nodeName);
-    dispatch(cancelWatch());
-    dispatch({type: NODE_REQUEST});
-
-    let consume = (reader) => {
-        initReader = reader;
-        let total = 0;
-        return new Promise((resolve, reject) => {
-            function pump() {
-                reader.read().then(({done, value}) => {
-                    if (done) {
-                        resolve();
-                        return
-                    }
-                    total += value.byteLength;
-                    let arr = Common.utf8ArrayToStr(value).split("\n");
-                    arr.map((text) => {
-                        if (text !== "") {
-                            let json = JSON.parse(text);
-                            dispatch({
-                                type: NODE_SUCCESS,
-                                status: 200,
-                                json,
-                                receivedAt: Date.now()
-                            });
-                        }
-                    });
-                    pump()
-                }).catch(reject)
-            }
-
-            pump()
-        })
-    };
-    let param = nodeName === undefined ? "type=node" : "type=node&name=" + nodeName;
-    fetch(Config.api + "/watch?" + param, {
-        method: 'post',
-        headers: {'connection': 'keep-alive'},
-        credentials: 'include',
-        body: JSON.stringify({query})
-    }).then((response) => {
-        retryCount = 0;
-        return consume(response.body.getReader())
-    }).then(() => {
-        if (initReader != null) {
-            dispatch({
-                type: NODE_FAILURE,
-                status: 500,
-                error: "Server connect closed",
-                receivedAt: Date.now()
-            });
-        }
-    }).catch((error) => {
-        //throw error;
-        if (retryCount < 3) {
-            retryCount++;
-            setTimeout(() => {
-                dispatch(watchNode(nodeName));
-            }, retryCount * 1000);
-        } else {
-            dispatch({
-                type: NODE_FAILURE,
-                status: 500,
-                error: error.message,
-                receivedAt: Date.now()
-            });
-        }
-    })
-};
-
 const nodes = (state = {
     fetchNodes: Common.initRequest,
     fetchNode: Common.initRequest,
-    isWatch: true,
     list: [],                   //数据
     data: {}
 }, action) => {
@@ -233,21 +144,6 @@ const nodes = (state = {
                     error: action.error,
                     lastUpdated: action.receivedAt
                 },
-            };
-        case NODE_RESET:
-            return {
-                ...state,
-                fetchNode: {
-                    ...state.fetchNode,
-                    loading: false,
-                    status: 0,
-                    error: null,
-                }
-            };
-        case NODE_WATCH:
-            return {
-                ...state,
-                isWatch: action.isWatch
             };
         case NODE_REQUEST:
             return {
