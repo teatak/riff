@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"sync"
 )
 
 const (
@@ -17,7 +18,9 @@ const (
 	ContentTypeFormURLEncoded = "application/x-www-form-urlencoded"
 )
 
-type Http struct{}
+type Http struct{
+	mu      sync.Mutex
+}
 
 type RequestOptions struct {
 	Query         string                 `json:"query" url:"query" schema:"query"`

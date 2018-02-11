@@ -1,12 +1,8 @@
-import {changeNode} from './nodes'
-import {changeService} from "./services";
-
 class Ws {
-    constructor() {
-        this.ws = null;
-    }
-
-    start = () => (dispatch, getState) => {
+    ws = null;
+    watchMsg = null;
+    onWatch = null;
+    start = () => {
         let loc = window.location, uri = "";
         if (loc.protocol === "https:") {
             uri = "wss:";
@@ -21,10 +17,10 @@ class Ws {
                 if (response.event) {
                     switch (response.event) {
                         case "NodeChange" :
-                            dispatch(changeNode(response.body));
-                            break;
                         case "ServiceChange" :
-                            dispatch(changeService(response.body));
+                            if (this.onWatch) {
+                                this.onWatch(response.body);
+                            }
                             break;
                     }
                 }
@@ -33,24 +29,25 @@ class Ws {
         };
         this.ws.onclose = () => {
             setTimeout(() => {
-                dispatch(this.start())
+                this.start();
             }, 5000);
         };
         this.ws.onopen = (evt) => {
-            //dispatch(resend)
+            if (this.watchMsg) {
+                this.send(this.watchMsg)
+            }
         };
     };
-    send = (msg) => (dispatch, getState) => {
-        if(this.ws.readyState === this.ws.OPEN){
-        }
-        // if(ws.opened) {
-            this.ws.send(
-                JSON.stringify(msg)
-            )
-        // } else {
-        //
-        // }
-    }
+    send = (msg) => {
+        this.ws.send(
+            JSON.stringify(msg)
+        )
+    };
+    watch = (msg, onWatch) => {
+        this.watchMsg = msg;
+        this.onWatch = onWatch;
+        this.send(this.watchMsg);
+    };
 }
 
 export default new Ws()

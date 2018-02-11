@@ -57,8 +57,8 @@ func (h *Http) handleWriter(ws *websocket.Conn) {
 }
 
 type WsResponse struct {
-	Event   string              `json:"event"`
-	Body    interface{}         `json:"body"`
+	Event string      `json:"event"`
+	Body  interface{} `json:"body"`
 }
 
 type BodyWatch struct {
@@ -149,15 +149,19 @@ func (h *Http) handleWatch(ws *websocket.Conn, handler *httpServiceHandler, quer
 			}
 			ws.SetWriteDeadline(time.Now().Add(writeWait))
 			if handler.WatchParam.WatchType == NodeChanged {
+				h.mu.Lock()
 				ws.WriteJSON(&WsResponse{
-					Event:   "NodeChange",
-					Body:    result,
+					Event: "NodeChange",
+					Body:  result,
 				})
+				h.mu.Unlock()
 			} else {
+				h.mu.Lock()
 				ws.WriteJSON(&WsResponse{
-					Event:   "ServiceChange",
-					Body:    result,
+					Event: "ServiceChange",
+					Body:  result,
 				})
+				h.mu.Unlock()
 			}
 
 		case <-handler.exitCh:

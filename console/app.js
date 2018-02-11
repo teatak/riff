@@ -8,23 +8,11 @@ import Explorer from './components/explorer'
 import Logs from './components/logs'
 import Ws from './reducers/ws'
 
-const mapStateToProps = (state, ownProps) => {
-    return {}
-};
-
-const mapDispatchToProps = (dispatch) => {
-    return {
-        start: () => {
-            dispatch(Ws.start());
-        }
-    }
-};
-
 class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {logs: false};
-        this.props.start()
+        Ws.start();
     }
 
     toggleLogs = () => {
@@ -50,4 +38,4 @@ class App extends React.Component {
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(App)
+export default App

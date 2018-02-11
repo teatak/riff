@@ -75,14 +75,21 @@ export const getService = (serviceName, state) => (dispatch, getState) => {
                 receivedAt: Date.now()
             });
             let name = serviceName === undefined ? "" : serviceName;
-            dispatch(Ws.send({
+            Ws.watch({
                 event: "Watch",
                 body: {
                     name: name,
                     type: "service",
                     query: query
                 }
-            }))
+            }, (json) => {
+                dispatch({
+                    type: SERVICE_SUCCESS,
+                    status: status,
+                    json,
+                    receivedAt: Date.now()
+                });
+            });
         } else {
             dispatch({
                 type: SERVICE_FAILURE,

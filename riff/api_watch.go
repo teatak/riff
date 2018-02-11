@@ -11,7 +11,7 @@ import (
 type httpServiceHandler struct {
 	*WatchParam
 	serviceCh chan bool
-	exitCh chan bool
+	exitCh    chan bool
 }
 
 func (h *httpServiceHandler) HandleWatch() {

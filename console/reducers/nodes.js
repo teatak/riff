@@ -1,5 +1,5 @@
-import Common from '../common'
-import Ws from './ws'
+import Common from "../common";
+import Ws from "./ws";
 
 export const NODES_REQUEST = 'NODES_REQUEST';
 export const NODES_SUCCESS = 'NODES_SUCCESS';
@@ -85,14 +85,21 @@ export const getNode = (nodeName) => (dispatch, getState) => {
                 receivedAt: Date.now()
             });
             let name = nodeName === undefined ? "" : nodeName;
-            dispatch(Ws.send({
+            Ws.watch({
                 event: "Watch",
                 body: {
                     name: name,
                     type: "node",
                     query: query
                 }
-            }))
+            }, (json) => {
+                dispatch({
+                    type: NODE_SUCCESS,
+                    status: status,
+                    json,
+                    receivedAt: Date.now()
+                });
+            });
         } else {
             dispatch({
                 type: NODE_FAILURE,
