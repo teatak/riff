@@ -1,7 +1,9 @@
 class Ws {
     ws = null;
-    watchMsg = null;
+    watchParam = null;
     onWatch = null;
+    logsParam = null;
+    onLogs = null;
     start = () => {
         let loc = window.location, uri = "";
         if (loc.protocol === "https:") {
@@ -22,6 +24,10 @@ class Ws {
                                 this.onWatch(response.body);
                             }
                             break;
+                        case "Logs":
+                            if (this.onLogs) {
+                                this.onLogs(response.body);
+                            }
                     }
                 }
 
@@ -33,8 +39,12 @@ class Ws {
             }, 5000);
         };
         this.ws.onopen = (evt) => {
-            if (this.watchMsg) {
-                this.send(this.watchMsg)
+            //send watch and logs param when reconnect
+            if (this.watchParam) {
+                this.send(this.watchParam);
+            }
+            if (this.logsParam) {
+                this.send(this.logsParam);
             }
         };
     };
@@ -43,11 +53,16 @@ class Ws {
             JSON.stringify(msg)
         )
     };
-    watch = (msg, onWatch) => {
-        this.watchMsg = msg;
+    watch = (param, onWatch) => {
+        this.watchParam = param;
         this.onWatch = onWatch;
-        this.send(this.watchMsg);
+        this.send(this.watchParam);
     };
+    logs = (param, onLogs) => {
+        this.logsParam = param;
+        this.onLogs = onLogs;
+        this.send(this.logsParam);
+    }
 }
 
 export default new Ws()

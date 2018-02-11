@@ -8,20 +8,20 @@ import (
 	"net/http"
 )
 
-type httpServiceHandler struct {
+type httpWatchHandler struct {
 	*WatchParam
-	serviceCh chan bool
-	exitCh    chan bool
+	watchCh chan bool
+	exitCh  chan bool
 }
 
-func (h *httpServiceHandler) HandleWatch() {
+func (h *httpWatchHandler) HandleWatch() {
 	// Do a non-blocking send
 	select {
-	case h.serviceCh <- true:
+	case h.watchCh <- true:
 	}
 }
 
-func (h *httpServiceHandler) GetParam() *WatchParam {
+func (h *httpWatchHandler) GetParam() *WatchParam {
 	return h.WatchParam
 }
 
@@ -50,15 +50,15 @@ func (h *Http) watch(c *cart.Context, next cart.Next) {
 		break
 	}
 
-	handler := &httpServiceHandler{
+	watchHandler := &httpWatchHandler{
 		WatchParam: &WatchParam{
 			Name:      name,
 			WatchType: watchType,
 		},
-		serviceCh: make(chan bool, 512),
+		watchCh: make(chan bool, 512),
 	}
-	server.watch.RegisterHandler(handler)
-	defer server.watch.DeregisterHandler(handler)
+	server.watch.RegisterHandler(watchHandler)
+	defer server.watch.DeregisterHandler(watchHandler)
 
 	opts := h.newRequestOptions(c.Request)
 	params := graphql.Params{
@@ -77,7 +77,7 @@ func (h *Http) watch(c *cart.Context, next cart.Next) {
 		select {
 		case <-clientGone:
 			return
-		case <-handler.serviceCh:
+		case <-watchHandler.watchCh:
 
 			result := graphql.Do(params)
 			if len(result.Errors) > 0 {

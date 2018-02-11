@@ -145,7 +145,8 @@ func (h *Http) api(c *cart.Context, next cart.Next) {
 }
 
 type httpLogHandler struct {
-	logCh chan string
+	logCh  chan string
+	exitCh chan bool
 }
 
 func (h *httpLogHandler) HandleLog(log string) {

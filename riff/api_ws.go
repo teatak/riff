@@ -77,10 +77,8 @@ func (h *Http) handleReader(ws *websocket.Conn) {
 	ws.SetReadDeadline(time.Now().Add(pongWait))
 	ws.SetPongHandler(func(string) error { ws.SetReadDeadline(time.Now().Add(pongWait)); return nil })
 
-	//name := server.Self.Name
-	//handler := h.buildHttpServiceHandler(name,"node")
-
-	var handler *httpServiceHandler
+	var watchHandler *httpWatchHandler
+	var logHandler *httpLogHandler
 
 	for {
 		var request WsRequest
@@ -94,18 +92,23 @@ func (h *Http) handleReader(ws *websocket.Conn) {
 		case "Watch":
 			watch := request.Body
 			//clear handler
-			if handler != nil {
-				close(handler.exitCh)
+			if watchHandler != nil {
+				close(watchHandler.exitCh)
 			}
-			handler = h.buildHttpServiceHandler(watch.Name, watch.Type)
-			go h.handleWatch(ws, handler, watch.Query)
+			watchHandler = h.buildHttpWatchHandler(watch.Name, watch.Type)
+			go h.handleWatch(ws, watchHandler, watch.Query)
 			//ws.WriteJSON()
+		case "Logs":
+			if logHandler != nil {
+				close(logHandler.exitCh)
+			}
+			logHandler = h.buildHttpLogHandler()
+			go h.handleLog(ws, logHandler)
 		}
 	}
 }
 
-func (h *Http) buildHttpServiceHandler(name string, watch string) *httpServiceHandler {
-
+func (h *Http) buildHttpWatchHandler(name string, watch string) *httpWatchHandler {
 	watchType := NodeChanged
 	switch watch {
 	case "node":
@@ -115,34 +118,30 @@ func (h *Http) buildHttpServiceHandler(name string, watch string) *httpServiceHa
 		watchType = ServiceChanged
 		break
 	}
-
 	if watchType == NodeChanged && name == "" {
 		name = server.Self.Name
 	}
-
-	handler := &httpServiceHandler{
+	handler := &httpWatchHandler{
 		WatchParam: &WatchParam{
 			Name:      name,
 			WatchType: watchType,
 		},
-		serviceCh: make(chan bool, 512),
-		exitCh:    make(chan bool, 1),
+		watchCh: make(chan bool, 512),
+		exitCh:  make(chan bool, 1),
 	}
 	return handler
 }
 
-func (h *Http) handleWatch(ws *websocket.Conn, handler *httpServiceHandler, query string) {
-
+func (h *Http) handleWatch(ws *websocket.Conn, handler *httpWatchHandler, query string) {
 	server.watch.RegisterHandler(handler)
 	defer server.watch.DeregisterHandler(handler)
-
 	params := graphql.Params{
 		Schema:        schema,
 		RequestString: query,
 	}
 	for {
 		select {
-		case <-handler.serviceCh:
+		case <-handler.watchCh:
 			result := graphql.Do(params)
 			if len(result.Errors) > 0 {
 				server.Logger.Printf(errorServicePrefix+"wrong result, unexpected errors: %v\n", result.Errors)
@@ -163,11 +162,34 @@ func (h *Http) handleWatch(ws *websocket.Conn, handler *httpServiceHandler, quer
 				})
 				h.mu.Unlock()
 			}
-
 		case <-handler.exitCh:
-			server.Logger.Printf(infoServicePrefix + "exit handler\n")
 			return
-			//b, _ := json.Marshal(result)
+		}
+	}
+}
+
+func (h *Http) buildHttpLogHandler() *httpLogHandler {
+	handler := &httpLogHandler{
+		logCh:  make(chan string, 512),
+		exitCh: make(chan bool, 1),
+	}
+	return handler
+}
+
+func (h *Http) handleLog(ws *websocket.Conn, handler *httpLogHandler) {
+	server.logWriter.RegisterHandler(handler)
+	defer server.logWriter.DeregisterHandler(handler)
+	for {
+		select {
+		case logs := <-handler.logCh:
+			h.mu.Lock()
+			ws.WriteJSON(&WsResponse{
+				Event: "Logs",
+				Body:  logs,
+			})
+			h.mu.Unlock()
+		case <-handler.exitCh:
+			return
 		}
 	}
 }
