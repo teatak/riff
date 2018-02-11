@@ -90,7 +90,7 @@ func staticDistConsoleCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/dist/console.css", size: 39931, mode: os.FileMode(420), modTime: time.Unix(1518376876, 0)}
+	info := bindataFileInfo{name: "static/dist/console.css", size: 39931, mode: os.FileMode(420), modTime: time.Unix(1518378142, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -110,7 +110,7 @@ func staticDistConsoleHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/dist/console.html", size: 971, mode: os.FileMode(420), modTime: time.Unix(1518376876, 0)}
+	info := bindataFileInfo{name: "static/dist/console.html", size: 971, mode: os.FileMode(420), modTime: time.Unix(1518378142, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -130,7 +130,7 @@ func staticDistConsoleJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/dist/console.js", size: 770735, mode: os.FileMode(420), modTime: time.Unix(1518376876, 0)}
+	info := bindataFileInfo{name: "static/dist/console.js", size: 770735, mode: os.FileMode(420), modTime: time.Unix(1518378142, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
