@@ -18,8 +18,8 @@ const (
 	ContentTypeFormURLEncoded = "application/x-www-form-urlencoded"
 )
 
-type Http struct{
-	mu      sync.Mutex
+type Http struct {
+	mu sync.Mutex
 }
 
 type RequestOptions struct {
