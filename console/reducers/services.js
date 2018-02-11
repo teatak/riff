@@ -37,7 +37,7 @@ export const getList = () => (dispatch, getState) => {
 };
 
 const buildQuery = (serviceName) => {
-    let query = `{
+    return `{
     service(name:"` + serviceName + `",state:All) {
         name
         nodes {
@@ -51,7 +51,6 @@ const buildQuery = (serviceName) => {
         } 
     }
 }`;
-    return query;
 };
 
 export const changeService = (json) => (dispatch, getState) => {

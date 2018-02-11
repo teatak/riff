@@ -37,13 +37,17 @@ class Ws {
             }, 5000);
         };
         this.ws.onopen = (evt) => {
-
+            //dispatch(resend)
         };
     };
     send = (msg) => (dispatch, getState) => {
-        this.ws.send(
-            JSON.stringify(msg)
-        )
+        if(ws.opened) {
+            this.ws.send(
+                JSON.stringify(msg)
+            )
+        } else {
+
+        }
     }
 }
 

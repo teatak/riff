@@ -44,7 +44,7 @@ export const getList = () => (dispatch, getState) => {
 
 const buildQuery = (nodeName) => {
     let node = (nodeName === undefined) ? "node:server" : "node(name:\"" + nodeName + "\")";
-    let query = `{
+    return `{
     ` + node + ` {
         name
         ip
@@ -62,7 +62,6 @@ const buildQuery = (nodeName) => {
         } 
     }
 }`;
-    return query;
 };
 
 export const changeNode = (json) => (dispatch, getState) => {
