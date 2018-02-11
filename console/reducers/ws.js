@@ -41,13 +41,15 @@ class Ws {
         };
     };
     send = (msg) => (dispatch, getState) => {
-        if(ws.opened) {
+        if(this.ws.readyState === this.ws.OPEN){
+        }
+        // if(ws.opened) {
             this.ws.send(
                 JSON.stringify(msg)
             )
-        } else {
-
-        }
+        // } else {
+        //
+        // }
     }
 }
 
