@@ -24,7 +24,6 @@ const mapDispatchToProps = (dispatch) => {
 class Logs extends React.Component {
     constructor(props) {
         super(props);
-
     }
 
     componentWillMount() {
@@ -37,16 +36,13 @@ class Logs extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-
         this.handleScroll();
     }
 
     handleRefresh = () => {
-
         this.props.getLogs();
     };
     handleScroll = () => {
-
         if (this.el) {
             let scrolltop = this.el.scrollTop;
             let clientHeight = this.el.clientHeight;
@@ -61,7 +57,6 @@ class Logs extends React.Component {
     };
 
     handleClose = () => {
-
         if (this.props.onClose) {
             this.props.onClose()
         }

@@ -45,7 +45,7 @@ func NewServer(config *Config) (*Server, error) {
 	shutdownCh := make(chan struct{})
 
 	server = &Server{
-		logWriter:  NewLogWriter(512),
+		logWriter:  NewLogWriter(255),
 		watch:      NewWatch(),
 		rpcServer:  rpc.NewServer(),
 		api:        &API{},

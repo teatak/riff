@@ -14,7 +14,7 @@ var upgrader = websocket.Upgrader{
 
 const (
 	// Time allowed to write a message to the peer.
-	writeWait = 10 * time.Second
+	writeWait = 60 * time.Second
 
 	// Time allowed to read the next pong message from the peer.
 	pongWait = 60 * time.Second
@@ -27,10 +27,11 @@ const (
 )
 
 func (h *Http) handleWs(c *cart.Context) {
+
 	ws, err := upgrader.Upgrade(c.Response, c.Request, nil)
 	if err != nil {
 		if _, ok := err.(websocket.HandshakeError); !ok {
-			server.Logger.Printf(errorServicePrefix+"wrong ws, unexpected errors: %v\n", err)
+			server.Logger.Printf(errorServicePrefix+"wrong ws connect: %v\n", err)
 		}
 		return
 	}
@@ -47,9 +48,12 @@ func (h *Http) handleWriter(ws *websocket.Conn) {
 	for {
 		select {
 		case <-ticker.C:
+			h.mu.Lock()
 			ws.SetWriteDeadline(time.Now().Add(writeWait))
 			err := ws.WriteMessage(websocket.PingMessage, []byte{})
+			h.mu.Unlock()
 			if err != nil {
+				server.Logger.Printf(errorServicePrefix+"wrong ws ping: %v\n", err)
 				return
 			}
 		}
@@ -84,8 +88,8 @@ func (h *Http) handleReader(ws *websocket.Conn) {
 		var request WsRequest
 		err := ws.ReadJSON(&request)
 		if err != nil {
-			server.Logger.Printf(errorServerPrefix+"error %v\n", err)
-			break
+			//server.Logger.Printf(errorServerPrefix+"error read %v\n", err)
+			return
 		}
 		ws.SetWriteDeadline(time.Now().Add(writeWait))
 		switch request.Event {
@@ -97,7 +101,6 @@ func (h *Http) handleReader(ws *websocket.Conn) {
 			}
 			watchHandler = h.buildHttpWatchHandler(watch.Name, watch.Type)
 			go h.handleWatch(ws, watchHandler, watch.Query)
-			//ws.WriteJSON()
 		case "Logs":
 			if logHandler != nil {
 				close(logHandler.exitCh)
@@ -126,7 +129,7 @@ func (h *Http) buildHttpWatchHandler(name string, watch string) *httpWatchHandle
 			Name:      name,
 			WatchType: watchType,
 		},
-		watchCh: make(chan bool, 512),
+		watchCh: make(chan bool, 255),
 		exitCh:  make(chan bool, 1),
 	}
 	return handler
@@ -144,23 +147,31 @@ func (h *Http) handleWatch(ws *websocket.Conn, handler *httpWatchHandler, query 
 		case <-handler.watchCh:
 			result := graphql.Do(params)
 			if len(result.Errors) > 0 {
-				server.Logger.Printf(errorServicePrefix+"wrong result, unexpected errors: %v\n", result.Errors)
+				server.Logger.Printf(errorServicePrefix+"wrong result errors: %v\n", result.Errors)
 			}
 			ws.SetWriteDeadline(time.Now().Add(writeWait))
 			if handler.WatchParam.WatchType == NodeChanged {
 				h.mu.Lock()
-				ws.WriteJSON(&WsResponse{
+				err := ws.WriteJSON(&WsResponse{
 					Event: "NodeChange",
 					Body:  result,
 				})
 				h.mu.Unlock()
+				if err != nil {
+					server.Logger.Printf(errorServicePrefix+"write node change errors: %v\n", err)
+					return
+				}
 			} else {
 				h.mu.Lock()
-				ws.WriteJSON(&WsResponse{
+				err := ws.WriteJSON(&WsResponse{
 					Event: "ServiceChange",
 					Body:  result,
 				})
 				h.mu.Unlock()
+				if err != nil {
+					server.Logger.Printf(errorServicePrefix+"write service change errors: %v\n", err)
+					return
+				}
 			}
 		case <-handler.exitCh:
 			return
@@ -170,7 +181,7 @@ func (h *Http) handleWatch(ws *websocket.Conn, handler *httpWatchHandler, query 
 
 func (h *Http) buildHttpLogHandler() *httpLogHandler {
 	handler := &httpLogHandler{
-		logCh:  make(chan string, 512),
+		logCh:  make(chan string, 255),
 		exitCh: make(chan bool, 1),
 	}
 	return handler
@@ -183,11 +194,15 @@ func (h *Http) handleLog(ws *websocket.Conn, handler *httpLogHandler) {
 		select {
 		case logs := <-handler.logCh:
 			h.mu.Lock()
-			ws.WriteJSON(&WsResponse{
+			err := ws.WriteJSON(&WsResponse{
 				Event: "Logs",
 				Body:  logs,
 			})
 			h.mu.Unlock()
+			if err != nil {
+				server.Logger.Printf(errorServicePrefix+"write logs errors: %v\n", err)
+				return
+			}
 		case <-handler.exitCh:
 			return
 		}

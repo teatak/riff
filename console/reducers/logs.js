@@ -48,6 +48,9 @@ const logs = (state = {
                 }
             };
         case LOG_SUCCESS:
+            if (state.list.length > 255) {
+                state.list.shift();
+            }
             return {
                 ...state,
                 fetchLogs: {
