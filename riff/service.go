@@ -261,13 +261,14 @@ func (s *Service) processGit(client git.Client) {
 		server.Logger.Printf(errorServicePrefix+"%s find version error: %v", s.Name, err)
 		return
 	}
-	server.Logger.Printf(infoServicePrefix+"%s find version: %s asset: %s", s.Name, version, asset)
 	//check local version
 	preVersion = s.GetVersion()
 	if preVersion == version {
-		server.Logger.Printf(infoServicePrefix+"%s preVersion=newVersion: %s", s.Name, version)
+		//server.Logger.Printf(infoServicePrefix+"%s preVersion=newVersion: %s", s.Name, version)
 		doPayload = false
 		return
+	} else {
+		server.Logger.Printf(infoServicePrefix+"%s find new version: %s", s.Name, version)
 	}
 
 	//download zip file and unzip
@@ -283,7 +284,7 @@ func (s *Service) processGit(client git.Client) {
 				return
 			case <-server.ShutdownCh:
 				client.Termination()
-				server.Logger.Printf(infoServicePrefix+"%s termination download", s.Name)
+				server.Logger.Printf(infoServicePrefix+"update %s termination download", s.Name)
 				return
 			}
 		}
@@ -292,21 +293,21 @@ func (s *Service) processGit(client git.Client) {
 	close(quitLoop)
 
 	if err != nil {
-		server.Logger.Printf(errorServicePrefix+"%s update download error: %v", s.Name, err)
+		server.Logger.Printf(errorServicePrefix+"update %s download error: %v", s.Name, err)
 		return
 	}
 	err = common.Unzip(file, dir)
 	if err != nil {
-		server.Logger.Printf(errorServicePrefix+"%s update unzip file error: %v", s.Name, err)
+		server.Logger.Printf(errorServicePrefix+"update %s unzip error: %v", s.Name, err)
 		return
 	}
 	s.SetVersion(version)
 	err = s.Restart()
 	if err != nil {
-		server.Logger.Printf(errorServicePrefix+"%s restart service error: %v", s.Name, err)
+		server.Logger.Printf(errorServicePrefix+"restart %s error: %v", s.Name, err)
 
 	} else {
-		server.Logger.Printf(infoServicePrefix+"%s update service success preVersion:%s newVersion:%s", s.Name, preVersion, version)
+		server.Logger.Printf(infoServicePrefix+"update %s success pre version: %s new version: %s", s.Name, preVersion, version)
 	}
 }
 
