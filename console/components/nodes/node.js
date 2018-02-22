@@ -9,6 +9,7 @@ import CheckCircle from '../icons/checkCircle'
 import Play from '../icons/play'
 import Stop from '../icons/stop'
 import Replay from '../icons/replay';
+import Spinner from "../icons/spinner";
 
 const mapStateToProps = (state, ownProps) => {
     return {
@@ -151,7 +152,7 @@ class Node extends React.Component {
                 <span className="name">{nodes.data.name}</span>
                 <span className="ipport">{nodes.data.ip}</span>
                 {mutation.mutationService.loading ? <span className="tools">
-                    <img src="/static/images/spinner.svg"/>
+                    <Spinner/>
                     </span> :
                     (Object.keys(this.state.check).length > 0 ? <span className="tools">
                     <Play className="start"

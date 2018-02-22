@@ -15,12 +15,41 @@
             margin-left: -24px;
             user-select: none;
         }
-
         .spinnerwrap img {
             display: block;
             width: 48px;
             height: 48px;
             -webkit-user-drag: none;
+            animation:loadingCircle 2s infinite linear;
+            -webkit-animation:loadingCircle 2s infinite linear; /* Safari 和 Chrome */
+        }
+        @-webkit-keyframes loadingCircle {
+            0% {
+                -webkit-transform-origin: 50% 50%;
+                transform-origin: 50% 50%;
+                -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+            }
+            100% {
+                -webkit-transform-origin: 50% 50%;
+                transform-origin: 50% 50%;
+                -webkit-transform: rotate(360deg);
+                transform: rotate(360deg);
+            }
+        }
+        @keyframes loadingCircle {
+            0% {
+                -webkit-transform-origin: 50% 50%;
+                transform-origin: 50% 50%;
+                -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+            }
+            100% {
+                -webkit-transform-origin: 50% 50%;
+                transform-origin: 50% 50%;
+                -webkit-transform: rotate(360deg);
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
