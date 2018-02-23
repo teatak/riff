@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gimke/riff/api"
 	"github.com/gimke/riff/cli"
+	"github.com/gimke/riff/cmd/daem"
 	"github.com/gimke/riff/cmd/query"
 	"github.com/gimke/riff/cmd/run"
 	"github.com/gimke/riff/cmd/service"
@@ -17,6 +18,7 @@ var Commands cli.Commands
 func init() {
 	Commands = cli.Commands{
 		"version": version.New(common.Version),
+		"daem":    daem.New(),
 		"run":     run.New(),
 		"query":   query.New(),
 		"start":   service.New(api.CmdStart),
