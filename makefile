@@ -2,10 +2,6 @@ GOTOOLS = \
 	github.com/elazarl/go-bindata-assetfs/... \
 	github.com/jteeuwen/go-bindata/...
 
-VERSION = $(shell cat version)
-GITSHA=$(shell git rev-parse HEAD)
-GITBRANCH=$(shell git rev-parse --abbrev-ref HEAD)
-
 # Build the project
 default: tools webpack assets
 	@echo "--> Running build"
