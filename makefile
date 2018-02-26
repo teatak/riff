@@ -25,7 +25,7 @@ webpack:
 
 assets:
 	@echo "--> Running assets"
-	@go-bindata-assetfs -ignore .DS_Store -pkg riff ./static/...
+	@go-bindata-assetfs -ignore .DS_Store -o bindata_assetfs.go -pkg riff ./static/...
 	@mv bindata_assetfs.go riff/
 	@cd $(CURDIR) ; \
 	go fmt $$(go list ./... | grep -v /vendor/)
