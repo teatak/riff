@@ -80,7 +80,6 @@ func (h *Http) newRequestOptions(r *http.Request) *RequestOptions {
 		return &RequestOptions{}
 	}
 
-	// TODO: improve Content-Type handling
 	contentTypeStr := r.Header.Get("Content-Type")
 	contentTypeTokens := strings.Split(contentTypeStr, ";")
 	contentType := strings.TrimSpace(contentTypeTokens[0])

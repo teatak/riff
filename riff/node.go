@@ -82,7 +82,6 @@ func (s *Server) ServicesSlice() []string {
 	return services
 }
 
-//todo 需要完善
 func (s *Server) GetService(findName string) interface{} {
 	keys := s.Keys()
 	var service map[string]interface{}
