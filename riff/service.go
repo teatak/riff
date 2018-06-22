@@ -60,11 +60,12 @@ type ServiceConfig struct {
 }
 
 type Deploy struct {
-	Provider   string `yaml:"provider,omitempty"`
-	Token      string `yaml:"token,omitempty"`
-	Repository string `yaml:"repository,omitempty"`
-	Version    string `yaml:"version,omitempty"`
-	Payload    string `yaml:"payload,omitempty"`
+	Provider    string `yaml:"provider,omitempty"`
+	Token       string `yaml:"token,omitempty"`
+	Repository  string `yaml:"repository,omitempty"`
+	Version     string `yaml:"version,omitempty"`
+	Payload     string `yaml:"payload,omitempty"`
+	ServicePath string `yaml:"service_path,omitempty"`
 }
 
 func (s *Server) initServices() {
@@ -272,7 +273,12 @@ func (s *Service) processGit(client git.Client) {
 	}
 
 	//download zip file and unzip
-	dir, _ := filepath.Abs(filepath.Dir(config.Command[0]))
+	//add dir
+	if config.Deploy.ServicePath == "" {
+		server.Logger.Printf(errorServicePrefix+"update %s error: no service_path in deploy", s.Name)
+		return
+	}
+	dir, _ := filepath.Abs(filepath.Dir(config.Deploy.ServicePath))
 	file := common.BinDir + "/update/" + s.Name + "/" + version + ".zip"
 
 	//Termination download when shouldQuit close
