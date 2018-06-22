@@ -162,22 +162,22 @@ func (s *Service) update() {
 			server.Logger.Printf(errorServicePrefix+"%s update error: %v", s.Name, err)
 		}
 	}()
-	if pid := s.GetPid(); pid != 0 || !s.IsExist() {
-		deploy := s.Deploy
-		if deploy != nil && deploy.Provider != "" {
-			var client git.Client
-			switch strings.ToLower(deploy.Provider) {
-			case "github":
-				client = git.GithubClient(deploy.Token, deploy.Repository)
-				break
-			case "gitlab":
-				client = git.GitlabClient(deploy.Token, deploy.Repository)
-			}
-			if client != nil {
-				s.processGit(client)
-			}
+	//if pid := s.GetPid(); pid != 0 || !s.IsExist() {
+	deploy := s.Deploy
+	if deploy != nil && deploy.Provider != "" {
+		var client git.Client
+		switch strings.ToLower(deploy.Provider) {
+		case "github":
+			client = git.GithubClient(deploy.Token, deploy.Repository)
+			break
+		case "gitlab":
+			client = git.GitlabClient(deploy.Token, deploy.Repository)
+		}
+		if client != nil {
+			s.processGit(client)
 		}
 	}
+	//}
 }
 
 func (s *Service) IsExist() bool {
@@ -278,7 +278,7 @@ func (s *Service) processGit(client git.Client) {
 		server.Logger.Printf(errorServicePrefix+"update %s error: no service_path in deploy", s.Name)
 		return
 	}
-	dir, _ := filepath.Abs(filepath.Dir(config.Deploy.ServicePath))
+	dir := config.Deploy.ServicePath
 	file := common.BinDir + "/update/" + s.Name + "/" + version + ".zip"
 
 	//Termination download when shouldQuit close
