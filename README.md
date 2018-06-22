@@ -129,6 +129,7 @@ ping.yml config file
 #keep_alive: false
 
 #deploy:
+#  service_path: (service path e.g /home/riff)
 #  provider: github (only support github gitlab)
 #  token: Personal access tokens (visit https://github.com/settings/tokens or https://gitlab.com/profile/personal_access_tokens and generate a new token)
 #  repository: repository address (https://github.com/gimke/cartdemo)
