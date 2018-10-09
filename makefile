@@ -37,6 +37,6 @@ assets:
 tools:
 	@echo "--> Running tools"
 	@go get -u -v $(GOTOOLS)
-	@npm install
+	@cd console && npm install
 
 .PHONY: default fmt

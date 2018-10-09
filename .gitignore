@@ -7,3 +7,4 @@ vendor/
 !vendor/vendor.json
 schema/bindata.go
 console/package-lock.json
+riff/bindata_assetfs.go
