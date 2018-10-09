@@ -8,7 +8,9 @@ branches:
     - master
 
 before_install:
-  - go get -t -v ./...
+  - go get -u github.com/kardianos/govendor
+  - govendor init
+  - govendor sync
 
 script:
   - make test
