@@ -6,7 +6,7 @@ cd ..
 
 BIN="riff"
 TYPE="release"
-VERSION="$(node -p "require('./package.json').version")"
+VERSION="$(node -p "require('./console/package.json').version")"
 GITSHA="$(git rev-parse HEAD)"
 GITBRANCH="$(git rev-parse --abbrev-ref HEAD)"
 

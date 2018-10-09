@@ -12,20 +12,20 @@ const env = process.env.NODE_ENV || 'development';
 
 module.exports = {
     entry: {
-        console: './console/main.js'
+        console: './main.js'
     },
     output: {
-        path: path.join(__dirname, "static/dist"),
+        path: path.join(__dirname, "../static/dist"),
         filename: "[name].js"
     },
     externals: {
         'config': function(){
-            return JSON.stringify(require('./console/config/' + env + '.json'));
+            return JSON.stringify(require('./config/' + env + '.json'));
         }()
     },
     plugins: function(){
         var options = [
-            new HtmlWebpackPlugin({title:'Riff Console',hash:true,inject:false, filename: 'console.html', template: 'console/index.html'}),
+            new HtmlWebpackPlugin({title:'Riff Console',hash:true,inject:false, filename: 'console.html', template: 'index.html'}),
             new ExtractTextPlugin({filename: "[name].css", disable: false, allChunks: true}),
             new webpack.DefinePlugin({'process.env': {NODE_ENV: JSON.stringify(env)}}),
         ];

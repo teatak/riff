@@ -25,7 +25,7 @@ test: tools dev
 
 webpack:
 	@echo "--> Running webpack"
-	@npm run product
+	@cd console && npm run product
 
 assets:
 	@echo "--> Running assets"
