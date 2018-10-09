@@ -5,3 +5,4 @@ pkg/
 static/dist/
 vendor/
 !vendor/vendor.json
+schema/bindata.go

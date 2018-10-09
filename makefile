@@ -3,13 +3,17 @@ GOTOOLS = \
 	github.com/jteeuwen/go-bindata/...
 
 # Build the project
-default: tools webpack assets
+default: tools webpack generate assets
 	@echo "--> Running build"
 	@sh -c "$(CURDIR)/scripts/build.sh"
 
-dev: assets
+dev: generate assets
 	@echo "--> Running build"
 	@DEV=1 sh -c "'$(CURDIR)/scripts/build.sh'"
+
+generate:
+	@echo "--> Running generate"
+	@go generate ./schema
 
 fmt:
 	@cd $(CURDIR) ; \
