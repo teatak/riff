@@ -8,7 +8,7 @@ type Query {
     nodes: [Node]
     riff: Riff
     server: Node
-    service(name: String!,state: State!): Service
+    service(name: String!,state: State): Service
     services: [Service]
 }
 

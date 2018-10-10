@@ -3,17 +3,20 @@ GOTOOLS = \
 	github.com/jteeuwen/go-bindata/...
 
 # Build the project
-default: tools webpack generate assets
+default: tools webpack assets
 	@echo "--> Running build"
 	@sh -c "$(CURDIR)/scripts/build.sh"
 
-dev: generate assets
+dev: assets
 	@echo "--> Running build"
 	@DEV=1 sh -c "'$(CURDIR)/scripts/build.sh'"
 
-generate:
+assets:
 	@echo "--> Running generate"
-	@go generate ./schema
+	@go-bindata -ignore \.go -pkg schema -o ./schema/bindata.go ./schema/...
+	@go-bindata-assetfs -ignore .DS_Store -pkg riff -o ./riff/bindata_assetfs.go  ./static/...
+	@cd $(CURDIR) ; \
+	go fmt $$(go list ./... | grep -v /vendor/)
 
 fmt:
 	@cd $(CURDIR) ; \
@@ -26,13 +29,6 @@ test: tools dev
 webpack:
 	@echo "--> Running webpack"
 	@cd console && npm run product
-
-assets:
-	@echo "--> Running assets"
-	@go-bindata-assetfs -ignore .DS_Store -o bindata_assetfs.go -pkg riff ./static/...
-	@mv bindata_assetfs.go riff/
-	@cd $(CURDIR) ; \
-	go fmt $$(go list ./... | grep -v /vendor/)
 
 tools:
 	@echo "--> Running tools"

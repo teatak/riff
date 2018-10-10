@@ -23,7 +23,12 @@ func (_ *Resolver) Nodes() *[]*NodeResolver {
 }
 
 func (_ *Resolver) Node(args struct{ Name string }) *NodeResolver {
-	return &NodeResolver{server.api.Node(args.Name)}
+	node := server.api.Node(args.Name)
+	if node == nil {
+		return nil
+	} else {
+		return &NodeResolver{node}
+	}
 }
 
 func (_ *Resolver) Server() *NodeResolver {
@@ -40,10 +45,18 @@ func (_ *Resolver) Services() *[]*ServiceResolver {
 
 func (_ *Resolver) Service(args struct {
 	Name  string
-	State string
+	State *string
 }) *ServiceResolver {
-	state := api.StateType_FromName(args.State)
-	return &ServiceResolver{server.api.Service(args.Name, state)}
+	state := api.StateAll
+	if args.State != nil {
+		state = api.StateType_FromName(*args.State)
+	}
+	service := server.api.Service(args.Name, state)
+	if service == nil {
+		return nil
+	} else {
+		return &ServiceResolver{service}
+	}
 }
 
 func (_ *Resolver) MutationService(args struct {

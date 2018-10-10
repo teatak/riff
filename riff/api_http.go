@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gimke/cart"
-	//graphql1 "github.com/graphql-go/graphql"
 	"github.com/graph-gophers/graphql-go"
 	"io/ioutil"
 	"net/http"
@@ -127,16 +126,7 @@ func (h *Http) newRequestOptions(r *http.Request) *RequestOptions {
 }
 
 func (h *Http) api(c *cart.Context, next cart.Next) {
-	//var reqOpt *RequestOptions
 	opts := h.newRequestOptions(c.Request)
-	//params := graphql1.Params{
-	//	Schema:         schema,
-	//	RequestString:  opts.Query,
-	//	VariableValues: opts.Variables,
-	//	OperationName:  opts.OperationName,
-	//	Context:        c.Request.Context(),
-	//}
-	//result := graphql1.Do(params)
 	result := h.Schema.Exec(c.Request.Context(), opts.Query, opts.OperationName, opts.Variables)
 
 	if len(result.Errors) > 0 {
