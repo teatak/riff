@@ -12,7 +12,7 @@ dev: assets
 	@DEV=1 sh -c "'$(CURDIR)/scripts/build.sh'"
 
 assets:
-	@echo "--> Running generate"
+	@echo "--> Running assets"
 	@go-bindata -ignore \.go -pkg schema -o ./schema/bindata.go ./schema/...
 	@go-bindata-assetfs -ignore .DS_Store -pkg riff -o ./riff/bindata_assetfs.go  ./static/...
 	@cd $(CURDIR) ; \
