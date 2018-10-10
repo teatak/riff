@@ -4,9 +4,46 @@ schema {
 }
 
 type Query {
-
+    riff: Riff
+    nodes: [Node]
 }
 
 type Mutation {
 
+}
+
+enum State {
+    ALIVE
+    SUSPECT
+    DEAD
+    ALL
+}
+
+enum Cmd {
+    START
+    STOP
+    RESTART
+}
+
+type Riff {
+    gitBranch: String!
+    gitSha: String!
+    version: String!
+}
+type Node {
+    dataCenter: String!
+    ip: String!
+    isSelf: Boolean!
+    name: String!
+    port: Int!
+    services: [NestService!]
+    snapShot: String!
+    state: State!
+    version: Int!
+}
+type NestService {
+    config: String!
+    name: String!
+    port: Int!
+    state: State!
 }
