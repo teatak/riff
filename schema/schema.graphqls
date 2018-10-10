@@ -4,8 +4,12 @@ schema {
 }
 
 type Query {
-    riff: Riff
+    node(name: String!): Node
     nodes: [Node]
+    riff: Riff
+    server: Node
+    service(name: String!,state: State!): Service
+    services: [Service]
 }
 
 type Mutation {
@@ -46,4 +50,20 @@ type NestService {
     name: String!
     port: Int!
     state: State!
+}
+type Service {
+    name: String!
+    nodes: [NestNode!]
+}
+type NestNode {
+    config: String!
+    dataCenter: String!
+    ip: String!
+    isSelf: Boolean!
+    name: String!
+    port: Int!
+    rpcPort: Int!
+    snapShot: String!
+    state: State!
+    version: Int!
 }

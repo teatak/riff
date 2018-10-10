@@ -1,4 +1,4 @@
-package resolver
+package riff
 
 import "github.com/gimke/riff/common"
 

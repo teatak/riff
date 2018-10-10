@@ -1,16 +1,19 @@
-package resolver
+package riff
+
+import "github.com/gimke/riff/api"
 
 type NestServiceResover struct {
+	service api.NestService
 }
 func (r *NestServiceResover) Config() string {
-	return ""
+	return r.service.Config
 }
 func (r *NestServiceResover) Name() string {
-	return ""
+	return r.service.Name
 }
 func (r *NestServiceResover) Port() int32 {
-	return 0
+	return int32(r.service.Port)
 }
 func (r *NestServiceResover) State() string {
-	return ""
+	return r.service.State.Name()
 }
