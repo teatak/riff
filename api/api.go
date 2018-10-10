@@ -13,18 +13,15 @@ func (s StateType) Name() string {
 	switch s {
 	case StateAlive:
 		return "ALIVE"
-		break
 	case StateSuspect:
 		return "SUSPECT"
-		break
 	case StateDead:
 		return "DEAD"
-		break
 	case StateAll:
 		return "ALL"
-		break
+	default:
+		return "UNKOWN"
 	}
-	return "UNKOWN"
 }
 
 func (s StateType) Value() int {
@@ -43,15 +40,13 @@ func (c CmdType) Name() string {
 	switch c {
 	case CmdStart:
 		return "START"
-		break
 	case CmdStop:
 		return "STOP"
-		break
 	case CmdRestart:
 		return "RESTART"
-		break
+	default:
+		return "UNKOWN"
 	}
-	return "UNKOWN"
 }
 
 func (c CmdType) Value() int {
