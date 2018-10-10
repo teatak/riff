@@ -159,8 +159,7 @@ func (s *Server) setupCart() error {
 		r.Use("/console/*file", cart.File("../static/dist/console.html"))
 		r.Use("/static/*file", cart.Static("../static", false))
 	}
-	sc := graphql.MustParseSchema(schema.String(), &resolver.Resolver{})
-	h := &Http{Schema:sc}
+	h := &Http{Schema:graphql.MustParseSchema(schema.String(), &resolver.Resolver{})}
 	r.Route("/", h.Index)
 	s.httpServer = r.ServerKeepAlive(s.config.Addresses.Http + ":" + strconv.Itoa(s.config.Ports.Http))
 	return nil
