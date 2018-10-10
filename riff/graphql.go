@@ -12,16 +12,16 @@ import (
 var enumStateType = graphql.NewEnum(graphql.EnumConfig{
 	Name: "State",
 	Values: graphql.EnumValueConfigMap{
-		"Alive": &graphql.EnumValueConfig{
+		"ALIVE": &graphql.EnumValueConfig{
 			Value: api.StateAlive,
 		},
-		"Suspect": &graphql.EnumValueConfig{
+		"SUSPECT": &graphql.EnumValueConfig{
 			Value: api.StateSuspect,
 		},
-		"Dead": &graphql.EnumValueConfig{
+		"DEAD": &graphql.EnumValueConfig{
 			Value: api.StateDead,
 		},
-		"All": &graphql.EnumValueConfig{
+		"ALL": &graphql.EnumValueConfig{
 			Value: api.StateAll,
 		},
 	},
@@ -30,13 +30,13 @@ var enumStateType = graphql.NewEnum(graphql.EnumConfig{
 var enumCmdype = graphql.NewEnum(graphql.EnumConfig{
 	Name: "Cmd",
 	Values: graphql.EnumValueConfigMap{
-		"Start": &graphql.EnumValueConfig{
+		"START": &graphql.EnumValueConfig{
 			Value: api.CmdStart,
 		},
-		"Stop": &graphql.EnumValueConfig{
+		"STOP": &graphql.EnumValueConfig{
 			Value: api.CmdStop,
 		},
-		"Restart": &graphql.EnumValueConfig{
+		"RESTART": &graphql.EnumValueConfig{
 			Value: api.CmdRestart,
 		},
 	},
@@ -395,11 +395,11 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
-var schema, _ = graphql.NewSchema(graphql.SchemaConfig{
-	Query:    rootQuery,
-	Mutation: rootMutation,
-	Types: []graphql.Type{
-		nestNodeType,
-		nestServiceType,
-	},
-})
+//var schema, _ = graphql.NewSchema(graphql.SchemaConfig{
+//	Query:    rootQuery,
+//	Mutation: rootMutation,
+//	Types: []graphql.Type{
+//		nestNodeType,
+//		nestServiceType,
+//	},
+//})

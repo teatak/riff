@@ -157,17 +157,17 @@ class Node extends React.Component {
                     (Object.keys(this.state.check).length > 0 ? <span className="tools">
                     <Play className="start"
                           onClick={() => {
-                              this.mutationService("Start");
+                              this.mutationService("START");
                           }}
                     />
                     <Stop className="stop"
                           onClick={() => {
-                              this.mutationService("Stop");
+                              this.mutationService("STOP");
                           }}
                     />
                     <Replay className="restart"
                             onClick={() => {
-                                this.mutationService("Restart");
+                                this.mutationService("RESTART");
                             }}
                     /></span> : null)
                 }

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gimke/cart"
-	"github.com/graphql-go/graphql"
 	"net/http"
 )
 
@@ -61,13 +60,13 @@ func (h *Http) watch(c *cart.Context, next cart.Next) {
 	defer server.watch.DeregisterHandler(watchHandler)
 
 	opts := h.newRequestOptions(c.Request)
-	params := graphql.Params{
-		Schema:         schema,
-		RequestString:  opts.Query,
-		VariableValues: opts.Variables,
-		OperationName:  opts.OperationName,
-		Context:        c.Request.Context(),
-	}
+	//params := graphql.Params{
+	//	Schema:         schema,
+	//	RequestString:  opts.Query,
+	//	VariableValues: opts.Variables,
+	//	OperationName:  opts.OperationName,
+	//	Context:        c.Request.Context(),
+	//}
 
 	flusher, ok := resp.(http.Flusher)
 	if !ok {
@@ -79,7 +78,8 @@ func (h *Http) watch(c *cart.Context, next cart.Next) {
 			return
 		case <-watchHandler.watchCh:
 
-			result := graphql.Do(params)
+			//result := graphql.Do(params)
+			result := h.Schema.Exec(c.Request.Context(), opts.Query, opts.OperationName, opts.Variables)
 			if len(result.Errors) > 0 {
 				server.Logger.Printf(errorServicePrefix+"wrong result, unexpected errors: %v\n", result.Errors)
 			}

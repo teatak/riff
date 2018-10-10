@@ -3,8 +3,8 @@ package riff
 import (
 	"github.com/gimke/cart"
 	"github.com/gorilla/websocket"
-	"github.com/graphql-go/graphql"
 	"time"
+	"context"
 )
 
 var upgrader = websocket.Upgrader{
@@ -138,14 +138,19 @@ func (h *Http) buildHttpWatchHandler(name string, watch string) *httpWatchHandle
 func (h *Http) handleWatch(ws *websocket.Conn, handler *httpWatchHandler, query string) {
 	server.watch.RegisterHandler(handler)
 	defer server.watch.DeregisterHandler(handler)
-	params := graphql.Params{
-		Schema:        schema,
-		RequestString: query,
+	//params := graphql.Params{
+	//	Schema:        schema,
+	//	RequestString: query,
+	//}
+	opts := &RequestOptions{
+		Query:query,
 	}
+
 	for {
 		select {
 		case <-handler.watchCh:
-			result := graphql.Do(params)
+			//result := graphql.Do(params)
+			result := h.Schema.Exec(context.Background(), opts.Query, opts.OperationName, opts.Variables)
 			if len(result.Errors) > 0 {
 				server.Logger.Printf(errorServicePrefix+"wrong result errors: %v\n", result.Errors)
 			}

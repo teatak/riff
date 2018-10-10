@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gimke/cart"
-	"github.com/graphql-go/graphql"
+	//graphql1 "github.com/graphql-go/graphql"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
 	"sync"
+	"github.com/graph-gophers/graphql-go"
 )
 
 const (
@@ -20,6 +21,7 @@ const (
 
 type Http struct {
 	mu sync.Mutex
+	Schema *graphql.Schema
 }
 
 type RequestOptions struct {
@@ -127,14 +129,16 @@ func (h *Http) newRequestOptions(r *http.Request) *RequestOptions {
 func (h *Http) api(c *cart.Context, next cart.Next) {
 	//var reqOpt *RequestOptions
 	opts := h.newRequestOptions(c.Request)
-	params := graphql.Params{
-		Schema:         schema,
-		RequestString:  opts.Query,
-		VariableValues: opts.Variables,
-		OperationName:  opts.OperationName,
-		Context:        c.Request.Context(),
-	}
-	result := graphql.Do(params)
+	//params := graphql1.Params{
+	//	Schema:         schema,
+	//	RequestString:  opts.Query,
+	//	VariableValues: opts.Variables,
+	//	OperationName:  opts.OperationName,
+	//	Context:        c.Request.Context(),
+	//}
+	//result := graphql1.Do(params)
+	result := h.Schema.Exec(c.Request.Context(), opts.Query, opts.OperationName, opts.Variables)
+
 	if len(result.Errors) > 0 {
 		server.Logger.Printf(errorServicePrefix+"wrong result, unexpected errors: %v\n", result.Errors)
 		c.IndentedJSON(500, result)

@@ -24,10 +24,24 @@
 			"revisionTime": "2017-12-10T03:53:53Z"
 		},
 		{
+			"checksumSHA1": "xC3/efukyAgClos8WKNeqP8Loro=",
+			"path": "github.com/graph-gophers/graphql-go",
+			"revision": "94da0f0031f9d30a1d56cd4b56e40852516c3301",
+			"revisionTime": "2018-08-06T17:57:03Z",
+			"tree": true
+		},
+		{
 			"checksumSHA1": "zoXvY/g1rtc3YXwPyndJ7H2ErNE=",
 			"path": "github.com/graphql-go/graphql",
 			"revision": "cc8e9a91d6b82f2f867446edb51e3f2454b5912b",
 			"revisionTime": "2018-09-12T00:08:44Z",
+			"tree": true
+		},
+		{
+			"checksumSHA1": "ZxaReuny3wJCoEAjpVuGKXhuxi4=",
+			"path": "github.com/opentracing/opentracing-go",
+			"revision": "6aa6febac7b98f836100ecaea478c04f30b6dbd0",
+			"revisionTime": "2018-09-08T21:19:32Z",
 			"tree": true
 		},
 		{
