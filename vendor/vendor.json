@@ -31,13 +31,6 @@
 			"tree": true
 		},
 		{
-			"checksumSHA1": "zoXvY/g1rtc3YXwPyndJ7H2ErNE=",
-			"path": "github.com/graphql-go/graphql",
-			"revision": "cc8e9a91d6b82f2f867446edb51e3f2454b5912b",
-			"revisionTime": "2018-09-12T00:08:44Z",
-			"tree": true
-		},
-		{
 			"checksumSHA1": "ZxaReuny3wJCoEAjpVuGKXhuxi4=",
 			"path": "github.com/opentracing/opentracing-go",
 			"revision": "6aa6febac7b98f836100ecaea478c04f30b6dbd0",
