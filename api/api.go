@@ -12,7 +12,7 @@ const (
 func (s StateType) Name() string {
 	switch s {
 	case StateAlive:
-		return "ALIVR"
+		return "ALIVE"
 		break
 	case StateSuspect:
 		return "SUSPECT"
