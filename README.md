@@ -15,7 +15,7 @@ If you need Web Console, you'll need npm installed dependencies
 
 Next clone this repository and build Riff or download from [release](https://github.com/gimke/riff/releases)
 ```bash
-make dev
+make
 ./riff -v
 ```
 ## Commands(CLI)
