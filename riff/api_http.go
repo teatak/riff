@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"github.com/gimke/cart"
 	//graphql1 "github.com/graphql-go/graphql"
+	"github.com/graph-gophers/graphql-go"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
 	"sync"
-	"github.com/graph-gophers/graphql-go"
 )
 
 const (
@@ -20,7 +20,7 @@ const (
 )
 
 type Http struct {
-	mu sync.Mutex
+	mu     sync.Mutex
 	Schema *graphql.Schema
 }
 

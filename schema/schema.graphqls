@@ -13,7 +13,7 @@ type Query {
 }
 
 type Mutation {
-    mutationService(services: [MutationServiceInput]): [MutationService]
+    mutationService(services: [MutationServiceInput!]): [MutationService]
 }
 
 enum State {
@@ -86,4 +86,20 @@ type NestNode {
     snapShot: String!
     state: State!
     version: Int!
+}
+
+input MutationServiceInput {
+    port: Int!
+    cmd: Cmd!
+    name: String!
+    ip: String!
+}
+
+type MutationService {
+    cmd: Cmd!
+    error: String!
+    ip: String!
+    name: String!
+    port: Int!
+    success: Boolean!
 }

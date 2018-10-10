@@ -5,6 +5,7 @@ import "github.com/gimke/riff/api"
 type NestServiceResover struct {
 	service api.NestService
 }
+
 func (r *NestServiceResover) Config() string {
 	return r.service.Config
 }

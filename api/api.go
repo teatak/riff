@@ -8,9 +8,10 @@ const (
 	StateDead
 	StateAll = StateAlive | StateSuspect | StateDead
 )
+
 func StateType_FromName(name string) StateType {
 	switch name {
-		case "ALIVE":
+	case "ALIVE":
 		return StateAlive
 	case "SUSPECT":
 		return StateSuspect
@@ -47,6 +48,7 @@ const (
 	CmdStop
 	CmdRestart
 )
+
 func CmdType_FromName(name string) CmdType {
 	switch name {
 	case "START":

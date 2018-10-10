@@ -7,6 +7,7 @@ import (
 type NodeResolver struct {
 	node *api.Node
 }
+
 func (r *NodeResolver) DataCenter() string {
 	return r.node.DataCenter
 }

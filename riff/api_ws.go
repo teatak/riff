@@ -1,10 +1,10 @@
 package riff
 
 import (
+	"context"
 	"github.com/gimke/cart"
 	"github.com/gorilla/websocket"
 	"time"
-	"context"
 )
 
 var upgrader = websocket.Upgrader{
@@ -143,7 +143,7 @@ func (h *Http) handleWatch(ws *websocket.Conn, handler *httpWatchHandler, query 
 	//	RequestString: query,
 	//}
 	opts := &RequestOptions{
-		Query:query,
+		Query: query,
 	}
 
 	for {

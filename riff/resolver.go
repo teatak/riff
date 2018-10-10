@@ -2,6 +2,8 @@ package riff
 
 import (
 	"github.com/gimke/riff/api"
+	"net"
+	"strconv"
 )
 
 type Resolver struct {
@@ -42,4 +44,26 @@ func (_ *Resolver) Service(args struct {
 }) *ServiceResolver {
 	state := api.StateType_FromName(args.State)
 	return &ServiceResolver{server.api.Service(args.Name, state)}
+}
+
+func (_ *Resolver) MutationService(args struct {
+	Services *[]*MutationServiceInput
+}) *[]*MutationService {
+	var l []*MutationService
+	for _, service := range *args.Services {
+		result := &MutationService{
+			cmd:  service.Cmd,
+			ip:   service.Ip,
+			port: int(service.Port),
+		}
+		if err := mutationService(service.Name, net.JoinHostPort(service.Ip, strconv.Itoa(int(service.Port))), api.CmdType_FromName(service.Cmd)); err != nil {
+			result.error = err.Error()
+			result.success = false
+		} else {
+			result.error = ""
+			result.success = true
+		}
+		l = append(l, result)
+	}
+	return &l
 }

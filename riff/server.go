@@ -5,6 +5,8 @@ import (
 	"github.com/gimke/cart"
 	"github.com/gimke/riff/api"
 	"github.com/gimke/riff/common"
+	"github.com/gimke/riff/schema"
+	"github.com/graph-gophers/graphql-go"
 	"io"
 	"log"
 	"net"
@@ -14,8 +16,6 @@ import (
 	"strconv"
 	"sync"
 	"time"
-	"github.com/graph-gophers/graphql-go"
-	"github.com/gimke/riff/schema"
 )
 
 const errorServerPrefix = "[ERR]  riff.server: "
@@ -41,6 +41,7 @@ type Server struct {
 	shutdown     bool
 	shutdownLock sync.Mutex
 }
+
 func NewServer(config *Config) (*Server, error) {
 
 	shutdownCh := make(chan struct{})
@@ -157,7 +158,7 @@ func (s *Server) setupCart() error {
 		r.Use("/console/*file", cart.File("../static/dist/console.html"))
 		r.Use("/static/*file", cart.Static("../static", false))
 	}
-	h := &Http{Schema:graphql.MustParseSchema(schema.String(), &Resolver{})}
+	h := &Http{Schema: graphql.MustParseSchema(schema.String(), &Resolver{})}
 	r.Route("/", h.Index)
 	s.httpServer = r.ServerKeepAlive(s.config.Addresses.Http + ":" + strconv.Itoa(s.config.Ports.Http))
 	return nil
