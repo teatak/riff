@@ -13,13 +13,10 @@ If you wish to work on Riff, you'll first need Go installed (version 1.9+ is req
 
 If you need Web Console, you'll need npm installed dependencies            
 
-```bash
-npm install
-```
 Next clone this repository and build Riff or download from [release](https://github.com/gimke/riff/releases)
 ```bash
-make
-bin/riff -v
+make dev
+./riff -v
 ```
 ## Commands(CLI)
 ```bash
