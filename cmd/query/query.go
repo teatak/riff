@@ -140,7 +140,7 @@ func (c *cmd) Nodes() {
 		line := fmt.Sprintf("%s|%s|%s|%s|%s",
 			n.Name,
 			net.JoinHostPort(n.IP, strconv.Itoa(n.Port)),
-			n.State.String(),
+			n.State.Name(),
 			n.DataCenter,
 			n.SnapShot[0:9]+"...")
 		results = append(results, line)
@@ -168,7 +168,7 @@ func (c *cmd) Node(name string) {
 
 	info = append(info, "Node:|"+node.Name)
 	info = append(info, "Address:|"+net.JoinHostPort(node.IP, strconv.Itoa(node.Port)))
-	info = append(info, "Status:|"+node.State.String())
+	info = append(info, "Status:|"+node.State.Name())
 	info = append(info, "DC:|"+node.DataCenter)
 	info = append(info, "SnapShot:|"+node.SnapShot)
 
@@ -187,7 +187,7 @@ func (c *cmd) Node(name string) {
 			line := fmt.Sprintf("%s|%s|%s",
 				s.Name,
 				net.JoinHostPort("", strconv.Itoa(s.Port)),
-				s.State.String())
+				s.State.Name())
 			results = append(results, line)
 		}
 
@@ -243,7 +243,7 @@ func (c *cmd) Service(name string) {
 		line := fmt.Sprintf("%s|%s|%s|%s|%s",
 			n.Name,
 			net.JoinHostPort(n.IP, strconv.Itoa(n.Port)),
-			n.State.String(),
+			n.State.Name(),
 			n.DataCenter,
 			n.SnapShot[0:9]+"...")
 		results = append(results, line)

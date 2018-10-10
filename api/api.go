@@ -9,22 +9,26 @@ const (
 	StateAll = StateAlive | StateSuspect | StateDead
 )
 
-func (s StateType) String() string {
+func (s StateType) Name() string {
 	switch s {
 	case StateAlive:
-		return "Alive"
+		return "ALIVR"
 		break
 	case StateSuspect:
-		return "Suspect"
+		return "SUSPECT"
 		break
 	case StateDead:
-		return "Dead"
+		return "DEAD"
 		break
 	case StateAll:
-		return "All"
+		return "ALL"
 		break
 	}
-	return "Unknow"
+	return "UNKOWN"
+}
+
+func (s StateType) Value() int {
+	return int(s)
 }
 
 type CmdType int
@@ -35,19 +39,23 @@ const (
 	CmdRestart
 )
 
-func (c CmdType) String() string {
+func (c CmdType) Name() string {
 	switch c {
 	case CmdStart:
-		return "Start"
+		return "START"
 		break
 	case CmdStop:
-		return "Stop"
+		return "STOP"
 		break
 	case CmdRestart:
-		return "Restart"
+		return "RESTART"
 		break
 	}
-	return "Unknow"
+	return "UNKOWN"
+}
+
+func (c CmdType) Value() int {
+	return int(c)
 }
 
 type Nodes []*Node

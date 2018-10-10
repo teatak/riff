@@ -86,15 +86,15 @@ func (c *cmd) Cmd(name string) {
 		fmt.Println(err)
 	}
 	if result {
-		fmt.Printf("service %s %s success\n", name, strings.ToLower(c.cmdType.String()))
+		fmt.Printf("service %s %s success\n", name, strings.ToLower(c.cmdType.Name()))
 	}
 }
 
 func (c *cmd) Synopsis() string {
-	return c.cmdType.String() + " service"
+	return c.cmdType.Name() + " service"
 }
 
 func (c *cmd) Help() string {
-	cmdName := strings.ToLower(c.cmdType.String())
+	cmdName := strings.ToLower(c.cmdType.Name())
 	return fmt.Sprintf(help, cmdName, cmdName)
 }

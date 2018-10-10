@@ -262,7 +262,7 @@ func (n *Node) String() string {
 	keys := n.Services.Keys()
 	for i, sk := range keys {
 		s := n.Services[sk]
-		io.WriteString(buff, s.Name+":{"+s.Address()+","+s.State.String()+"}")
+		io.WriteString(buff, s.Name+":{"+s.Address()+","+s.State.Name()+"}")
 		if i != len(keys)-1 {
 			io.WriteString(buff, ",")
 		}
