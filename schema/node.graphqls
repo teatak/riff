@@ -4,7 +4,8 @@ type Node {
     ip: String!
     isSelf: Boolean!
     name: String!
-    port: Int!
+    httpPort: Int!
+    rpcPort: Int!
     services: [NestService!]
     snapShot: String!
     state: State!
@@ -14,11 +15,10 @@ type Node {
 type NestNode {
     config: String!
     dataCenter: String!
-    ip: String!
     isSelf: Boolean!
     name: String!
+    ip: String!
     port: Int!
-    rpcPort: Int!
     snapShot: String!
     state: State!
     version: Int!

@@ -334,7 +334,7 @@ func (s *Service) SetVersion(version string) {
 }
 
 func (s *Service) Address() string {
-	return net.JoinHostPort("", strconv.Itoa(int(s.Port)))
+	return net.JoinHostPort(s.Ip, strconv.Itoa(int(s.Port)))
 }
 
 func (s *Services) Keys() []string {

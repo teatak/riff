@@ -57,7 +57,7 @@ class Nodes extends React.Component {
                     return <li className="item" key={node.name}>
                         <NavLink className={className} to={"/nodes/" + node.name}>
                             <span className="name">{node.name}</span>
-                            <span className="ipport">{node.ip}:{node.port}</span>
+                            <span className="ipport">{node.ip}:{node.rpcPort}</span>
                         </NavLink>
                     </li>
                 }

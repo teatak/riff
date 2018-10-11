@@ -15,7 +15,8 @@ export const getList = () => (dispatch, getState) => {
     nodes {
         name
         ip
-        port
+        httpPort
+        rpcPort
         dataCenter
         state
         isSelf
@@ -48,7 +49,8 @@ const buildQuery = (nodeName) => {
     ` + node + ` {
         name
         ip
-        port
+        httpPort
+        rpcPort
         dataCenter
         snapShot
         state

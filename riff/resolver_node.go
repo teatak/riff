@@ -20,8 +20,11 @@ func (r *NodeResolver) IsSelf() bool {
 func (r *NodeResolver) Name() string {
 	return r.node.Name
 }
-func (r *NodeResolver) Port() int32 {
-	return int32(r.node.Port)
+func (r *NodeResolver) RpcPort() int32 {
+	return int32(r.node.RpcPort)
+}
+func (r *NodeResolver) HttpPort() int32 {
+	return int32(r.node.HttpPort)
 }
 func (r *NodeResolver) Services() *[]*NestServiceResover {
 	var l []*NestServiceResover

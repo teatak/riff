@@ -44,7 +44,6 @@ const buildQuery = (serviceName) => {
             name
             ip
             port
-            rpcPort
             state
             isSelf
             config

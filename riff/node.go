@@ -213,7 +213,8 @@ type Node struct {
 	Name        string
 	DataCenter  string
 	IP          string
-	Port        int
+	RpcPort     int
+	HttpPort    int
 	Version     uint64
 	State       api.StateType // Current state
 	StateChange time.Time     // Time last state change happened
@@ -254,7 +255,7 @@ WITNESS:
 }
 
 func (n *Node) Address() string {
-	return net.JoinHostPort(n.IP, strconv.Itoa(int(n.Port)))
+	return net.JoinHostPort(n.IP, strconv.Itoa(int(n.RpcPort)))
 }
 
 func (n *Node) String() string {

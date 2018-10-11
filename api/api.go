@@ -83,7 +83,8 @@ type Node struct {
 	Name         string    `json:"name"`
 	DataCenter   string    `json:"dataCenter"`
 	IP           string    `json:"ip"`
-	Port         int       `json:"port,omitempty"`
+	RpcPort      int       `json:"rpcPort,omitempty"`
+	HttpPort     int       `json:"httpPort,omitempty"`
 	Version      int       `json:"version"`
 	State        StateType `json:"state"`
 	SnapShot     string    `json:"snapShot,omitempty"`
@@ -98,7 +99,6 @@ type NestNode struct {
 	DataCenter string    `json:"dataCenter"`
 	IP         string    `json:"ip"`
 	Port       int       `json:"port,omitempty"`
-	RpcPort    int       `json:"rpcPort,omitempty"`
 	Version    int       `json:"version"`
 	State      StateType `json:"state"`
 	SnapShot   string    `json:"snapShot,omitempty"`

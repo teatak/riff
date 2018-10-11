@@ -139,7 +139,7 @@ func (c *cmd) Nodes() {
 	for _, n := range nodes {
 		line := fmt.Sprintf("%s|%s|%s|%s|%s",
 			n.Name,
-			net.JoinHostPort(n.IP, strconv.Itoa(n.Port)),
+			net.JoinHostPort(n.IP, strconv.Itoa(n.RpcPort)),
 			n.State.Name(),
 			n.DataCenter,
 			n.SnapShot[0:9]+"...")
@@ -167,7 +167,7 @@ func (c *cmd) Node(name string) {
 	info := make([]string, 0, 5)
 
 	info = append(info, "Node:|"+node.Name)
-	info = append(info, "Address:|"+net.JoinHostPort(node.IP, strconv.Itoa(node.Port)))
+	info = append(info, "Address:|"+net.JoinHostPort(node.IP, strconv.Itoa(node.RpcPort)))
 	info = append(info, "Status:|"+node.State.Name())
 	info = append(info, "DC:|"+node.DataCenter)
 	info = append(info, "SnapShot:|"+node.SnapShot)

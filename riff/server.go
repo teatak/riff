@@ -84,7 +84,8 @@ func (s *Server) setupServer() error {
 	self := &Node{
 		Name:        s.config.Name,
 		IP:          s.config.Addresses.Rpc,
-		Port:        s.config.Ports.Rpc,
+		RpcPort:     s.config.Ports.Rpc,
+		HttpPort:    s.config.Ports.Http,
 		DataCenter:  s.config.DataCenter,
 		IsSelf:      true,
 		State:       api.StateAlive,
