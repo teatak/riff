@@ -20,10 +20,14 @@ func (a *API) makeNode(n *Node) *api.Node {
 	return node
 }
 func (a *API) makeNestNode(n *Node, s *Service, resolveState api.StateType) *api.NestNode {
+	ip := n.IP
+	if s.Ip != "" {
+		ip = s.Ip
+	}
 	node := &api.NestNode{
 		Name:       n.Name,
 		DataCenter: n.DataCenter,
-		IP:         n.IP,
+		IP:         ip,
 		Port:       s.Port,
 		RpcPort:    n.Port,
 		State:      resolveState,
@@ -44,6 +48,7 @@ func (a *API) makeService(s *Service) *api.Service {
 func (a *API) makeNestService(s *Service) *api.NestService {
 	service := &api.NestService{
 		Name:   s.Name,
+		IP:     s.Ip,
 		Port:   s.Port,
 		State:  s.State,
 		Config: s.Config,

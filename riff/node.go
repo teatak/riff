@@ -131,7 +131,9 @@ func (s *Server) AddNode(n *Node) {
 		WatchType: NodeChanged,
 	})
 }
-
+func (s *Server) AddService(service *Service) {
+	s.Self.Services[service.Name] = service
+}
 func (s *Server) DeleteNode(key string) {
 	s.nodes.Delete(key)
 

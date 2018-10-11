@@ -12,6 +12,9 @@ func (r *NestServiceResover) Config() string {
 func (r *NestServiceResover) Name() string {
 	return r.service.Name
 }
+func (r *NestServiceResover) Ip() string {
+	return r.service.IP
+}
 func (r *NestServiceResover) Port() int32 {
 	return int32(r.service.Port)
 }

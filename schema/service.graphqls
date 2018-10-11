@@ -1,14 +1,20 @@
 input MutationServiceInput {
-    port: Int!
     cmd: Cmd!
     name: String!
     ip: String!
+    port: Int!
 }
 
+input RegisteServiceInput {
+    name: String!
+    ip: String!
+    port: Int!
+}
 
 type NestService {
     config: String!
     name: String!
+    ip: String!
     port: Int!
     state: State!
 }
@@ -17,7 +23,6 @@ type Service {
     name: String!
     nodes: [NestNode!]
 }
-
 
 type MutationService {
     cmd: Cmd!

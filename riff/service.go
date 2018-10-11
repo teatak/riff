@@ -47,6 +47,7 @@ type Service struct {
 
 type ServiceConfig struct {
 	Name       string   `yaml:"name,omitempty"`
+	Ip         string   `yaml:"ip,omitempty"`
 	Port       int      `yaml:"port,omitempty"`
 	Env        []string `yaml:"env,omitempty"`
 	Command    []string `yaml:"command,omitempty"`

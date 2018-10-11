@@ -117,6 +117,7 @@ type NestServices []*NestService
 
 type NestService struct {
 	Name   string    `json:"name"`
+	IP     string    `json:"ip"`
 	Port   int       `json:"port,omitempty"`
 	State  StateType `json:"state,omitempty"`
 	Config string    `json:"config,omitempty"`

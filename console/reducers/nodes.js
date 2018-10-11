@@ -56,6 +56,7 @@ const buildQuery = (nodeName) => {
         version
         services {
             name
+            ip
             port
             state
             config

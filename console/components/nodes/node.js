@@ -1,14 +1,14 @@
-import React from 'react'
-import {NavLink, withRouter} from 'react-router-dom'
-import {connect} from 'react-redux'
-import {getNode} from '../../reducers/nodes'
-import {mutationService} from '../../reducers/mutation'
-import ArrowDown from '../icons/arrowDown'
-import ArrowUp from '../icons/arrowUp'
-import CheckCircle from '../icons/checkCircle'
-import Play from '../icons/play'
-import Stop from '../icons/stop'
-import Replay from '../icons/replay';
+import React from "react";
+import {NavLink, withRouter} from "react-router-dom";
+import {connect} from "react-redux";
+import {getNode} from "../../reducers/nodes";
+import {mutationService} from "../../reducers/mutation";
+import ArrowDown from "../icons/arrowDown";
+import ArrowUp from "../icons/arrowUp";
+import CheckCircle from "../icons/checkCircle";
+import Play from "../icons/play";
+import Stop from "../icons/stop";
+import Replay from "../icons/replay";
 import Spinner from "../icons/spinner";
 
 const mapStateToProps = (state, ownProps) => {
@@ -124,7 +124,7 @@ class Node extends React.Component {
                                     {service.name}
                                 </NavLink>
                             </span>
-                            <span className="ipport">{service.port !== 0 ? ":" + service.port : ""}</span>
+                            <span className="ipport">{service.port !== 0 ? service.ip + ":" + service.port : ""}</span>
                             <div className="toggle" onClick={() => {
                                 this.toggle(service.name)
                             }}>{this.state.toggle[service.name] ? <ArrowUp/> : <ArrowDown/>}</div>

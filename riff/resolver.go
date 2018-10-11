@@ -2,6 +2,7 @@ package riff
 
 import (
 	"github.com/gimke/riff/api"
+	"gopkg.in/yaml.v2"
 	"net"
 	"strconv"
 )
@@ -79,4 +80,33 @@ func (_ *Resolver) MutationService(args struct {
 		l = append(l, result)
 	}
 	return &l
+}
+
+func (_ *Resolver) RegisteService(args struct {
+	Service struct {
+		Name string
+		Ip   string
+		Port int32
+	}
+}) *bool {
+	service := &Service{
+		ServiceConfig: &ServiceConfig{
+			Name: args.Service.Name,
+			Ip:   args.Service.Ip,
+			Port: int(args.Service.Port),
+		},
+	}
+	config, _ := yaml.Marshal(service.ServiceConfig)
+	service.Config = string(config)
+	server.AddService(service)
+	result := true
+	return &result
+}
+
+func (_ *Resolver) UnregisteService(args struct {
+	Name string
+}) *bool {
+	delete(server.Self.Services, args.Name)
+	result := true
+	return &result
 }
