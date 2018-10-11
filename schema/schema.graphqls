@@ -29,77 +29,8 @@ enum Cmd {
     RESTART
 }
 
-type MutationServiceInput {
-    port: Int!
-    cmd: Cmd!
-    name: String!
-    ip: String!
-}
-
-type MutationService {
-    cmd: Cmd
-    error: String!
-    ip: String!
-    name: String!
-    port: Int!
-    success: Boolean!
-}
-
 type Riff {
     gitBranch: String!
     gitSha: String!
     version: String!
-}
-
-type Node {
-    dataCenter: String!
-    ip: String!
-    isSelf: Boolean!
-    name: String!
-    port: Int!
-    services: [NestService!]
-    snapShot: String!
-    state: State!
-    version: Int!
-}
-
-type NestService {
-    config: String!
-    name: String!
-    port: Int!
-    state: State!
-}
-
-type Service {
-    name: String!
-    nodes: [NestNode!]
-}
-
-type NestNode {
-    config: String!
-    dataCenter: String!
-    ip: String!
-    isSelf: Boolean!
-    name: String!
-    port: Int!
-    rpcPort: Int!
-    snapShot: String!
-    state: State!
-    version: Int!
-}
-
-input MutationServiceInput {
-    port: Int!
-    cmd: Cmd!
-    name: String!
-    ip: String!
-}
-
-type MutationService {
-    cmd: Cmd!
-    error: String!
-    ip: String!
-    name: String!
-    port: Int!
-    success: Boolean!
 }

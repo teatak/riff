@@ -1,0 +1,29 @@
+input MutationServiceInput {
+    port: Int!
+    cmd: Cmd!
+    name: String!
+    ip: String!
+}
+
+
+type NestService {
+    config: String!
+    name: String!
+    port: Int!
+    state: State!
+}
+
+type Service {
+    name: String!
+    nodes: [NestNode!]
+}
+
+
+type MutationService {
+    cmd: Cmd!
+    error: String!
+    ip: String!
+    name: String!
+    port: Int!
+    success: Boolean!
+}

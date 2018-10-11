@@ -1,0 +1,26 @@
+
+type Node {
+    dataCenter: String!
+    ip: String!
+    isSelf: Boolean!
+    name: String!
+    port: Int!
+    services: [NestService!]
+    snapShot: String!
+    state: State!
+    version: Int!
+}
+
+type NestNode {
+    config: String!
+    dataCenter: String!
+    ip: String!
+    isSelf: Boolean!
+    name: String!
+    port: Int!
+    rpcPort: Int!
+    snapShot: String!
+    state: State!
+    version: Int!
+}
+
