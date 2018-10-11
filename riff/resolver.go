@@ -84,16 +84,19 @@ func (_ *Resolver) MutationService(args struct {
 
 func (_ *Resolver) RegisteService(args struct {
 	Service struct {
-		Name string
-		Ip   string
-		Port int32
+		Name       string
+		Ip         string
+		Port       int32
+		StatusPage *string
 	}
 }) *bool {
 	service := &Service{
+		State: api.StateDead,
 		ServiceConfig: &ServiceConfig{
-			Name: args.Service.Name,
-			Ip:   args.Service.Ip,
-			Port: int(args.Service.Port),
+			Name:       args.Service.Name,
+			Ip:         args.Service.Ip,
+			Port:       int(args.Service.Port),
+			StatusPage: *args.Service.StatusPage,
 		},
 	}
 	config, _ := yaml.Marshal(service.ServiceConfig)

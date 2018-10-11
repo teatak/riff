@@ -129,9 +129,12 @@ class Node extends React.Component {
                                 this.toggle(service.name)
                             }}>{this.state.toggle[service.name] ? <ArrowUp/> : <ArrowDown/>}</div>
                         </div>
-                        {this.state.toggle[service.name] ? <pre>
+                        {this.state.toggle[service.name] ? <div className="extend">CONFIG<pre>
                             {service.config}
-                        </pre> : null}
+                        </pre></div> : null}
+                        {this.state.toggle[service.name] && service.statusContent !== "" ? <div className="extend">STATUS<pre>
+                            {service.statusContent}
+                        </pre></div> : null}
                     </li>
                 })}
             </ul>

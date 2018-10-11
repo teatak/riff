@@ -9,6 +9,9 @@ type NestNodeResover struct {
 func (r *NestNodeResover) Config() string {
 	return r.node.Config
 }
+func (r *NestNodeResover) StatusContent() string {
+	return r.node.StatusContent
+}
 func (r *NestNodeResover) DataCenter() string {
 	return r.node.DataCenter
 }

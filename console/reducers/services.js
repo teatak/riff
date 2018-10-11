@@ -47,6 +47,7 @@ const buildQuery = (serviceName) => {
             state
             isSelf
             config
+            statusContent
         } 
     }
 }`;

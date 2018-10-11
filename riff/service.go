@@ -38,10 +38,11 @@ func getVersionType(version string) string {
 type Services map[string]*Service
 
 type Service struct {
-	Version     uint64
-	State       api.StateType // Current state
-	StateChange time.Time     // Time last state change happened
-	Config      string        //config file
+	Version       uint64
+	State         api.StateType // Current state
+	StateChange   time.Time     // Time last state change happened
+	Config        string        //config file
+	StatusContent string        //status content
 	*ServiceConfig
 }
 
@@ -51,6 +52,7 @@ type ServiceConfig struct {
 	Port       int      `yaml:"port,omitempty"`
 	Env        []string `yaml:"env,omitempty"`
 	Command    []string `yaml:"command,omitempty"`
+	StatusPage string   `yaml:"status_page,omitempty"`
 	PidFile    string   `yaml:"pid_file,omitempty"`
 	StdOutFile string   `yaml:"std_out_file,omitempty"`
 	StdErrFile string   `yaml:"std_err_file,omitempty"`
@@ -129,22 +131,53 @@ func (s *Server) handleServices() {
 }
 
 func (s *Service) checkState() {
-	if pid := s.GetPid(); pid == 0 {
-		if s.State != api.StateDead {
-			server.watch.Dispatch(WatchParam{
-				Name:      s.Name,
-				WatchType: ServiceChanged,
-			})
+	if s.StatusPage != "" {
+		status := 0
+		req, _ := http.NewRequest("GET", s.StatusPage, nil)
+		res, err := http.DefaultClient.Do(req)
+		if err == nil {
+			status = res.StatusCode
+			if status == 200 {
+				body, _ := ioutil.ReadAll(res.Body)
+				defer res.Body.Close()
+				s.StatusContent = string(body)
+			}
 		}
-		s.State = api.StateDead
+		if status == 200 {
+			if s.State != api.StateAlive {
+				server.watch.Dispatch(WatchParam{
+					Name:      s.Name,
+					WatchType: ServiceChanged,
+				})
+			}
+			s.State = api.StateAlive
+		} else {
+			if s.State != api.StateDead {
+				server.watch.Dispatch(WatchParam{
+					Name:      s.Name,
+					WatchType: ServiceChanged,
+				})
+			}
+			s.State = api.StateDead
+		}
 	} else {
-		if s.State != api.StateAlive {
-			server.watch.Dispatch(WatchParam{
-				Name:      s.Name,
-				WatchType: ServiceChanged,
-			})
+		if pid := s.GetPid(); pid == 0 {
+			if s.State != api.StateDead {
+				server.watch.Dispatch(WatchParam{
+					Name:      s.Name,
+					WatchType: ServiceChanged,
+				})
+			}
+			s.State = api.StateDead
+		} else {
+			if s.State != api.StateAlive {
+				server.watch.Dispatch(WatchParam{
+					Name:      s.Name,
+					WatchType: ServiceChanged,
+				})
+			}
+			s.State = api.StateAlive
 		}
-		s.State = api.StateAlive
 	}
 }
 

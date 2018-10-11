@@ -9,6 +9,9 @@ type NestServiceResover struct {
 func (r *NestServiceResover) Config() string {
 	return r.service.Config
 }
+func (r *NestServiceResover) StatusContent() string {
+	return r.service.StatusContent
+}
 func (r *NestServiceResover) Name() string {
 	return r.service.Name
 }

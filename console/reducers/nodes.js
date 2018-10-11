@@ -62,6 +62,7 @@ const buildQuery = (nodeName) => {
             port
             state
             config
+            statusContent
         } 
     }
 }`;

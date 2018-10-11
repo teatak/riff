@@ -9,10 +9,12 @@ input RegisteServiceInput {
     name: String!
     ip: String!
     port: Int!
+    statusPage: String
 }
 
 type NestService {
     config: String!
+    statusContent: String!
     name: String!
     ip: String!
     port: Int!

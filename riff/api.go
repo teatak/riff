@@ -26,15 +26,16 @@ func (a *API) makeNestNode(n *Node, s *Service, resolveState api.StateType) *api
 		ip = s.Ip
 	}
 	node := &api.NestNode{
-		Name:       n.Name,
-		DataCenter: n.DataCenter,
-		IP:         ip,
-		Port:       s.Port,
-		State:      resolveState,
-		Version:    int(n.Version),
-		SnapShot:   n.SnapShot,
-		IsSelf:     n.IsSelf,
-		Config:     s.Config,
+		Name:          n.Name,
+		DataCenter:    n.DataCenter,
+		IP:            ip,
+		Port:          s.Port,
+		State:         resolveState,
+		Version:       int(n.Version),
+		SnapShot:      n.SnapShot,
+		IsSelf:        n.IsSelf,
+		Config:        s.Config,
+		StatusContent: s.StatusContent,
 	}
 	return node
 }
@@ -47,11 +48,12 @@ func (a *API) makeService(s *Service) *api.Service {
 
 func (a *API) makeNestService(s *Service) *api.NestService {
 	service := &api.NestService{
-		Name:   s.Name,
-		IP:     s.Ip,
-		Port:   s.Port,
-		State:  s.State,
-		Config: s.Config,
+		Name:          s.Name,
+		IP:            s.Ip,
+		Port:          s.Port,
+		State:         s.State,
+		Config:        s.Config,
+		StatusContent: s.StatusContent,
 	}
 	return service
 }
