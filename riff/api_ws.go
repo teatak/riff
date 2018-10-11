@@ -27,7 +27,6 @@ const (
 )
 
 func (h *Http) handleWs(c *cart.Context) {
-
 	ws, err := upgrader.Upgrade(c.Response, c.Request, nil)
 	if err != nil {
 		if _, ok := err.(websocket.HandshakeError); !ok {
@@ -36,7 +35,7 @@ func (h *Http) handleWs(c *cart.Context) {
 		return
 	}
 	go h.handleWriter(ws)
-	h.handleReader(ws)
+	go h.handleReader(ws)
 }
 
 func (h *Http) handleWriter(ws *websocket.Conn) {
