@@ -34,11 +34,12 @@ func (h *Http) handleWs(c *cart.Context) {
 		}
 		return
 	}
-	go h.handleWriter(ws)
-	go h.handleReader(ws)
+	clientGone := make(chan bool)
+	go h.handleWriter(ws, clientGone)
+	go h.handleReader(ws, clientGone)
 }
 
-func (h *Http) handleWriter(ws *websocket.Conn) {
+func (h *Http) handleWriter(ws *websocket.Conn, clientGone chan bool) {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
 		ticker.Stop()
@@ -52,9 +53,12 @@ func (h *Http) handleWriter(ws *websocket.Conn) {
 			err := ws.WriteMessage(websocket.PingMessage, []byte{})
 			h.mu.Unlock()
 			if err != nil {
-				server.Logger.Printf(errorServicePrefix+"wrong ws ping: %v\n", err)
+				server.Logger.Printf(infoServerPrefix+"wrong ws ping: %v\n", err)
 				return
 			}
+		case <-clientGone:
+			ticker.Stop()
+			return
 		}
 	}
 }
@@ -74,7 +78,7 @@ type WsRequest struct {
 	Body  BodyWatch `json:"body"`
 }
 
-func (h *Http) handleReader(ws *websocket.Conn) {
+func (h *Http) handleReader(ws *websocket.Conn, clientGone chan bool) {
 	defer ws.Close()
 	ws.SetReadLimit(maxMessageSize)
 	ws.SetReadDeadline(time.Now().Add(pongWait))
@@ -87,8 +91,14 @@ func (h *Http) handleReader(ws *websocket.Conn) {
 		var request WsRequest
 		err := ws.ReadJSON(&request)
 		if err != nil {
-			//server.Logger.Printf(errorServerPrefix+"error read %v\n", err)
-			return
+			closeError := err.(*websocket.CloseError)
+			if closeError.Code == 1001 {
+				server.Logger.Printf(infoServerPrefix+"client gone %v\n", err)
+				clientGone <- true
+				break
+			} else {
+				server.Logger.Printf(errorServerPrefix+"error read %v\n", err)
+			}
 		}
 		ws.SetWriteDeadline(time.Now().Add(writeWait))
 		switch request.Event {

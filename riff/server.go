@@ -125,18 +125,17 @@ func (s *Server) setupCart() error {
 
 	r := cart.New()
 	r.Use("/", s.httpLogger(), cart.RecoveryRender(cart.DefaultErrorWriter))
-	r.Use("/favicon.ico", func(c *cart.Context, next cart.Next) {
-		b, err := assetFS().Asset("static/images/favicon.ico")
-		if err != nil {
-			s.Logger.Printf(errorServerPrefix+"error: %v\n", err)
-			next()
-		} else {
-			c.Response.WriteHeader(200)
-			c.Response.Write(b)
-		}
-	})
-
 	if common.IsRelease() {
+		r.Use("/favicon.ico", func(c *cart.Context, next cart.Next) {
+			b, err := assetFS().Asset("static/images/favicon.ico")
+			if err != nil {
+				s.Logger.Printf(errorServerPrefix+"error: %v\n", err)
+				next()
+			} else {
+				c.Response.WriteHeader(200)
+				c.Response.Write(b)
+			}
+		})
 		r.Use("/console/*file", func(c *cart.Context, next cart.Next) {
 			b, err := assetFS().Asset("static/dist/console.html")
 			if err != nil {
@@ -156,6 +155,7 @@ func (s *Server) setupCart() error {
 		})
 	} else {
 		//debug
+		r.Use("/favicon.ico", cart.File("../static/images/favicon.ico"))
 		r.Use("/console/*file", cart.File("../static/dist/console.html"))
 		r.Use("/static/*file", cart.Static("../static", false))
 	}
