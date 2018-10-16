@@ -62,12 +62,12 @@ func loadConfig(cmd *cmd) (*riff.Config, error) {
 	}
 
 	file := common.BinDir + "/config/" + common.Name + ".yml"
-	if !common.IsExist(file) {
-		os.MkdirAll(common.BinDir+"/config", 0755)
-		out, err := yaml.Marshal(c)
-		if err == nil {
-			ioutil.WriteFile(file, out, 0666)
-		}
+	//if !common.IsExist(file) {
+	os.MkdirAll(common.BinDir+"/config", 0755)
+	out, err := yaml.Marshal(c)
+	if err == nil {
+		ioutil.WriteFile(file, out, 0666)
 	}
+	//}
 	return c, nil
 }

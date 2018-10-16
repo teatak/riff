@@ -18,6 +18,7 @@ import (
 	"strings"
 	"syscall"
 	"time"
+	"context"
 )
 
 const branch = "branch"
@@ -133,8 +134,10 @@ func (s *Server) handleServices() {
 func (s *Service) checkState() {
 	if s.StatusPage != "" {
 		status := 0
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
+		defer cancel()
 		req, _ := http.NewRequest("GET", s.StatusPage, nil)
-		res, err := http.DefaultClient.Do(req)
+		res, err := http.DefaultClient.Do(req.WithContext(ctx))
 		if err == nil {
 			status = res.StatusCode
 			if status == 200 {
