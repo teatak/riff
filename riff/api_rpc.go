@@ -48,7 +48,13 @@ func (q *Query) Service(p api.ParamService, service *api.Service) error {
 
 type Mutation struct{}
 
-func (q *Mutation) Service(p api.ParamServiceMutation, reply *bool) (err error) {
+func (m *Mutation) Reload(_ struct{}, result *bool) error {
+	server.initServices()
+	*result = true
+	return nil
+}
+
+func (m *Mutation) Service(p api.ParamServiceMutation, reply *bool) (err error) {
 	server.Logger.Printf(infoServerPrefix+"client %s service %s", strings.ToLower(p.Cmd.Name()), p.Name)
 	s := server.Self.Services[p.Name]
 	if s == nil {

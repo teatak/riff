@@ -11,6 +11,7 @@ import (
 	"github.com/gimke/riff/cmd/version"
 	"github.com/gimke/riff/common"
 	"os"
+	"github.com/gimke/riff/cmd/reload"
 )
 
 var Commands cli.Commands
@@ -19,6 +20,7 @@ func init() {
 	Commands = cli.Commands{
 		"version": version.New(common.Version),
 		"daem":    daem.New(),
+		"reload":  reload.New(),
 		"run":     run.New(),
 		"query":   query.New(),
 		"start":   service.New(api.CmdStart),
