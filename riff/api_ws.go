@@ -91,11 +91,13 @@ func (h *Http) handleReader(ws *websocket.Conn, clientGone chan bool) {
 		var request WsRequest
 		err := ws.ReadJSON(&request)
 		if err != nil {
-			closeError := err.(*websocket.CloseError)
-			if closeError.Code == 1001 {
-				server.Logger.Printf(infoServerPrefix+"client gone %v\n", err)
-				clientGone <- true
-				break
+			if closeError, ok := err.(*websocket.CloseError); ok {
+				if closeError.Code == 1001 {
+					server.Logger.Printf(infoServerPrefix+"client gone %v\n", err)
+					clientGone <- true
+				} else {
+					server.Logger.Printf(errorServerPrefix+"error read %v\n", err)
+				}
 			} else {
 				server.Logger.Printf(errorServerPrefix+"error read %v\n", err)
 			}
