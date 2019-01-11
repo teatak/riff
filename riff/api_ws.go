@@ -94,13 +94,14 @@ func (h *Http) handleReader(ws *websocket.Conn, clientGone chan bool) {
 			if closeError, ok := err.(*websocket.CloseError); ok {
 				if closeError.Code == 1001 {
 					server.Logger.Printf(infoServerPrefix+"client gone %v\n", err)
-					clientGone <- true
 				} else {
 					server.Logger.Printf(errorServerPrefix+"error read %v\n", err)
 				}
 			} else {
 				server.Logger.Printf(errorServerPrefix+"error read %v\n", err)
 			}
+			clientGone <- true
+			return
 		}
 		ws.SetWriteDeadline(time.Now().Add(writeWait))
 		switch request.Event {
