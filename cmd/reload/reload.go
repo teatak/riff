@@ -1,12 +1,12 @@
 package reload
 
 import (
-	"fmt"
 	"flag"
+	"fmt"
+	"github.com/gimke/riff/api"
+	"github.com/gimke/riff/common"
 	"net"
 	"strconv"
-	"github.com/gimke/riff/common"
-	"github.com/gimke/riff/api"
 )
 
 const help = `Usage: riff reload
@@ -18,7 +18,7 @@ Options:
 
 type cmd struct {
 	flags *flag.FlagSet
-	rpc string
+	rpc   string
 }
 
 func New() *cmd {

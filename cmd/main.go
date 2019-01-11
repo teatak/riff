@@ -6,12 +6,12 @@ import (
 	"github.com/gimke/riff/cli"
 	"github.com/gimke/riff/cmd/daem"
 	"github.com/gimke/riff/cmd/query"
+	"github.com/gimke/riff/cmd/reload"
 	"github.com/gimke/riff/cmd/run"
 	"github.com/gimke/riff/cmd/service"
 	"github.com/gimke/riff/cmd/version"
 	"github.com/gimke/riff/common"
 	"os"
-	"github.com/gimke/riff/cmd/reload"
 )
 
 var Commands cli.Commands
