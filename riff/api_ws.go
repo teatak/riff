@@ -95,10 +95,10 @@ func (h *Http) handleReader(ws *websocket.Conn, clientGone chan bool) {
 				if closeError.Code == 1001 {
 					server.Logger.Printf(infoServerPrefix+"client gone %v\n", err)
 				} else {
-					server.Logger.Printf(errorServerPrefix+"error read %v\n", err)
+					server.Logger.Printf(errorServerPrefix+"error %v\n", err)
 				}
 			} else {
-				server.Logger.Printf(errorServerPrefix+"error read %v\n", err)
+				server.Logger.Printf(errorServerPrefix+"error %v\n", err)
 			}
 			clientGone <- true
 			return
