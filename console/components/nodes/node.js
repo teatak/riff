@@ -78,7 +78,7 @@ class Node extends React.Component {
             check[service.name] = {
                 name: service.name,
                 ip: nodes.data.ip,
-                port: nodes.data.port,
+                port: nodes.data.rpcPort,
             };
             this.setState({check: check});
         }
@@ -99,7 +99,7 @@ class Node extends React.Component {
                 check[service.name] = {
                     name: service.name,
                     ip: nodes.data.ip,
-                    port: nodes.data.port,
+                    port: nodes.data.rpcPort,
                 };
             });
             this.setState({check: check});

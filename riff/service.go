@@ -1,6 +1,7 @@
 package riff
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/gimke/riff/api"
@@ -18,7 +19,6 @@ import (
 	"strings"
 	"syscall"
 	"time"
-	"context"
 )
 
 const branch = "branch"

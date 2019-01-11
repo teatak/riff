@@ -71,6 +71,7 @@ class Service extends React.Component {
 
     check = (node) => {
         const {services} = this.props;
+        console.log(node);
         if (this.state.check[node.name]) {
             //remove
             let check = this.state.check;

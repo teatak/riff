@@ -27,6 +27,9 @@ func (r *NestNodeResover) Name() string {
 func (r *NestNodeResover) Port() int32 {
 	return int32(r.node.Port)
 }
+func (r *NestNodeResover) RpcPort() int32 {
+	return int32(r.node.RpcPort)
+}
 func (r *NestNodeResover) SnapShot() string {
 	return r.node.SnapShot
 }
