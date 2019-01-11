@@ -15,12 +15,12 @@ assets:
 	@echo "--> Running assets"
 	@go-bindata -ignore \.go -pkg schema -o ./schema/bindata.go ./schema/...
 	@go-bindata-assetfs -ignore .DS_Store -pkg riff -o ./riff/bindata_assetfs.go  ./static/...
-	@cd $(CURDIR) ; \
-	go fmt $$(go list ./... | grep -v /vendor/)
+	@cd $(CURDIR)
+	@go fmt $$(go list ./... | grep -v /vendor/)
 
 fmt:
-	@cd $(CURDIR) ; \
-	go fmt $$(go list ./... | grep -v /vendor/)
+	@cd $(CURDIR)
+	@go fmt $$(go list ./... | grep -v /vendor/)
 
 test: tools dev
 	@echo "--> Running go test"
