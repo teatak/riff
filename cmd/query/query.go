@@ -47,9 +47,16 @@ func (c *cmd) init() {
 	}
 }
 func (c *cmd) Run(args []string) int {
+	command := args[0]
 	if len(args) > 1 {
-		if err := c.flags.Parse(args[1:]); err != nil {
-			return 1
+		if command == "node" || command == "service" {
+			if err := c.flags.Parse(args[2:]); err != nil {
+				return 1
+			}
+		} else {
+			if err := c.flags.Parse(args[1:]); err != nil {
+				return 1
+			}
 		}
 	}
 	advise, _ := common.AdviseRpc()
@@ -68,7 +75,6 @@ func (c *cmd) Run(args []string) int {
 		c.flags.Usage()
 		return 0
 	}
-	command := args[0]
 	switch command {
 	case "snap":
 		c.SnapShot()
@@ -119,7 +125,7 @@ func (c *cmd) SnapShot() {
 }
 
 func (c *cmd) Nodes() {
-	client, err := api.NewJsonClient(c.rpc)
+	client, err := api.NewClient(c.rpc)
 	if err != nil {
 		fmt.Println(err)
 		return
