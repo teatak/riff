@@ -132,7 +132,7 @@ func (s *Server) handleServices() {
 }
 
 func (s *Service) checkState() {
-	if len(s.Command) > 0 {
+	if s.Command != nil && len(s.Command) > 0 {
 		//if have command onlycheck statuspage
 		if s.StatusPage != "" {
 			status := 0

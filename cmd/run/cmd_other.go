@@ -8,6 +8,9 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"strconv"
+	"io/ioutil"
+	"github.com/gimke/riff/common"
 )
 
 func (c *cmd) Run(args []string) int {
@@ -39,6 +42,12 @@ func (c *cmd) Run(args []string) int {
 			}
 		}
 	}()
+	pid := []byte(strconv.Itoa(os.Getpid()))
+	ioutil.WriteFile(common.BinDir+"/run/riff.pid", pid, 0666)
 	<-s.ShutdownCh
+	_, err = ioutil.ReadFile(common.BinDir + "/run/riff.pid")
+	if err == nil {
+		os.Remove(common.BinDir + "/run/riff.pid")
+	}
 	return 0
 }
