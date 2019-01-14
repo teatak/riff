@@ -132,38 +132,23 @@ func (s *Server) handleServices() {
 }
 
 func (s *Service) checkState() {
-	if s.StatusPage != "" {
-		status := 0
-		ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
-		defer cancel()
-		req, _ := http.NewRequest("GET", s.StatusPage, nil)
-		res, err := http.DefaultClient.Do(req.WithContext(ctx))
-		if err == nil {
-			status = res.StatusCode
-			if status == 200 {
-				body, _ := ioutil.ReadAll(res.Body)
-				defer res.Body.Close()
-				s.StatusContent = string(body)
+	if len(s.Command) > 0 {
+		//if have command onlycheck statuspage
+		if s.StatusPage != "" {
+			status := 0
+			ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
+			defer cancel()
+			req, _ := http.NewRequest("GET", s.StatusPage, nil)
+			res, err := http.DefaultClient.Do(req.WithContext(ctx))
+			if err == nil {
+				status = res.StatusCode
+				if status == 200 {
+					body, _ := ioutil.ReadAll(res.Body)
+					defer res.Body.Close()
+					s.StatusContent = string(body)
+				}
 			}
 		}
-		if status == 200 {
-			if s.State != api.StateAlive {
-				server.watch.Dispatch(WatchParam{
-					Name:      s.Name,
-					WatchType: ServiceChanged,
-				})
-			}
-			s.State = api.StateAlive
-		} else {
-			if s.State != api.StateDead {
-				server.watch.Dispatch(WatchParam{
-					Name:      s.Name,
-					WatchType: ServiceChanged,
-				})
-			}
-			s.State = api.StateDead
-		}
-	} else {
 		if pid := s.GetPid(); pid == 0 {
 			if s.State != api.StateDead {
 				server.watch.Dispatch(WatchParam{
@@ -181,7 +166,91 @@ func (s *Service) checkState() {
 			}
 			s.State = api.StateAlive
 		}
+	} else {
+		//only use statuspage to check status
+		if s.StatusPage != "" {
+			status := 0
+			ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
+			defer cancel()
+			req, _ := http.NewRequest("GET", s.StatusPage, nil)
+			res, err := http.DefaultClient.Do(req.WithContext(ctx))
+			if err == nil {
+				status = res.StatusCode
+				if status == 200 {
+					body, _ := ioutil.ReadAll(res.Body)
+					defer res.Body.Close()
+					s.StatusContent = string(body)
+				}
+			}
+			if status == 200 {
+				if s.State != api.StateAlive {
+					server.watch.Dispatch(WatchParam{
+						Name:      s.Name,
+						WatchType: ServiceChanged,
+					})
+				}
+				s.State = api.StateAlive
+			} else {
+				if s.State != api.StateDead {
+					server.watch.Dispatch(WatchParam{
+						Name:      s.Name,
+						WatchType: ServiceChanged,
+					})
+				}
+				s.State = api.StateDead
+			}
+		}
 	}
+	//if s.StatusPage != "" {
+	//	status := 0
+	//	ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
+	//	defer cancel()
+	//	req, _ := http.NewRequest("GET", s.StatusPage, nil)
+	//	res, err := http.DefaultClient.Do(req.WithContext(ctx))
+	//	if err == nil {
+	//		status = res.StatusCode
+	//		if status == 200 {
+	//			body, _ := ioutil.ReadAll(res.Body)
+	//			defer res.Body.Close()
+	//			s.StatusContent = string(body)
+	//		}
+	//	}
+	//	if status == 200 {
+	//		if s.State != api.StateAlive {
+	//			server.watch.Dispatch(WatchParam{
+	//				Name:      s.Name,
+	//				WatchType: ServiceChanged,
+	//			})
+	//		}
+	//		s.State = api.StateAlive
+	//	} else {
+	//		if s.State != api.StateDead {
+	//			server.watch.Dispatch(WatchParam{
+	//				Name:      s.Name,
+	//				WatchType: ServiceChanged,
+	//			})
+	//		}
+	//		s.State = api.StateDead
+	//	}
+	//} else {
+	//	if pid := s.GetPid(); pid == 0 {
+	//		if s.State != api.StateDead {
+	//			server.watch.Dispatch(WatchParam{
+	//				Name:      s.Name,
+	//				WatchType: ServiceChanged,
+	//			})
+	//		}
+	//		s.State = api.StateDead
+	//	} else {
+	//		if s.State != api.StateAlive {
+	//			server.watch.Dispatch(WatchParam{
+	//				Name:      s.Name,
+	//				WatchType: ServiceChanged,
+	//			})
+	//		}
+	//		s.State = api.StateAlive
+	//	}
+	//}
 }
 
 func (s *Service) keepAlive() {
