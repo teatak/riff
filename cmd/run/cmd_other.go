@@ -8,9 +8,6 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"strconv"
-	"io/ioutil"
-	"github.com/gimke/riff/common"
 )
 
 func (c *cmd) Run(args []string) int {
@@ -27,7 +24,6 @@ func (c *cmd) Run(args []string) int {
 		fmt.Println(err)
 		return 1
 	}
-	defer s.Shutdown()
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM, syscall.SIGUSR2)
 	go func() {
