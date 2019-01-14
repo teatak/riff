@@ -24,7 +24,7 @@ func (c *cmd) Run(args []string) int {
 		fmt.Println(err)
 		return 1
 	}
-	sigs := make(chan os.Signal, 1)
+	sigs := make(chan os.Signal, 10)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM, syscall.SIGUSR2)
 	go func() {
 		for {
@@ -32,7 +32,9 @@ func (c *cmd) Run(args []string) int {
 			fmt.Println()
 			s.Logger.Printf(infoServerPrefix+"get signal %v\n", sig)
 			if sig == syscall.SIGUSR2 {
-				s.Shutdown()
+				//grace reload
+				s.Self.LoadServices()
+				s.Shutter()
 			} else {
 				s.Shutdown()
 			}
