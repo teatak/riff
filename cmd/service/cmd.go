@@ -91,7 +91,7 @@ func (c *cmd) Cmd(name string) {
 }
 
 func (c *cmd) Synopsis() string {
-	return c.cmdType.Name() + " service"
+	return strings.Title(strings.ToLower(c.cmdType.Name())) + " service"
 }
 
 func (c *cmd) Help() string {

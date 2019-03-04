@@ -75,7 +75,7 @@ func (c *cmd) Reload() {
 }
 
 func (c *cmd) Synopsis() string {
-	return "Reload riff config"
+	return "Reload Riff config"
 }
 
 func (c *cmd) Help() string {

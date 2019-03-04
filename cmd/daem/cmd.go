@@ -13,7 +13,7 @@ import (
 	"syscall"
 )
 
-const synopsis = "Run Riff As Service "
+const synopsis = "Run Riff as service "
 const help = `Usage: daem [options]
 
   Run riff as daemon service
