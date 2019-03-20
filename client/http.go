@@ -7,5 +7,3 @@ type HttpClient struct {
 func (this *HttpClient) QueryService(name string) bool {
 	return true
 }
-
-
