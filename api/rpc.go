@@ -111,10 +111,11 @@ func (this *RpcClient) HashRing(url, key string) (string, error) {
 	count := len(service.NestNodes)
 	//make hashring
 	if count > 0 {
-		ring := New(nil)
+		nodes := []string{}
 		for i := 0; i < count; i++ {
-			ring = ring.AddNode(service.NestNodes[i].IP + ":" + strconv.Itoa(service.NestNodes[i].Port))
+			nodes = append(nodes, service.NestNodes[i].IP+":"+strconv.Itoa(service.NestNodes[i].Port))
 		}
+		ring := New(nodes)
 		if server, ok := ring.GetNode(key); ok {
 			return prefix + server, nil
 		}
