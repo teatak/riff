@@ -3,6 +3,7 @@ package api
 import (
 	"errors"
 	"fmt"
+	"hash/crc32"
 	"math/rand"
 	"strconv"
 	"strings"
@@ -28,12 +29,12 @@ func (this *RpcClient) Services(name string, state StateType) (service Service) 
 	return
 }
 
-func reserveAddress(url string) (string,string)  {
+func reserveAddress(url string) (string, string) {
 	prefix := "http://"
 	serviceName := ""
 	urls := strings.SplitN(url, "//", 2)
-	if len(urls) == 0 {
-		return "",url
+	if len(urls) == 1 {
+		return "", url
 	} else {
 		prefix = urls[0] + "//"
 		serviceName = urls[1]
@@ -43,9 +44,10 @@ func reserveAddress(url string) (string,string)  {
 		if prefix == "tcp://" {
 			prefix = ""
 		}
-		return prefix,serviceName
+		return prefix, serviceName
 	}
 }
+
 /*
 robin
 url: http://serviceName or rpc://serviceName
@@ -53,7 +55,7 @@ http url return http://ip:port
 rpc url only return ip:port
 */
 func (this *RpcClient) Robin(url string) (string, error) {
-	prefix,serviceName := reserveAddress(url)
+	prefix, serviceName := reserveAddress(url)
 	service := this.Services(serviceName, StateAlive)
 	count := len(service.NestNodes)
 	if count > 0 {
@@ -72,7 +74,7 @@ http url return http://ip:port
 rpc url only return ip:port
 */
 func (this *RpcClient) Round(url string) (string, error) {
-	prefix,serviceName := reserveAddress(url)
+	prefix, serviceName := reserveAddress(url)
 	service := this.Services(serviceName, StateAlive)
 	count := len(service.NestNodes)
 	if count > 0 {
@@ -92,7 +94,47 @@ func (this *RpcClient) Round(url string) (string, error) {
 	return "", errors.New("404")
 }
 
+func (this *RpcClient) Hash(url, key string) (string, error) {
+	prefix, serviceName := reserveAddress(url)
+	service := this.Services(serviceName, StateAlive)
+	count := len(service.NestNodes)
+	if count > 0 {
+		r := hash(key) % count
+		return prefix + service.NestNodes[r].IP + ":" + strconv.Itoa(service.NestNodes[r].Port), nil
+	}
+	return "", errors.New("404")
+}
+
+func (this *RpcClient) HashRing(url, key string) (string, error) {
+	prefix, serviceName := reserveAddress(url)
+	service := this.Services(serviceName, StateAlive)
+	count := len(service.NestNodes)
+	//make hashring
+	ring := New(nil)
+	for i := 0; i < count; i++ {
+		ring = ring.AddNode(service.NestNodes[i].IP + ":" + strconv.Itoa(service.NestNodes[i].Port))
+	}
+	server, _ := ring.GetNode(key)
+	//if count > 0 {
+	//	r := hash(key) % count
+	return prefix + server, nil
+	//}
+	return "", errors.New("404")
+}
+
 func generateNumber(min, max int) int {
 	i := rand.Intn(max-min) + min
 	return i
+}
+
+func hash(s string) int {
+	v := int(crc32.ChecksumIEEE([]byte(s)))
+	if v >= 0 {
+		return v
+	}
+	if -v >= 0 {
+		return -v
+	}
+	// v == MinInt
+	return 0
 }
