@@ -110,12 +110,14 @@ func (this *RpcClient) HashRing(url, key string) (string, error) {
 	service := this.Services(serviceName, StateAlive)
 	count := len(service.NestNodes)
 	//make hashring
-	ring := New(nil)
-	for i := 0; i < count; i++ {
-		ring = ring.AddNode(service.NestNodes[i].IP + ":" + strconv.Itoa(service.NestNodes[i].Port))
-	}
-	if server, ok := ring.GetNode(key); ok {
-		return prefix + server, nil
+	if count > 0 {
+		ring := New(nil)
+		for i := 0; i < count; i++ {
+			ring = ring.AddNode(service.NestNodes[i].IP + ":" + strconv.Itoa(service.NestNodes[i].Port))
+		}
+		if server, ok := ring.GetNode(key); ok {
+			return prefix + server, nil
+		}
 	}
 	return "", errors.New("404")
 }
