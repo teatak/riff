@@ -57,7 +57,7 @@ func (this *RpcClient) Robin(url string) (string, error) {
 	service := this.Services(serviceName, StateAlive)
 	count := len(service.NestNodes)
 	if count > 0 {
-		r := GenerateNumber(0, count-1)
+		r := generateNumber(0, count-1)
 		return prefix + service.NestNodes[r].IP + ":" + strconv.Itoa(service.NestNodes[r].Port), nil
 	}
 	return "", errors.New("404")
@@ -92,7 +92,7 @@ func (this *RpcClient) Round(url string) (string, error) {
 	return "", errors.New("404")
 }
 
-func GenerateNumber(min, max int) int {
+func generateNumber(min, max int) int {
 	i := rand.Intn(max-min) + min
 	return i
 }
