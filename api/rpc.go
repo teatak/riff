@@ -94,6 +94,12 @@ func (this *RpcClient) Round(url string) (string, error) {
 	return "", errors.New("404")
 }
 
+/*
+hash
+url: http://serviceName or rpc://serviceName
+http url return http://ip:port
+rpc url only return ip:port
+*/
 func (this *RpcClient) Hash(url, key string) (string, error) {
 	prefix, serviceName := reserveAddress(url)
 	service := this.Services(serviceName, StateAlive)
@@ -105,6 +111,12 @@ func (this *RpcClient) Hash(url, key string) (string, error) {
 	return "", errors.New("404")
 }
 
+/*
+hashring
+url: http://serviceName or rpc://serviceName
+http url return http://ip:port
+rpc url only return ip:port
+*/
 func (this *RpcClient) HashRing(url, key string) (string, error) {
 	prefix, serviceName := reserveAddress(url)
 	service := this.Services(serviceName, StateAlive)
