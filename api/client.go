@@ -13,6 +13,10 @@ type Client interface {
 	HashRing(url, key string) (string, error)
 }
 
+/*
+url : riff://ip:port
+return Client
+*/
 func RiffClient(url string) (Client, error) {
 	if strings.Index(url, "riff://") == 0 {
 		rpc := strings.Replace(url, "riff://", "", 1)
