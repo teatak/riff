@@ -6,6 +6,7 @@ import {mutationService} from '../../reducers/mutation'
 import ArrowDown from '../icons/arrowDown'
 import ArrowUp from '../icons/arrowUp'
 import CheckCircle from '../icons/checkCircle'
+import Check from '../icons/check'
 import Play from '../icons/play'
 import Stop from '../icons/stop'
 import Replay from '../icons/replay';
@@ -71,7 +72,6 @@ class Service extends React.Component {
 
     check = (node) => {
         const {services} = this.props;
-        console.log(node);
         if (this.state.check[node.name]) {
             //remove
             let check = this.state.check;
@@ -120,10 +120,15 @@ class Service extends React.Component {
                     let className = "item " + node.state.toLowerCase();
                     return <li className={className} key={node.name}>
                         <div className="basic">
-                            <CheckCircle className={this.state.check[node.name] ? "checked" : ""} onClick={() => {
-                                this.check(node);
-                            }}
-                            />
+                            {
+                                this.state.check[node.name] ? <CheckCircle className="checked" onClick={() => {
+                                    this.check(node);
+                                }}
+                                /> : <Check onClick={() => {
+                                    this.check(node);
+                                }}
+                                />
+                            }
                             <span className="name">
                                 <NavLink to={"/nodes/" + node.name}>
                                     {node.name}
@@ -151,28 +156,36 @@ class Service extends React.Component {
 
         return <div>
             <div className="title">
-                {services.data.nodes && services.data.nodes.length > 0 ? <CheckCircle
-                    className={Object.keys(this.state.check).length === services.data.nodes.length ? "checked" : ""}
-                    onClick={() => {
-                        this.checkAll();
-                    }}
-                /> : null}
+                {services.data.nodes && services.data.nodes.length > 0 ? (
+                    Object.keys(this.state.check).length === services.data.nodes.length ?
+                        <CheckCircle
+                            className="checked"
+                            onClick={() => {
+                                this.checkAll();
+                            }}
+                        />
+                        : <Check
+                            onClick={() => {
+                                this.checkAll();
+                            }}
+                        />
+                ) : null}
                 <span className="name">{services.data.name}</span>
                 {mutation.mutationService.loading ? <span className="tools">
                     <Spinner/>
                     </span> :
                     (Object.keys(this.state.check).length > 0 ? <span className="tools">
-                    <Play className="start"
+                    <Play className="start" title="start"
                           onClick={() => {
                               this.mutationService("START");
                           }}
                     />
-                    <Stop className="stop"
+                    <Stop className="stop" title="stop"
                           onClick={() => {
                               this.mutationService("STOP");
                           }}
                     />
-                    <Replay className="restart"
+                    <Replay className="restart" title="restart"
                             onClick={() => {
                                 this.mutationService("RESTART");
                             }}

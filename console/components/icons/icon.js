@@ -33,6 +33,7 @@ class Icon extends Component {
             onMouseLeave, // eslint-disable-line no-unused-vars
             style,
             viewBox,
+            title,
             ...other
         } = this.props;
 
@@ -48,6 +49,7 @@ class Icon extends Component {
                 style={style}
                 viewBox={viewBox}
             >
+                {title?<title>{title}</title>:null}
                 {children}
             </svg>
         );
