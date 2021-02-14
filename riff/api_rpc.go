@@ -3,6 +3,9 @@ package riff
 import (
 	"fmt"
 	"github.com/gimke/riff/api"
+	"github.com/gimke/riff/common"
+	"gopkg.in/yaml.v2"
+	"io/ioutil"
 	"strings"
 )
 
@@ -51,6 +54,39 @@ type Mutation struct{}
 func (m *Mutation) Reload(_ struct{}, result *bool) error {
 	server.initServices()
 	*result = true
+	return nil
+}
+
+func (m *Mutation) RegisteService(config string, result *bool) error {
+	serviceConfig := &Config{}
+	if err := yaml.Unmarshal([]byte(config), serviceConfig); err != nil {
+		return fmt.Errorf("config file error")
+	}
+	//write to config file
+	file := common.BinDir + "/config/" + serviceConfig.Name + ".yml"
+	_ = ioutil.WriteFile(file, []byte(config), 0666)
+
+	s := server.Self.LoadService(serviceConfig.Name)
+	server.Self.Services[s.Name] = s
+	server.Self.Shutter()
+	server.Shutter()
+
+	*result = true
+	server.Logger.Printf(infoServerPrefix + "client add new service")
+	return nil
+}
+
+func (m *Mutation) UnregisteService(name string, result *bool) error {
+	*result = true
+	if server.Self.Services[name] != nil {
+		if server.Self.Services[name].State == api.StateAlive {
+			if err := server.Self.Services[name].Stop(); err != nil {
+				server.Logger.Printf(errorServicePrefix+"client stop service %s error", name)
+			}
+		}
+	}
+	delete(server.Self.Services, name)
+	server.Logger.Printf(infoServerPrefix+"client remove service %s", name)
 	return nil
 }
 

@@ -14,8 +14,14 @@ type Query {
 
 type Mutation {
     mutationService(services: [MutationServiceInput!]): [MutationService]
-    registeService(service: RegisteServiceInput!): Boolean
-    unregisteService(name: String!): Boolean
+    registeService(
+        node: MutationNodeInput!
+        config: String!
+    ): Boolean
+    unregisteService(
+        node: MutationNodeInput!
+        name: String!
+    ): Boolean
 }
 
 enum State {

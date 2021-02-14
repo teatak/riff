@@ -5,11 +5,9 @@ input MutationServiceInput {
     port: Int!
 }
 
-input RegisteServiceInput {
-    name: String!
+input MutationNodeInput {
     ip: String!
     port: Int!
-    statusPage: String
 }
 
 type NestService {

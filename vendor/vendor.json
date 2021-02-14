@@ -9,10 +9,10 @@
 			"revisionTime": "2017-02-27T21:27:28Z"
 		},
 		{
-			"checksumSHA1": "RoDrMzBtkK6bCzoBosOUlusknWU=",
+			"checksumSHA1": "Hq4a4+pm84xrme7cCWjRGUEmQoM=",
 			"path": "github.com/gimke/cart",
-			"revision": "f42a4d654398e0d1a89f5d676b63ba1228accec8",
-			"revisionTime": "2018-02-24T09:49:47Z",
+			"revision": "a1c669e551713930ba2a6bae4a199877bbb57d49",
+			"revisionTime": "2020-11-06T06:58:11Z",
 			"tree": true,
 			"version": "v1.0.6",
 			"versionExact": "v1.0.6"
