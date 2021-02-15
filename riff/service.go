@@ -44,6 +44,7 @@ type Service struct {
 	StateChange   time.Time     //Time last state change happened
 	Progress      *Progress     //update percent
 	Config        string        //config file
+	StartTime     time.Time     //start time
 	StatusContent string        //status content
 	*ServiceConfig
 }
@@ -521,6 +522,7 @@ func (s *Service) Start() error {
 			cmd.Wait()
 		}()
 		if s.PidFile == "" {
+			s.StartTime = time.Now()
 			s.SetPid(cmd.Process.Pid)
 		}
 	}

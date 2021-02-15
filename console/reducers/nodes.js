@@ -63,6 +63,7 @@ const buildQuery = (nodeName) => {
             state
             config
             statusContent
+            startTime
             progress {
                 current
                 total

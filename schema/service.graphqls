@@ -17,6 +17,7 @@ type NestService {
     ip: String!
     port: Int!
     state: State!
+    startTime: Int!
     progress: Progress!
 }
 

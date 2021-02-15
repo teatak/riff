@@ -11,6 +11,7 @@ import Play from '../icons/play'
 import Stop from '../icons/stop'
 import Replay from '../icons/replay';
 import Spinner from "../icons/spinner";
+import Time from "../icons/time";
 
 const mapStateToProps = (state, ownProps) => {
     return {
@@ -109,7 +110,20 @@ class Service extends React.Component {
             this.setState({check: check});
         }
     };
+    getLastTime(time) {
+        var sec =  Math.round(Date.now()/1000 - time)
 
+        if (sec/(60*60*24) > 1) {
+            return Math.round(sec/(60*60*24))+"D"
+        }
+        if (sec/(60*60) > 1) {
+            return Math.round(sec/(60*60))+"H"
+        }
+        if (sec/(60) > 1) {
+            return Math.round(sec/(60))+"M"
+        }
+        return sec+"S"
+    }
     renderList() {
         const {services} = this.props;
         if (services.data.nodes) {
@@ -146,6 +160,7 @@ class Service extends React.Component {
                         {this.state.toggle[node.name] && node.statusContent !== "" ? <div className="extend">STATUS<pre>
                             {node.statusContent}
                         </pre></div> : null}
+                        {/*{node.state.toLowerCase()==="alive"?<div className="footer"><Time/><span>{this.getLastTime(node.startTime)}</span></div>:null}*/}
                     </li>
                 })}
             </ul>

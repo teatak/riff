@@ -322,6 +322,7 @@ func (n *Node) LoadService(name string) *Service {
 	s.Config = string(content)
 	s.ServiceConfig = c
 	s.StateChange = time.Now()
+	s.StartTime = time.Now()
 	s.Progress = &Progress{
 		Current:    0,
 		Total:      0,

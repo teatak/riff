@@ -49,6 +49,7 @@ const buildQuery = (serviceName) => {
             isSelf
             config
             statusContent
+            startTime
             progress {
                 current
                 total

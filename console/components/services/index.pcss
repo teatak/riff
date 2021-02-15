@@ -214,6 +214,24 @@
           border-radius: var(--borderRadiusLg);
           padding: 8px;
         }
+        & .footer {
+          margin-top: 8px;
+          display: flex;
+          align-items: center;
+          font-size: 12px;
+          color: var(--lightBlack);
+          & svg {
+            height: 16px;
+            width: 16px;
+            fill: var(--lightBlack);
+            &.checked {
+              fill: var(--mainBlue);
+            }
+          }
+          & span {
+            margin-left: 4px;
+          }
+        }
       }
     }
   }

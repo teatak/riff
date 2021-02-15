@@ -12,6 +12,7 @@ import Stop from "../icons/stop";
 import Replay from "../icons/replay";
 import Spinner from "../icons/spinner";
 import Add from "../icons/add";
+import Time from "../icons/time"
 
 const mapStateToProps = (state, ownProps) => {
     return {
@@ -107,7 +108,20 @@ class Node extends React.Component {
             this.setState({check: check});
         }
     };
+    getLastTime(time) {
+        var sec =  Math.round(Date.now()/1000 - time)
 
+        if (sec/(60*60*24) > 1) {
+            return Math.round(sec/(60*60*24))+"D"
+        }
+        if (sec/(60*60) > 1) {
+            return Math.round(sec/(60*60))+"H"
+        }
+        if (sec/(60) > 1) {
+            return Math.round(sec/(60))+"M"
+        }
+        return sec+"S"
+    }
     renderList() {
         const {nodes} = this.props;
         if (nodes.data.services) {
@@ -132,7 +146,9 @@ class Node extends React.Component {
                                 </NavLink>
                             </span>
                             {service.progress.inProgress?<React.Fragment>&nbsp;<Spinner/>&nbsp;{(service.progress.current/1024/1024).toFixed(2)}M</React.Fragment>:null}
-                            <span className="ipport">{service.port !== 0 ? service.ip + ":" + service.port : ""}</span>
+                            <span className="ipport">
+                                {service.port !== 0 ? service.ip + ":" + service.port : ""}
+                            </span>
                             <div className="toggle" onClick={() => {
                                 this.toggle(service.name)
                             }}>{this.state.toggle[service.name] ? <ArrowUp/> : <ArrowDown/>}</div>
@@ -143,6 +159,7 @@ class Node extends React.Component {
                         {this.state.toggle[service.name] && service.statusContent !== "" ? <div className="extend">STATUS<pre>
                             {service.statusContent}
                         </pre></div> : null}
+                        {/*{service.state.toLowerCase()==="alive"?<div className="footer"><Time/><span>{this.getLastTime(service.startTime)}</span></div>:null}*/}
                     </li>
                 })}
             </ul>

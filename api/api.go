@@ -1,5 +1,7 @@
 package api
 
+import "time"
+
 type StateType int
 
 const (
@@ -106,6 +108,7 @@ type NestNode struct {
 	IsSelf        bool          `json:"isSelf,omitempty"`
 	Config        string        `json:"config,omitempty"`
 	StatusContent string        `json:"statusContent,omitempty"`
+	StartTime     time.Time     `json:"startTime,omitempty"`
 	Progress      *NestProgress `json:"progress,omitempty"`
 }
 
@@ -131,6 +134,7 @@ type NestService struct {
 	State         StateType     `json:"state,omitempty"`
 	Config        string        `json:"config,omitempty"`
 	StatusContent string        `json:"statusContent,omitempty"`
+	StartTime     time.Time     `json:"startTime,omitempty"`
 	Progress      *NestProgress `json:"progress,omitempty"`
 }
 

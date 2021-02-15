@@ -24,7 +24,9 @@ func (r *NestServiceResover) Port() int32 {
 func (r *NestServiceResover) State() string {
 	return r.service.State.Name()
 }
-
+func (r *NestServiceResover) StartTime() int32 {
+	return int32(r.service.StartTime.Unix())
+}
 func (r *NestServiceResover) Progress() *NestProgressResover {
 	return &NestProgressResover{r.service.Progress}
 }
