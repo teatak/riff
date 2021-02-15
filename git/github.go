@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"github.com/gimke/riff/api"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -127,10 +128,10 @@ func (g *Github) GetBranch(branch string) (string, string, error) {
 
 }
 
-func (g *Github) DownloadFile(file, url string) error {
+func (g *Github) DownloadFile(file, url string, progress api.Progress) error {
 	header := "Authorization: token " + g.Token
 	g.d = &download{}
-	return g.d.downloadFile(header, file, url)
+	return g.d.downloadFile(header, file, url, progress)
 }
 
 func (g *Github) Termination() {

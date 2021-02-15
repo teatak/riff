@@ -265,7 +265,8 @@ func (n *Node) String() string {
 	keys := n.Services.Keys()
 	for i, sk := range keys {
 		s := n.Services[sk]
-		io.WriteString(buff, s.Name+":{"+s.Address()+","+s.State.Name()+"}")
+
+		io.WriteString(buff, s.Name+":{"+s.Address()+","+s.State.Name()+","+strconv.Itoa(int(s.Progress.Current))+"}")
 		if i != len(keys)-1 {
 			io.WriteString(buff, ",")
 		}
@@ -321,6 +322,11 @@ func (n *Node) LoadService(name string) *Service {
 	s.Config = string(content)
 	s.ServiceConfig = c
 	s.StateChange = time.Now()
+	s.Progress = &Progress{
+		Current:    0,
+		Total:      0,
+		InProgress: false,
+	}
 	s.runAtLoad()
 	s.checkState()
 	return s

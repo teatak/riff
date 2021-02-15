@@ -63,6 +63,11 @@ const buildQuery = (nodeName) => {
             state
             config
             statusContent
+            progress {
+                current
+                total
+                inProgress
+            }
         } 
     }
 }`;

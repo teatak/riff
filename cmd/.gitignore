@@ -2,5 +2,6 @@ cmd
 riff
 config/
 logs/
+update/
 run/*.pid
 run/*.ver

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/gimke/riff/api"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -133,10 +134,10 @@ func (g *Gitlab) GetBranch(branch string) (string, string, error) {
 	return version, asset, nil
 }
 
-func (g *Gitlab) DownloadFile(file, url string) error {
+func (g *Gitlab) DownloadFile(file, url string, progress api.Progress) error {
 	header := "PRIVATE-TOKEN: " + g.Token
 	g.d = &download{}
-	return g.d.downloadFile(header, file, url)
+	return g.d.downloadFile(header, file, url, progress)
 }
 
 func (g *Gitlab) Termination() {

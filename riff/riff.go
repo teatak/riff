@@ -218,6 +218,12 @@ func (s *Server) walkService(n, d *Node) {
 					WatchType: ServiceChanged,
 				})
 			}
+			if d.Services[sv.Name].Progress.Current != sv.Progress.Current {
+				s.watch.Dispatch(WatchParam{
+					Name:      sv.Name,
+					WatchType: ServiceChanged,
+				})
+			}
 		}
 	}
 	for _, sv := range d.Services {

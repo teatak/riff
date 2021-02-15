@@ -49,6 +49,11 @@ const buildQuery = (serviceName) => {
             isSelf
             config
             statusContent
+            progress {
+                current
+                total
+                inProgress
+            }
         } 
     }
 }`;

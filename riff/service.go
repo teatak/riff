@@ -40,11 +40,18 @@ type Services map[string]*Service
 
 type Service struct {
 	Version       uint64
-	State         api.StateType // Current state
-	StateChange   time.Time     // Time last state change happened
+	State         api.StateType //Current state
+	StateChange   time.Time     //Time last state change happened
+	Progress      *Progress     //update percent
 	Config        string        //config file
 	StatusContent string        //status content
 	*ServiceConfig
+}
+
+type Progress struct {
+	Current    int32
+	Total      int32
+	InProgress bool
 }
 
 type ServiceConfig struct {
@@ -87,7 +94,14 @@ func (s *Server) handleServices() {
 			}
 			for _, service := range s.Self.Services {
 				//first run it
+				current := service.Progress.Current
 				service.checkState()
+				if current != service.Progress.Current {
+					server.watch.Dispatch(WatchParam{
+						Name:      service.Name,
+						WatchType: ServiceChanged,
+					})
+				}
 			}
 			preSnap := s.Self.SnapShot
 			s.Self.Shutter()
@@ -401,7 +415,16 @@ func (s *Service) processGit(client git.Client) {
 			}
 		}
 	}()
-	err = client.DownloadFile(file, asset)
+
+	var progress api.Progress
+	progress = func(current, total int32) {
+		s.Progress.Current = current
+		s.Progress.Total = total
+		s.Progress.InProgress = true
+	}
+
+	err = client.DownloadFile(file, asset, progress)
+	s.Progress.InProgress = false
 	close(quitLoop)
 
 	if err != nil {

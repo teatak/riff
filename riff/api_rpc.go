@@ -6,6 +6,7 @@ import (
 	"github.com/gimke/riff/common"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"os"
 	"strings"
 )
 
@@ -86,6 +87,15 @@ func (m *Mutation) UnregisteService(name string, result *bool) error {
 		}
 	}
 	delete(server.Self.Services, name)
+
+	file := common.BinDir + "/config/" + name + ".yml"
+	run := common.BinDir + "/run/" + name + ".ver"
+	update := common.BinDir + "/update/" + name
+
+	_ = os.Remove(file)
+	_ = os.Remove(run)
+	_ = os.RemoveAll(update)
+
 	server.Logger.Printf(infoServerPrefix+"client remove service %s", name)
 	return nil
 }

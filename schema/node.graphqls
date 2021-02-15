@@ -24,5 +24,6 @@ type NestNode {
     snapShot: String!
     state: State!
     version: Int!
+    progress: Progress!
 }
 

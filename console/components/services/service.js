@@ -134,6 +134,7 @@ class Service extends React.Component {
                                     {node.name}
                                 </NavLink>
                             </span>
+                            {node.progress.inProgress?<React.Fragment>&nbsp;<Spinner/>&nbsp;{(node.progress.current/1024/1024).toFixed(2)}M</React.Fragment>:null}
                             <span className="ipport">{node.ip + (node.port !== 0 ? ":" + node.port : "")}</span>
                             <div className="toggle" onClick={() => {
                                 this.toggle(node.name)

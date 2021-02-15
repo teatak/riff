@@ -95,17 +95,18 @@ type Node struct {
 type NestNodes []*NestNode
 
 type NestNode struct {
-	Name          string    `json:"name"`
-	DataCenter    string    `json:"dataCenter"`
-	IP            string    `json:"ip"`
-	Port          int       `json:"port,omitempty"`
-	RpcPort       int       `json:"rpcPort,omitempty"`
-	Version       int       `json:"version"`
-	State         StateType `json:"state"`
-	SnapShot      string    `json:"snapShot,omitempty"`
-	IsSelf        bool      `json:"isSelf,omitempty"`
-	Config        string    `json:"config,omitempty"`
-	StatusContent string    `json:"statusContent,omitempty"`
+	Name          string        `json:"name"`
+	DataCenter    string        `json:"dataCenter"`
+	IP            string        `json:"ip"`
+	Port          int           `json:"port,omitempty"`
+	RpcPort       int           `json:"rpcPort,omitempty"`
+	Version       int           `json:"version"`
+	State         StateType     `json:"state"`
+	SnapShot      string        `json:"snapShot,omitempty"`
+	IsSelf        bool          `json:"isSelf,omitempty"`
+	Config        string        `json:"config,omitempty"`
+	StatusContent string        `json:"statusContent,omitempty"`
+	Progress      *NestProgress `json:"progress,omitempty"`
 }
 
 type Services []*Service
@@ -117,13 +118,20 @@ type Service struct {
 
 type NestServices []*NestService
 
+type NestProgress struct {
+	Current    int32 `json:"current,omitempty"`
+	Total      int32 `json:"total,omitempty"`
+	InProgress bool  `json:"inProgress,omitempty"`
+}
+
 type NestService struct {
-	Name          string    `json:"name"`
-	IP            string    `json:"ip"`
-	Port          int       `json:"port,omitempty"`
-	State         StateType `json:"state,omitempty"`
-	Config        string    `json:"config,omitempty"`
-	StatusContent string    `json:"statusContent,omitempty"`
+	Name          string        `json:"name"`
+	IP            string        `json:"ip"`
+	Port          int           `json:"port,omitempty"`
+	State         StateType     `json:"state,omitempty"`
+	Config        string        `json:"config,omitempty"`
+	StatusContent string        `json:"statusContent,omitempty"`
+	Progress      *NestProgress `json:"progress,omitempty"`
 }
 
 type ParamNode struct {

@@ -39,3 +39,7 @@ func (r *NestNodeResover) State() string {
 func (r *NestNodeResover) Version() int32 {
 	return int32(r.node.Version)
 }
+
+func (r *NestNodeResover) Progress() *NestProgressResover {
+	return &NestProgressResover{r.node.Progress}
+}

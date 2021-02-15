@@ -24,3 +24,23 @@ func (r *NestServiceResover) Port() int32 {
 func (r *NestServiceResover) State() string {
 	return r.service.State.Name()
 }
+
+func (r *NestServiceResover) Progress() *NestProgressResover {
+	return &NestProgressResover{r.service.Progress}
+}
+
+type NestProgressResover struct {
+	progress *api.NestProgress
+}
+
+func (r *NestProgressResover) Current() int32 {
+	return int32(r.progress.Current)
+}
+
+func (r *NestProgressResover) Total() int32 {
+	return int32(r.progress.Total)
+}
+
+func (r *NestProgressResover) InProgress() bool {
+	return r.progress.InProgress
+}

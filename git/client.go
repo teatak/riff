@@ -3,6 +3,7 @@ package git
 import (
 	"context"
 	"errors"
+	"github.com/gimke/riff/api"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -11,12 +12,25 @@ import (
 	"strings"
 )
 
+type WriteCounter struct {
+	Total    int32
+	Current  int32
+	Progress api.Progress
+}
+
+func (wc *WriteCounter) Write(p []byte) (int, error) {
+	n := len(p)
+	wc.Current += int32(n)
+	wc.Progress(wc.Current, wc.Total)
+	return n, nil
+}
+
 type Client interface {
 	Request(method, url string) (string, error)
 	GetContentFile(branch, file string) (string, error)
 	GetRelease(release string) (string, string, error)
 	GetBranch(branch string) (string, string, error)
-	DownloadFile(file, url string) error
+	DownloadFile(file, url string, progress api.Progress) error
 	Termination()
 }
 
@@ -25,7 +39,7 @@ type download struct {
 	cancel context.CancelFunc
 }
 
-func (d *download) downloadFile(header, file, url string) error {
+func (d *download) downloadFile(header, file, url string, progress api.Progress) error {
 	// Create the file
 	dir := filepath.Dir(file)
 	os.MkdirAll(dir, 0755)
@@ -64,7 +78,9 @@ func (d *download) downloadFile(header, file, url string) error {
 				return err
 			}
 			defer out.Close()
-			_, err = io.Copy(out, resp.Body)
+			total := resp.ContentLength
+			counter := &WriteCounter{Total: int32(total), Current: 0, Progress: progress}
+			_, err = io.Copy(out, io.TeeReader(resp.Body, counter))
 			if err != nil {
 				os.Remove(file)
 				return err
