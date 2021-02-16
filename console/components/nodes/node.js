@@ -12,7 +12,7 @@ import Stop from "../icons/stop";
 import Replay from "../icons/replay";
 import Spinner from "../icons/spinner";
 import Add from "../icons/add";
-import Cancel from "../icons/cancel"
+import toast, { Toaster } from 'react-hot-toast';
 
 const mapStateToProps = (state, ownProps) => {
     return {
@@ -39,7 +39,7 @@ const mapDispatchToProps = (dispatch) => {
 class Node extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {toggle: {}, check: {}, add:false, value: "", showToast: false };
+        this.state = {toggle: {}, check: {}, add:false, value: ""};
         this.nodeName = "";
     }
 
@@ -93,24 +93,18 @@ class Node extends React.Component {
     handleChange = (event) => {
         this.setState({value: event.target.value});
     };
-    toast = (error) => {
-        this.setState({error: error, showToast: true})
-        setTimeout(() => {
-            this.setState({showToast: false})
-        },5000)
-    };
     addService = (ip, port) => {
         if (this.state.value ) {
-            this.props.mutationAddService(ip, port, this.state.value, (success,error) => {
+            this.props.mutationAddService(ip, port, this.state.value, (success, error) => {
                 if (success) {
                     this.props.getNode(this.nodeName);
                 } else {
-                    this.toast(error);
+                    toast.error(error);
                 }
             });
             this.setState({value:"", add:false})
         } else {
-            this.toast("Config File Is Empty");
+            toast.error("Config File Is Empty");
         }
     };
     mutationService = (cmd) => {
@@ -195,21 +189,12 @@ class Node extends React.Component {
 
     render() {
         const {nodes, mutation} = this.props;
-        let className = "toast";
-        if (this.state.showToast) {
-            className = "toast show"
-        }
         return <div>
-            <div className={className}>
-                <div className="notice">
-                    <div className="content">
-                        <div className="contentcontainer">
-                            <span className="icon"><Cancel/></span>
-                            <span className="message">{this.state.error}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <Toaster
+                toastOptions={{
+                    className: 'toaster'
+                }}
+            />
             <div className="title">
                 {nodes.data.services && nodes.data.services.length > 0 ? (
                     Object.keys(this.state.check).length === nodes.data.services.length ?
