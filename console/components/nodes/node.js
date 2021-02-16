@@ -94,9 +94,9 @@ class Node extends React.Component {
         this.setState({value: event.target.value});
     };
     toast = (error) => {
-        this.setState({error:error,showToast:true})
+        this.setState({error: error, showToast: true})
         setTimeout(() => {
-            this.setState({error:"",showToast:false})
+            this.setState({showToast: false})
         },5000)
     };
     addService = (ip, port) => {
@@ -195,9 +195,12 @@ class Node extends React.Component {
 
     render() {
         const {nodes, mutation} = this.props;
-
+        let className = "toast";
+        if (this.state.showToast) {
+            className = "toast show"
+        }
         return <div>
-            {this.state.showToast? <div className="toast">
+            <div className={className}>
                 <div className="notice">
                     <div className="content">
                         <div className="contentcontainer">
@@ -206,7 +209,7 @@ class Node extends React.Component {
                         </div>
                     </div>
                 </div>
-            </div>:null}
+            </div>
             <div className="title">
                 {nodes.data.services && nodes.data.services.length > 0 ? (
                     Object.keys(this.state.check).length === nodes.data.services.length ?

@@ -94,7 +94,7 @@ func staticDistConsoleCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/dist/console.css", size: 15999, mode: os.FileMode(420), modTime: time.Unix(1613469458, 0)}
+	info := bindataFileInfo{name: "static/dist/console.css", size: 15999, mode: os.FileMode(420), modTime: time.Unix(1613470063, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -114,7 +114,7 @@ func staticDistConsoleHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/dist/console.html", size: 2347, mode: os.FileMode(420), modTime: time.Unix(1613469458, 0)}
+	info := bindataFileInfo{name: "static/dist/console.html", size: 2347, mode: os.FileMode(420), modTime: time.Unix(1613470063, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -134,7 +134,7 @@ func staticDistConsoleJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/dist/console.js", size: 51487, mode: os.FileMode(420), modTime: time.Unix(1613469458, 0)}
+	info := bindataFileInfo{name: "static/dist/console.js", size: 51487, mode: os.FileMode(420), modTime: time.Unix(1613470063, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -174,7 +174,7 @@ func staticDistReactJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/dist/react.js", size: 134466, mode: os.FileMode(420), modTime: time.Unix(1613469458, 0)}
+	info := bindataFileInfo{name: "static/dist/react.js", size: 134466, mode: os.FileMode(420), modTime: time.Unix(1613470063, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -194,7 +194,7 @@ func staticDistVendorsCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/dist/vendors.css", size: 30675, mode: os.FileMode(420), modTime: time.Unix(1613469458, 0)}
+	info := bindataFileInfo{name: "static/dist/vendors.css", size: 30675, mode: os.FileMode(420), modTime: time.Unix(1613470063, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -214,7 +214,7 @@ func staticDistVendorsJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/dist/vendors.js", size: 721828, mode: os.FileMode(420), modTime: time.Unix(1613469458, 0)}
+	info := bindataFileInfo{name: "static/dist/vendors.js", size: 721828, mode: os.FileMode(420), modTime: time.Unix(1613470063, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
