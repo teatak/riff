@@ -108,7 +108,7 @@ class Node extends React.Component {
                     this.toast(error);
                 }
             });
-            this.setState({add:false})
+            this.setState({value:"", add:false})
         } else {
             this.toast("Config File Is Empty");
         }
