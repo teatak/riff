@@ -4,7 +4,37 @@ export const MUTATIONSERVICE_REQUEST = 'MUTATIONSERVICE_REQUEST';
 export const MUTATIONSERVICE_SUCCESS = 'MUTATIONSERVICE_SUCCESS';
 export const MUTATIONSERVICE_FAILURE = 'MUTATIONSERVICE_FAILURE';
 
-//获取Product
+export const mutationAddService = (ip, port, text, cb) => (dispatch, getState) => {
+    const query = `mutation {
+  registeService(
+    node: {
+      ip: "`+ip+`", 
+      port: `+port+`
+    }, 
+    config: `+JSON.stringify(text)+`)
+}
+`;
+    dispatch({type: MUTATIONSERVICE_REQUEST});
+    Common.fetch({query}, (json, error, status) => {
+        if (status === 200) {
+            dispatch({
+                type: MUTATIONSERVICE_SUCCESS,
+                status: status,
+                receivedAt: Date.now()
+            });
+            cb(true);
+        } else {
+            dispatch({
+                type: MUTATIONSERVICE_FAILURE,
+                status: status,
+                error: error,
+                receivedAt: Date.now()
+            });
+            cb(false);
+        }
+    })
+};
+
 export const mutationService = (services, cmd) => (dispatch, getState) => {
     let servicesList = [];
     Object.keys(services).map((key, index) => {

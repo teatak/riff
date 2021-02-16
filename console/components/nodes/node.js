@@ -2,7 +2,7 @@ import React from "react";
 import {NavLink, withRouter} from "react-router-dom";
 import {connect} from "react-redux";
 import {getNode} from "../../reducers/nodes";
-import {mutationService} from "../../reducers/mutation";
+import {mutationService,mutationAddService} from "../../reducers/mutation";
 import ArrowDown from "../icons/arrowDown";
 import ArrowUp from "../icons/arrowUp";
 import CheckCircle from "../icons/checkCircle";
@@ -29,13 +29,16 @@ const mapDispatchToProps = (dispatch) => {
         mutationService: (services, cmd) => {
             dispatch(mutationService(services, cmd));
         },
+        mutationAddService: (ip, port, text, cb) => {
+            dispatch(mutationAddService(ip, port, text, cb));
+        }
     }
 };
 
 class Node extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {toggle: {}, check: {}};
+        this.state = {toggle: {}, check: {}, add:false, value: "", errorAdd:false};
         this.nodeName = "";
     }
 
@@ -86,7 +89,21 @@ class Node extends React.Component {
             this.setState({check: check});
         }
     };
-
+    handleChange = (event) => {
+        this.setState({value: event.target.value});
+    };
+    addService = (ip, port) => {
+        if (this.state.value ) {
+            this.props.mutationAddService(ip, port, this.state.value, (success) => {
+                if (success) {
+                    this.props.getNode(this.nodeName);
+                }
+            });
+            this.setState({errorAdd:false,value:"",add:false})
+        } else {
+            this.setState({errorAdd:true})
+        }
+    };
     mutationService = (cmd) => {
         this.props.mutationService(this.state.check, cmd);
     };
@@ -188,15 +205,14 @@ class Node extends React.Component {
                 <span className="name">{nodes.data.name}</span>
                 <span className="ipport">{nodes.data.ip}</span>
                 <span className="tools">
-                {mutation.mutationService.loading ? 
+                    {mutation.mutationService.loading ?
                     <Spinner/>
                     :
                     <React.Fragment>
                         <Add className="add" title="add"
-                              // onClick={() => {
-                              //     this.mutationService("START");
-                              // }}
-                        />
+                              onClick={() => {
+                                  this.setState({add:true})
+                              }}/>
                         {Object.keys(this.state.check).length > 0 ? <React.Fragment>
                         <Play className="start" title="start"
                               onClick={() => {
@@ -218,6 +234,23 @@ class Node extends React.Component {
                 </span>
             </div>
             {this.renderList()}
+            {this.state.add?<div className="addservice">
+                <div className="text">
+                    <textarea
+                        value={this.state.value}
+                        onChange={this.handleChange}
+                    />
+                </div>
+                <div className="tools">
+                    {this.state.errorAdd?<span>config file is empty</span>:null}
+                    <input value="Close" type="button" onClick={() => {
+                        this.setState({add:false});
+                    }} />
+                    <input value="Add" type="button" onClick={() => {
+                        this.addService(nodes.data.ip,nodes.data.rpcPort)
+                    }} />
+                </div>
+            </div>:null}
         </div>
     }
 }
