@@ -12,7 +12,7 @@ import Stop from "../icons/stop";
 import Replay from "../icons/replay";
 import Spinner from "../icons/spinner";
 import Add from "../icons/add";
-import Time from "../icons/time"
+import Cancel from "../icons/cancel"
 
 const mapStateToProps = (state, ownProps) => {
     return {
@@ -35,10 +35,11 @@ const mapDispatchToProps = (dispatch) => {
     }
 };
 
+
 class Node extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {toggle: {}, check: {}, add:false, value: "", errorAdd:false};
+        this.state = {toggle: {}, check: {}, add:false, value: "", errorAdd: false, showToast: false };
         this.nodeName = "";
     }
 
@@ -92,16 +93,23 @@ class Node extends React.Component {
     handleChange = (event) => {
         this.setState({value: event.target.value});
     };
+    toast = (error) => {
+        this.setState({error:error,showToast:true})
+        setTimeout(() => {
+            this.setState({error:"",showToast:false})
+        },5000)
+    };
     addService = (ip, port) => {
         if (this.state.value ) {
-            this.props.mutationAddService(ip, port, this.state.value, (success) => {
+            this.props.mutationAddService(ip, port, this.state.value, (success,error) => {
                 if (success) {
                     this.props.getNode(this.nodeName);
+                } else {
+                    this.toast(error);
                 }
             });
-            this.setState({errorAdd:false,value:"",add:false})
         } else {
-            this.setState({errorAdd:true})
+            this.toast("config file is empty");
         }
     };
     mutationService = (cmd) => {
@@ -139,6 +147,7 @@ class Node extends React.Component {
         }
         return sec+"S"
     }
+
     renderList() {
         const {nodes} = this.props;
         if (nodes.data.services) {
@@ -187,6 +196,16 @@ class Node extends React.Component {
         const {nodes, mutation} = this.props;
 
         return <div>
+            {this.state.showToast? <div className="toast">
+                <div className="notice">
+                    <div className="content">
+                        <div className="contentcontainer">
+                            <span className="icon"><Cancel/></span>
+                            <span className="message">{this.state.error}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>:null}
             <div className="title">
                 {nodes.data.services && nodes.data.services.length > 0 ? (
                     Object.keys(this.state.check).length === nodes.data.services.length ?
@@ -242,7 +261,6 @@ class Node extends React.Component {
                     />
                 </div>
                 <div className="tools">
-                    {this.state.errorAdd?<span>config file is empty</span>:null}
                     <input value="Close" type="button" onClick={() => {
                         this.setState({add:false});
                     }} />

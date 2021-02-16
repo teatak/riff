@@ -30,7 +30,7 @@ export const mutationAddService = (ip, port, text, cb) => (dispatch, getState) =
                 error: error,
                 receivedAt: Date.now()
             });
-            cb(false);
+            cb(false,error);
         }
     })
 };

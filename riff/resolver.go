@@ -2,6 +2,7 @@ package riff
 
 import (
 	"github.com/gimke/riff/api"
+	"github.com/pkg/errors"
 	"net"
 	"strconv"
 )
@@ -87,14 +88,18 @@ func (_ *Resolver) RegisteService(args struct {
 		Port int32
 	}
 	Config string
-}) *bool {
+}) (*bool,error) {
 	result := true
 	if err := registeService(net.JoinHostPort(args.Node.Ip, strconv.Itoa(int(args.Node.Port))), args.Config); err != nil {
 		result = false
 	} else {
 		result = true
 	}
-	return &result
+	if result {
+		return &result,nil
+	} else {
+		return &result,errors.New("Registe Service Fail")
+	}
 }
 
 func (_ *Resolver) UnregisteService(args struct {
