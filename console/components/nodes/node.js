@@ -109,7 +109,7 @@ class Node extends React.Component {
                 }
             });
         } else {
-            this.toast("config file is empty");
+            this.toast("Config File Is Empty");
         }
     };
     mutationService = (cmd) => {

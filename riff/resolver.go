@@ -88,7 +88,7 @@ func (_ *Resolver) RegisteService(args struct {
 		Port int32
 	}
 	Config string
-}) (*bool,error) {
+}) (*bool, error) {
 	result := true
 	if err := registeService(net.JoinHostPort(args.Node.Ip, strconv.Itoa(int(args.Node.Port))), args.Config); err != nil {
 		result = false
@@ -96,9 +96,9 @@ func (_ *Resolver) RegisteService(args struct {
 		result = true
 	}
 	if result {
-		return &result,nil
+		return &result, nil
 	} else {
-		return &result,errors.New("Registe Service Fail")
+		return &result, errors.New("Registe Service Fail")
 	}
 }
 
