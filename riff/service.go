@@ -345,13 +345,13 @@ func (s *Service) processGit(client git.Client) {
 				data.Add("payload", string(jsonb))
 				resp, err := http.PostForm(payloadUrl, data)
 				if err != nil {
-					server.Logger.Printf(errorServicePrefix+"%s payload:%s error: %v", s.Name, err)
+					server.Logger.Printf(errorServicePrefix+"%s payload: error: %v", s.Name, err)
 				} else {
 					resultData, _ := ioutil.ReadAll(resp.Body)
 					if resp.StatusCode == 200 {
-						server.Logger.Printf(infoServicePrefix+"%s payload:%s success: %s", s.Name, string(resultData))
+						server.Logger.Printf(infoServicePrefix+"%s payload: success: %s", s.Name, string(resultData))
 					} else {
-						server.Logger.Printf(errorServicePrefix+"%s payload:%s error: %s", s.Name, string(resultData))
+						server.Logger.Printf(errorServicePrefix+"%s payload: error: %s", s.Name, string(resultData))
 					}
 				}
 			}

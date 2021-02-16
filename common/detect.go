@@ -19,7 +19,7 @@ func AdviseRpc() (string, error) {
 func GetPrivateIPv4() ([]*net.IPNet, error) {
 	addrs, err := net.InterfaceAddrs()
 	if err != nil {
-		return nil, fmt.Errorf("error: ", err)
+		return nil, fmt.Errorf("error: %s", err)
 	}
 	var ipNets []*net.IPNet
 	for _, address := range addrs {

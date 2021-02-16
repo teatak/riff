@@ -1,8 +1,8 @@
 package riff
 
 import (
+	"errors"
 	"github.com/gimke/riff/api"
-	"github.com/pkg/errors"
 	"net"
 	"strconv"
 )
