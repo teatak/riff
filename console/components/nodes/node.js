@@ -39,7 +39,7 @@ const mapDispatchToProps = (dispatch) => {
 class Node extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {toggle: {}, check: {}, add:false, value: "", errorAdd: false, showToast: false };
+        this.state = {toggle: {}, check: {}, add:false, value: "", showToast: false };
         this.nodeName = "";
     }
 
@@ -108,6 +108,7 @@ class Node extends React.Component {
                     this.toast(error);
                 }
             });
+            this.setState({add:false})
         } else {
             this.toast("Config File Is Empty");
         }
