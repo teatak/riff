@@ -110,7 +110,7 @@ class Service extends React.Component {
             this.setState({check: check});
         }
     };
-    getLastTime(time) {
+    getLastTime = (time) => {
         var sec =  Math.round(Date.now()/1000 - time)
 
         if (sec/(60*60*24) > 1) {
@@ -126,7 +126,8 @@ class Service extends React.Component {
             sec = 0
         }
         return sec+"S"
-    }
+    };
+
     renderList() {
         const {services} = this.props;
         if (services.data.nodes) {
