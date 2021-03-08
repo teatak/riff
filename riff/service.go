@@ -95,14 +95,7 @@ func (s *Server) handleServices() {
 			}
 			for _, service := range s.Self.Services {
 				//first run it
-				current := service.Progress.Current
 				service.checkState()
-				if current != service.Progress.Current {
-					server.watch.Dispatch(WatchParam{
-						Name:      service.Name,
-						WatchType: ServiceChanged,
-					})
-				}
 			}
 			preSnap := s.Self.SnapShot
 			s.Self.Shutter()
@@ -418,14 +411,32 @@ func (s *Service) processGit(client git.Client) {
 	}()
 
 	var progress api.Progress
+	now := time.Now()
 	progress = func(current, total int32) {
 		s.Progress.Current = current
 		s.Progress.Total = total
 		s.Progress.InProgress = true
+
+		//dispatch every 1 sec
+		go func() {
+			if time.Now().Sub(now).Seconds() > 1 {
+				now = time.Now()
+				server.watch.Dispatch(WatchParam{
+					Name:      s.Name,
+					WatchType: ServiceChanged,
+				})
+			}
+		}()
 	}
 
 	err = client.DownloadFile(file, asset, progress)
 	s.Progress.InProgress = false
+
+	//update status
+	server.watch.Dispatch(WatchParam{
+		Name:      s.Name,
+		WatchType: ServiceChanged,
+	})
 	close(quitLoop)
 
 	if err != nil {
