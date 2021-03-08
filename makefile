@@ -32,7 +32,7 @@ webpack:
 
 tools:
 	@echo "--> Running tools"
-	@go get -u -v $(GOTOOLS)
+	@go get $(GOTOOLS)
 	@cd console && npm install
 
 .PHONY: default fmt
