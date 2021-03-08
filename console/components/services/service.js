@@ -122,6 +122,9 @@ class Service extends React.Component {
         if (sec/(60) > 1) {
             return Math.round(sec/(60))+"M"
         }
+        if (sec < 0) {
+            sec = 0
+        }
         return sec+"S"
     }
     renderList() {

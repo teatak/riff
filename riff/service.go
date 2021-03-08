@@ -575,6 +575,13 @@ func (s *Service) GetPid() int {
 	} else {
 		pid, _ := strconv.Atoi(strings.Trim(string(content), "\n"))
 		if _, find := s.processExist(pid); find {
+			f, err := os.Open(s.pidFile())
+			if err == nil {
+				fi, err := f.Stat()
+				if err == nil {
+					s.StartTime = fi.ModTime()
+				}
+			}
 			return pid
 		} else {
 			return 0
