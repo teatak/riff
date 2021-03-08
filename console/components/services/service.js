@@ -134,25 +134,33 @@ class Service extends React.Component {
                     let className = "item " + node.state.toLowerCase();
                     return <li className={className} key={node.name}>
                         <div className="basic">
-                            {
-                                this.state.check[node.name] ? <CheckCircle className="checked" onClick={() => {
-                                    this.check(node);
-                                }}
-                                /> : <Check onClick={() => {
-                                    this.check(node);
-                                }}
-                                />
-                            }
-                            <span className="name">
-                                <NavLink to={"/nodes/" + node.name}>
-                                    {node.name}
-                                </NavLink>
+                            <div className="left">
+                                {
+                                    this.state.check[node.name] ? <CheckCircle className="checked" onClick={() => {
+                                        this.check(node);
+                                    }}
+                                    /> : <Check onClick={() => {
+                                        this.check(node);
+                                    }}
+                                    />
+                                }
+                                <span className="name">
+                                    <NavLink to={"/nodes/" + node.name}>
+                                        {node.name}
+                                    </NavLink>
+                                </span>
+                                {node.progress.inProgress?<React.Fragment>&nbsp;<Spinner/>&nbsp;{(node.progress.current/1024/1024).toFixed(2)}M</React.Fragment>:null}
+
+                            </div>
+                            <div className="right">
+                                {node.state.toLowerCase()==="alive"?<span className="time"><Time/>{this.getLastTime(node.startTime)}</span>:null}
+                                <span className="ipport">
+                                {node.ip + (node.port !== 0 ? ":" + node.port : "")}
                             </span>
-                            {node.progress.inProgress?<React.Fragment>&nbsp;<Spinner/>&nbsp;{(node.progress.current/1024/1024).toFixed(2)}M</React.Fragment>:null}
-                            <span className="ipport">{node.ip + (node.port !== 0 ? ":" + node.port : "")}</span>
-                            <div className="toggle" onClick={() => {
-                                this.toggle(node.name)
-                            }}>{this.state.toggle[node.name] ? <ArrowUp/> : <ArrowDown/>}</div>
+                                <div className="toggle" onClick={() => {
+                                    this.toggle(node.name)
+                                }}>{this.state.toggle[node.name] ? <ArrowUp/> : <ArrowDown/>}</div>
+                            </div>
                         </div>
                         {this.state.toggle[node.name] ? <div className="extend">CONFIG<pre>
                             {node.config}
@@ -160,7 +168,6 @@ class Service extends React.Component {
                         {this.state.toggle[node.name] && node.statusContent !== "" ? <div className="extend">STATUS<pre>
                             {node.statusContent}
                         </pre></div> : null}
-                        {/*{node.state.toLowerCase()==="alive"?<div className="footer"><Time/><span>{this.getLastTime(node.startTime)}</span></div>:null}*/}
                     </li>
                 })}
             </ul>

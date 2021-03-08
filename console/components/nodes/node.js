@@ -12,6 +12,7 @@ import Stop from "../icons/stop";
 import Replay from "../icons/replay";
 import Spinner from "../icons/spinner";
 import Add from "../icons/add";
+import Time from "../icons/time";
 import toast, { Toaster } from 'react-hot-toast';
 
 const mapStateToProps = (state, ownProps) => {
@@ -152,27 +153,32 @@ class Node extends React.Component {
                     let className = "item " + service.state.toLowerCase();
                     return <li className={className} key={service.name}>
                         <div className="basic">
-                            {
-                                this.state.check[service.name] ? <CheckCircle className="checked" onClick={() => {
-                                    this.check(service);
-                                }}
-                                /> : <Check onClick={() => {
-                                    this.check(service);
-                                }}
-                                />
-                            }
-                            <span className="name">
-                                <NavLink to={"/services/" + service.name}>
-                                    {service.name}
-                                </NavLink>
-                            </span>
-                            {service.progress.inProgress?<React.Fragment>&nbsp;<Spinner/>&nbsp;{(service.progress.current/1024/1024).toFixed(2)}M</React.Fragment>:null}
-                            <span className="ipport">
+                            <div className="left">
+                                {
+                                    this.state.check[service.name] ? <CheckCircle className="checked" onClick={() => {
+                                        this.check(service);
+                                    }}
+                                    /> : <Check onClick={() => {
+                                        this.check(service);
+                                    }}
+                                    />
+                                }
+                                <span className="name">
+                                    <NavLink to={"/services/" + service.name}>
+                                        {service.name}
+                                    </NavLink>
+                                </span>
+                                {service.progress.inProgress?<React.Fragment>&nbsp;<Spinner/>&nbsp;{(service.progress.current/1024/1024).toFixed(2)}M</React.Fragment>:null}
+                            </div>
+                            <div className="right">
+                                {service.state.toLowerCase()==="alive"?<span className="time"><Time/>{this.getLastTime(service.startTime)}</span>:null}
+                                <span className="ipport">
                                 {service.port !== 0 ? service.ip + ":" + service.port : ""}
                             </span>
-                            <div className="toggle" onClick={() => {
-                                this.toggle(service.name)
-                            }}>{this.state.toggle[service.name] ? <ArrowUp/> : <ArrowDown/>}</div>
+                                <div className="toggle" onClick={() => {
+                                    this.toggle(service.name)
+                                }}>{this.state.toggle[service.name] ? <ArrowUp/> : <ArrowDown/>}</div>
+                            </div>
                         </div>
                         {this.state.toggle[service.name] ? <div className="extend">CONFIG<pre>
                             {service.config}
@@ -180,7 +186,6 @@ class Node extends React.Component {
                         {this.state.toggle[service.name] && service.statusContent !== "" ? <div className="extend">STATUS<pre>
                             {service.statusContent}
                         </pre></div> : null}
-                        {/*{service.state.toLowerCase()==="alive"?<div className="footer"><Time/><span>{this.getLastTime(service.startTime)}</span></div>:null}*/}
                     </li>
                 })}
             </ul>

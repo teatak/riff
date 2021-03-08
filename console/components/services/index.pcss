@@ -176,6 +176,34 @@
         & .basic {
           display: flex;
           align-items: center;
+          justify-content: space-between;
+          & .left {
+            display: flex;
+            & .name {
+              margin-left: 4px;
+            }
+          }
+          & .right {
+            display: flex;
+            & .toggle {
+              cursor: pointer;
+              & svg {
+                height: 16px;
+                width: 16px;
+              }
+            }
+            & .time {
+              font-size: 12px;
+              color: var(--lightBlack);
+              display: flex;
+              margin-right: 8px;
+            }
+            & .ipport {
+              font-size: 12px;
+              color: var(--lightBlack);
+              margin-left: auto;
+            }
+          }
           & svg {
             height: 16px;
             width: 16px;
@@ -185,21 +213,7 @@
               fill: var(--mainBlue);
             }
           }
-          & .name {
-            margin-left: 4px;
-          }
-          & .toggle {
-            cursor: pointer;
-            & svg {
-              height: 16px;
-              width: 16px;
-            }
-          }
-          & .ipport {
-            font-size: 12px;
-            color: var(--lightBlack);
-            margin-left: auto;
-          }
+
         }
         & .extend {
           margin-top: 8px;
