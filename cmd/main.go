@@ -6,6 +6,7 @@ import (
 	"github.com/gimke/riff/cli"
 	"github.com/gimke/riff/cmd/daem"
 	"github.com/gimke/riff/cmd/query"
+	"github.com/gimke/riff/cmd/quit"
 	"github.com/gimke/riff/cmd/reload"
 	"github.com/gimke/riff/cmd/run"
 	"github.com/gimke/riff/cmd/service"
@@ -20,6 +21,7 @@ func init() {
 	Commands = cli.Commands{
 		"version": version.New(common.Version),
 		"daem":    daem.New(),
+		"quit":    quit.New(),
 		"reload":  reload.New(),
 		"run":     run.New(),
 		"query":   query.New(),
