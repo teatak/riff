@@ -3,11 +3,7 @@ package quit
 import (
 	"flag"
 	"fmt"
-	"github.com/gimke/riff/common"
-	"io/ioutil"
-	"os"
-	"strconv"
-	"strings"
+	"github.com/gimke/riff/cmd/cli"
 	"syscall"
 	"time"
 )
@@ -41,39 +37,12 @@ func (c *cmd) Run(args []string) int {
 	return 0
 }
 
-func (c *cmd) GetPid() int {
-	content, err := ioutil.ReadFile(common.BinDir + "/run/riff.pid")
-	if err != nil {
-		return 0
-	} else {
-		pid, _ := strconv.Atoi(strings.Trim(string(content), "\n"))
-		if _, find := c.processExist(pid); find {
-			return pid
-		} else {
-			return 0
-		}
-	}
-}
-
-func (c *cmd) processExist(pid int) (*os.Process, bool) {
-	process, err := os.FindProcess(pid)
-	if err != nil {
-		return nil, false
-	} else {
-		err := process.Signal(syscall.Signal(0))
-		if err != nil {
-			return nil, false
-		}
-	}
-	return process, true
-}
-
 func (c *cmd) Quit() {
-	pid := c.GetPid()
+	pid := cli.GetPid()
 	if pid == 0 {
 		fmt.Println("can't find riff")
 	} else {
-		if p, find := c.processExist(pid); find {
+		if p, find := cli.ProcessExist(pid); find {
 			err := p.Signal(syscall.SIGINT)
 			if err != nil {
 				fmt.Println(err)
@@ -81,7 +50,7 @@ func (c *cmd) Quit() {
 				quitStop := make(chan bool)
 				go func() {
 					for {
-						if pid := c.GetPid(); pid == 0 {
+						if pid := cli.GetPid(); pid == 0 {
 							quitStop <- true
 							break
 						}

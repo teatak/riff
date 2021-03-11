@@ -3,14 +3,12 @@ package daem
 import (
 	"flag"
 	"fmt"
+	"github.com/gimke/riff/cmd/cli"
 	"github.com/gimke/riff/common"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strconv"
 	"strings"
-	"syscall"
 )
 
 const synopsis = "Run Riff as service "
@@ -70,7 +68,7 @@ func (c *cmd) Run(args []string) int {
 }
 
 func (c *cmd) Start(args []string) error {
-	if c.GetPid() != 0 {
+	if cli.GetPid() != 0 {
 		return fmt.Errorf("%s is already running", "riff")
 	}
 	command := c.resoveCommand(common.BinDir + "/riff")
@@ -90,10 +88,8 @@ func (c *cmd) Start(args []string) error {
 	if err != nil {
 		return err
 	} else {
-		go func() {
-			cmd.Wait()
-		}()
-		c.SetPid(cmd.Process.Pid)
+		cli.SetPid(cmd.Process.Pid)
+		fmt.Println("start riff success")
 	}
 	return nil
 }
@@ -108,39 +104,6 @@ func (c *cmd) resoveCommand(path string) string {
 			return path
 		}
 	}
-}
-
-func (c *cmd) SetPid(pid int) {
-	pidString := []byte(strconv.Itoa(pid))
-	os.MkdirAll(common.BinDir+"/run", 0755)
-	ioutil.WriteFile(common.BinDir+"/run/riff.pid", pidString, 0666)
-}
-
-func (c *cmd) GetPid() int {
-	content, err := ioutil.ReadFile(common.BinDir + "/run/riff.pid")
-	if err != nil {
-		return 0
-	} else {
-		pid, _ := strconv.Atoi(strings.Trim(string(content), "\n"))
-		if _, find := c.processExist(pid); find {
-			return pid
-		} else {
-			return 0
-		}
-	}
-}
-
-func (c *cmd) processExist(pid int) (*os.Process, bool) {
-	process, err := os.FindProcess(pid)
-	if err != nil {
-		return nil, false
-	} else {
-		err := process.Signal(syscall.Signal(0))
-		if err != nil {
-			return nil, false
-		}
-	}
-	return process, true
 }
 
 func (c *cmd) Synopsis() string {

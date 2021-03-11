@@ -77,7 +77,7 @@ func GetIpPort(ipPort string) (ip string, port int) {
 	return
 }
 
-func Unzip(src, dest string) error {
+func Unzip(src, dest string, ignoreFirstFolder bool) error {
 	r, err := zip.OpenReader(src)
 	if err != nil {
 		return err
@@ -102,8 +102,12 @@ func Unzip(src, dest string) error {
 			}
 		}()
 
-		//remove first folder
-		name := strings.Join(strings.Split(f.Name, "/")[1:], "/")
+		name := ""
+		if ignoreFirstFolder {
+			name = strings.Join(strings.Split(f.Name, "/")[1:], "/")
+		} else {
+			name = f.Name
+		}
 		path := filepath.Join(dest, name)
 
 		if f.FileInfo().IsDir() {

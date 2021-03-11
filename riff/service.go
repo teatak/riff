@@ -443,7 +443,7 @@ func (s *Service) processGit(client git.Client) {
 		server.Logger.Printf(errorServicePrefix+"update %s download error: %v", s.Name, err)
 		return
 	}
-	err = common.Unzip(file, dir)
+	err = common.Unzip(file, dir, true)
 	if err != nil {
 		server.Logger.Printf(errorServicePrefix+"update %s unzip error: %v", s.Name, err)
 		return

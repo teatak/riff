@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"github.com/gimke/riff/api"
 	"github.com/gimke/riff/cli"
-	"github.com/gimke/riff/cmd/daem"
-	"github.com/gimke/riff/cmd/query"
-	"github.com/gimke/riff/cmd/quit"
-	"github.com/gimke/riff/cmd/reload"
-	"github.com/gimke/riff/cmd/run"
-	"github.com/gimke/riff/cmd/service"
-	"github.com/gimke/riff/cmd/version"
+	"github.com/gimke/riff/cmd/cli/daem"
+	"github.com/gimke/riff/cmd/cli/query"
+	"github.com/gimke/riff/cmd/cli/quit"
+	"github.com/gimke/riff/cmd/cli/reload"
+	"github.com/gimke/riff/cmd/cli/run"
+	"github.com/gimke/riff/cmd/cli/service"
+	"github.com/gimke/riff/cmd/cli/update"
+	"github.com/gimke/riff/cmd/cli/version"
 	"github.com/gimke/riff/common"
 	"os"
 )
@@ -22,6 +23,7 @@ func init() {
 		"version": version.New(common.Version),
 		"daem":    daem.New(),
 		"quit":    quit.New(),
+		"update":  update.New(),
 		"reload":  reload.New(),
 		"run":     run.New(),
 		"query":   query.New(),

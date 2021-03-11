@@ -103,8 +103,8 @@ func (g *Github) GetRelease(release string) (string, string, error) {
 	if version == "" {
 		version = jsonData["tag_name"].(string)
 	}
-	asset := jsonData["zipball_url"].(string)
-	return version, asset, nil
+	zipball := jsonData["zipball_url"].(string)
+	return version, zipball, nil
 }
 
 func (g *Github) GetBranch(branch string) (string, string, error) {

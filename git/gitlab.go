@@ -94,8 +94,8 @@ func (g *Gitlab) GetRelease(release string) (string, string, error) {
 		if len(jsonData) > 0 {
 			version := jsonData[0]["name"].(string)
 			sha := jsonData[0]["commit"].(map[string]interface{})["id"].(string)
-			asset := g.getUrl() + "/archive.zip?sha=" + sha
-			return version, asset, nil
+			zipball := g.getUrl() + "/archive.zip?sha=" + sha
+			return version, zipball, nil
 		} else {
 			return "", "", errors.New("not found")
 		}
@@ -108,8 +108,9 @@ func (g *Gitlab) GetRelease(release string) (string, string, error) {
 		}
 		version := jsonData["name"].(string)
 		sha := jsonData["commit"].(map[string]interface{})["id"].(string)
-		asset := g.getUrl() + "/archive.zip?sha=" + sha
-		return version, asset, nil
+		zipball := g.getUrl() + "/archive.zip?sha=" + sha
+
+		return version, zipball, nil
 	}
 
 }
