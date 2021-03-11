@@ -305,6 +305,11 @@ func (n *Node) LoadServices() {
 	n.Shutter()
 }
 
+func (n *Node) rewriteConfig(service *Service) {
+	//rewrite name port ip
+
+}
+
 func (n *Node) LoadService(name string) *Service {
 	file := common.BinDir + "/config/" + name + ".yml"
 	if !common.IsExist(file) {
@@ -328,6 +333,8 @@ func (n *Node) LoadService(name string) *Service {
 		Total:      0,
 		InProgress: false,
 	}
+	//rewrite name port ip
+	s.rewriteConfig()
 	s.runAtLoad()
 	s.checkState()
 	return s

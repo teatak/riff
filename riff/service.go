@@ -85,6 +85,39 @@ func (s *Server) initServices() {
 	s.Shutter()
 }
 
+func (s *Service) rewriteConfig() {
+	//rewrite name port ip
+	advise, _ := common.AdviseRpc()
+	ipNet, _, _ := net.ParseCIDR(advise)
+	//get this server ip
+	ip := ipNet.String()
+	name := s.Name
+	port := s.Port
+
+	replaceValue := func(value string) string {
+		value = strings.ReplaceAll(value, "${name}", name)
+		value = strings.ReplaceAll(value, "${ip}", ip)
+		value = strings.ReplaceAll(value, "${port}", strconv.Itoa(port))
+		return value
+	}
+
+	replaceValues := func(values []string) []string {
+		v := []string{}
+		for _, item := range values {
+			item = replaceValue(item)
+			v = append(v, item)
+		}
+		return v
+	}
+
+	s.Env = replaceValues(s.Env)
+	s.Command = replaceValues(s.Command)
+	s.StatusPage = replaceValue(s.StatusPage)
+	if s.Deploy != nil {
+		s.Deploy.ServicePath = replaceValue(s.Deploy.ServicePath)
+		s.Deploy.Repository = replaceValue(s.Deploy.Repository)
+	}
+}
 func (s *Server) handleServices() {
 	go func() {
 		for {
@@ -146,7 +179,11 @@ func (s *Service) checkState() {
 			status := 0
 			ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
 			defer cancel()
-			req, _ := http.NewRequest("GET", s.StatusPage, nil)
+			req, err := http.NewRequest("GET", s.StatusPage, nil)
+			if err != nil {
+				//server.Logger.Printf(errorServicePrefix+"%s check state error: %v", s.Name, err)
+				return
+			}
 			res, err := http.DefaultClient.Do(req.WithContext(ctx))
 			if err == nil {
 				status = res.StatusCode
@@ -155,6 +192,9 @@ func (s *Service) checkState() {
 					defer res.Body.Close()
 					s.StatusContent = string(body)
 				}
+			} else {
+				//server.Logger.Printf(errorServicePrefix+"%s check state error: %v", s.Name, err)
+				return
 			}
 		}
 		if pid := s.GetPid(); pid == 0 {
@@ -180,7 +220,11 @@ func (s *Service) checkState() {
 			status := 0
 			ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
 			defer cancel()
-			req, _ := http.NewRequest("GET", s.StatusPage, nil)
+			req, err := http.NewRequest("GET", s.StatusPage, nil)
+			if err != nil {
+				//server.Logger.Printf(errorServicePrefix+"%s check state error: %v", s.Name, err)
+				return
+			}
 			res, err := http.DefaultClient.Do(req.WithContext(ctx))
 			if err == nil {
 				status = res.StatusCode
@@ -189,6 +233,9 @@ func (s *Service) checkState() {
 					defer res.Body.Close()
 					s.StatusContent = string(body)
 				}
+			} else {
+				//server.Logger.Printf(errorServicePrefix+"%s check state error: %v", s.Name, err)
+				return
 			}
 			if status == 200 {
 				if s.State != api.StateAlive {
