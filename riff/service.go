@@ -180,21 +180,16 @@ func (s *Service) checkState() {
 			ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
 			defer cancel()
 			req, err := http.NewRequest("GET", s.StatusPage, nil)
-			if err != nil {
-				//server.Logger.Printf(errorServicePrefix+"%s check state error: %v", s.Name, err)
-				return
-			}
-			res, err := http.DefaultClient.Do(req.WithContext(ctx))
 			if err == nil {
-				status = res.StatusCode
-				if status == 200 {
-					body, _ := ioutil.ReadAll(res.Body)
-					defer res.Body.Close()
-					s.StatusContent = string(body)
+				res, err := http.DefaultClient.Do(req.WithContext(ctx))
+				if err == nil {
+					status = res.StatusCode
+					if status == 200 {
+						body, _ := ioutil.ReadAll(res.Body)
+						defer res.Body.Close()
+						s.StatusContent = string(body)
+					}
 				}
-			} else {
-				//server.Logger.Printf(errorServicePrefix+"%s check state error: %v", s.Name, err)
-				return
 			}
 		}
 		if pid := s.GetPid(); pid == 0 {
@@ -221,38 +216,33 @@ func (s *Service) checkState() {
 			ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
 			defer cancel()
 			req, err := http.NewRequest("GET", s.StatusPage, nil)
-			if err != nil {
-				//server.Logger.Printf(errorServicePrefix+"%s check state error: %v", s.Name, err)
-				return
-			}
-			res, err := http.DefaultClient.Do(req.WithContext(ctx))
 			if err == nil {
-				status = res.StatusCode
+				res, err := http.DefaultClient.Do(req.WithContext(ctx))
+				if err == nil {
+					status = res.StatusCode
+					if status == 200 {
+						body, _ := ioutil.ReadAll(res.Body)
+						defer res.Body.Close()
+						s.StatusContent = string(body)
+					}
+				}
 				if status == 200 {
-					body, _ := ioutil.ReadAll(res.Body)
-					defer res.Body.Close()
-					s.StatusContent = string(body)
+					if s.State != api.StateAlive {
+						server.watch.Dispatch(WatchParam{
+							Name:      s.Name,
+							WatchType: ServiceChanged,
+						})
+					}
+					s.State = api.StateAlive
+				} else {
+					if s.State != api.StateDead {
+						server.watch.Dispatch(WatchParam{
+							Name:      s.Name,
+							WatchType: ServiceChanged,
+						})
+					}
+					s.State = api.StateDead
 				}
-			} else {
-				//server.Logger.Printf(errorServicePrefix+"%s check state error: %v", s.Name, err)
-				return
-			}
-			if status == 200 {
-				if s.State != api.StateAlive {
-					server.watch.Dispatch(WatchParam{
-						Name:      s.Name,
-						WatchType: ServiceChanged,
-					})
-				}
-				s.State = api.StateAlive
-			} else {
-				if s.State != api.StateDead {
-					server.watch.Dispatch(WatchParam{
-						Name:      s.Name,
-						WatchType: ServiceChanged,
-					})
-				}
-				s.State = api.StateDead
 			}
 		}
 	}

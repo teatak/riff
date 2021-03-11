@@ -1,7 +1,6 @@
 package update
 
 import (
-	"bufio"
 	"flag"
 	"fmt"
 	"github.com/gimke/riff/api"
@@ -11,7 +10,6 @@ import (
 	"github.com/gimke/riff/common"
 	"github.com/gimke/riff/git"
 	"math"
-	"os"
 	"runtime"
 	"strings"
 )
@@ -56,29 +54,27 @@ func (c *cmd) Update() {
 		fmt.Println(err)
 	} else {
 		if version != "v"+currentVersion {
-			reader := bufio.NewReader(os.Stdin)
 			fmt.Printf("find new version %v to be update [Y/N]:", version)
-			input, _ := reader.ReadString('\n')
-			input = strings.TrimSuffix(input, "\n")
+			var input string
+			_, _ = fmt.Scanln(&input)
 			if strings.ToLower(input) == "y" {
+				fmt.Print("downloading...")
 				zipFile := runtime.GOOS + "_" + runtime.GOARCH + ".zip"
 				downloadUrl := "https://github.com/gimke/riff/releases/download/" + version + "/" + zipFile
 				file := common.BinDir + "/update/riff/" + version + "/" + zipFile
 				dir := common.BinDir
 				var progress api.Progress
 				progress = func(current, total int32) {
-
 					fmt.Printf("\r%s", strings.Repeat(" ", 45))
-
 					// Return again and print current status of download
 					// We use the humanize package to print the bytes in a meaningful way (e.g. 10 MB)
 					c := math.Round(float64(current)/1024/1024*100) / 100
 					t := math.Round(float64(total)/1024/1024*100) / 100
 					s := fmt.Sprintf("%vM/%vM", c, t)
 					fmt.Printf("\rdownloading... %s complete", s)
-
 				}
 				if err := client.DownloadFile(file, downloadUrl, progress); err != nil {
+					fmt.Println()
 					fmt.Println(err)
 				} else {
 					//
