@@ -24,6 +24,11 @@ func (g *Gitlab) getUrl() string {
 	return u.Scheme + "://" + u.Host + "/api/v4/projects/" + url.PathEscape(u.Path[1:]) + "/repository"
 }
 
+func (g *Gitlab) getReleasesUrl() string {
+	u, _ := url.Parse(g.Repository)
+	return u.Scheme + "://" + u.Host + "/api/v4/projects/" + url.PathEscape(u.Path[1:])
+}
+
 func GitlabClient(token, repo string) Client {
 	return &Gitlab{Token: token, Repository: repo}
 }
@@ -72,14 +77,56 @@ func (g *Gitlab) GetContentFile(branch, file string) (string, error) {
 	return content, nil
 }
 
-func (g *Gitlab) GetRelease(release string) (string, string, error) {
+func (g *Gitlab) GetTag(tag string) (string, string, error) {
 	//latest or tag name
 	u := g.getUrl()
 	//tag := g.Version
-	if release == "latest" {
+	if tag == "latest" {
 		u += "/tags"
 	} else {
-		u += "/tags/" + release
+		u += "/tags/" + tag
+	}
+	data, err := g.Request("GET", u)
+	if err != nil {
+		return "", "", err
+	}
+	if tag == "latest" {
+		var jsonData []map[string]interface{}
+		err = json.Unmarshal([]byte(data), &jsonData)
+		if err != nil {
+			return "", "", err
+		}
+		if len(jsonData) > 0 {
+			version := jsonData[0]["name"].(string)
+			sha := jsonData[0]["commit"].(map[string]interface{})["id"].(string)
+			zipball := g.getUrl() + "/archive.zip?sha=" + sha
+			return version, zipball, nil
+		} else {
+			return "", "", errors.New("not found")
+		}
+
+	} else {
+		var jsonData map[string]interface{}
+		err = json.Unmarshal([]byte(data), &jsonData)
+		if err != nil {
+			return "", "", err
+		}
+		version := jsonData["name"].(string)
+		sha := jsonData["commit"].(map[string]interface{})["id"].(string)
+		zipball := g.getUrl() + "/archive.zip?sha=" + sha
+
+		return version, zipball, nil
+	}
+}
+
+func (g *Gitlab) GetRelease(release string) (string, string, error) {
+	//latest or tag name
+	u := g.getReleasesUrl()
+	//tag := g.Version
+	if release == "latest" {
+		u += "/releases"
+	} else {
+		u += "/releases/" + release
 	}
 	data, err := g.Request("GET", u)
 	if err != nil {
@@ -112,7 +159,6 @@ func (g *Gitlab) GetRelease(release string) (string, string, error) {
 
 		return version, zipball, nil
 	}
-
 }
 
 func (g *Gitlab) GetBranch(branch string) (string, string, error) {

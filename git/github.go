@@ -81,6 +81,44 @@ func (g *Github) GetContentFile(branch, file string) (string, error) {
 	return content, nil
 }
 
+func (g *Github) GetTag(tag string) (string, string, error) {
+	//latest or tag name
+	u := g.getUrl()
+	//tag := g.Version
+	u += "/tags"
+
+	data, err := g.Request("GET", u)
+	if err != nil {
+		return "", "", err
+	}
+	var jsonData []map[string]interface{}
+	err = json.Unmarshal([]byte(data), &jsonData)
+	if err != nil {
+		return "", "", err
+	}
+	if tag == "latest" {
+		//get first
+		version := jsonData[0]["name"].(string)
+		if version == "" {
+			version = jsonData[0]["tag_name"].(string)
+		}
+		zipball := jsonData[0]["zipball_url"].(string)
+		return version, zipball, nil
+	} else {
+		for _,item := range jsonData {
+			if item["name"] == tag {
+				version := item["name"].(string)
+				if version == "" {
+					version = item["tag_name"].(string)
+				}
+				zipball := item["zipball_url"].(string)
+				return version, zipball, nil
+			}
+		}
+	}
+	return "","",errors.New("not found")
+}
+
 func (g *Github) GetRelease(release string) (string, string, error) {
 	//latest or tag name
 	u := g.getUrl()

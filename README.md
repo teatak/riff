@@ -26,12 +26,17 @@ Usage: riff [--version] <command> [<args>]
 
 Available commands are:
 
+  daem        Run Riff as service 
   query       Query
+  quit        Quit Riff
+  reload      Reload Riff config
   restart     Restart service
   run         Run Riff
   start       Start service
   stop        Stop service
+  update      Update Riff
   version     Prints the Riff version
+
 
 ```
 
@@ -130,7 +135,7 @@ ping.yml config file
 #  provider: github (only support github gitlab)
 #  token: Personal access tokens (visit https://github.com/settings/tokens or https://gitlab.com/profile/personal_access_tokens and generate a new token)
 #  repository: repository address (https://github.com/gimke/cartdemo)
-#  version: branchName (e.g master), latest release (e.g latest）or a release described in a file (e.g master:filepath/version.txt)
+#  version: branchName (e.g branch:master), latest release (e.g release:latest or tag:latest）
 #  payload: payload url when update success
 
 name: ping

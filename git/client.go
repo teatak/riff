@@ -29,6 +29,7 @@ type Client interface {
 	Request(method, url string) (string, error)
 	GetContentFile(branch, file string) (string, error)
 	GetRelease(release string) (string, string, error)
+	GetTag(tag string) (string, string, error)
 	GetBranch(branch string) (string, string, error)
 	DownloadFile(file, url string, progress api.Progress) error
 	Termination()
