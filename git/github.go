@@ -105,7 +105,7 @@ func (g *Github) GetTag(tag string) (string, string, error) {
 		zipball := jsonData[0]["zipball_url"].(string)
 		return version, zipball, nil
 	} else {
-		for _,item := range jsonData {
+		for _, item := range jsonData {
 			if item["name"] == tag {
 				version := item["name"].(string)
 				if version == "" {
@@ -116,7 +116,7 @@ func (g *Github) GetTag(tag string) (string, string, error) {
 			}
 		}
 	}
-	return "","",errors.New("not found")
+	return "", "", errors.New("not found")
 }
 
 func (g *Github) GetRelease(release string) (string, string, error) {
