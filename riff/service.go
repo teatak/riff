@@ -32,12 +32,6 @@ func getVersionType(version string) (t string, v string) {
 	if len(arr) > 1 {
 		t = arr[0]
 		v = strings.Join(arr[1:], ":")
-	} else {
-		//old version todo remove next version
-		if version == "latest" {
-			t = latest
-		}
-		t = branch
 	}
 	return t, v
 }
