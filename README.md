@@ -135,7 +135,7 @@ ping.yml config file
 #  provider: github (only support github gitlab)
 #  token: Personal access tokens (visit https://github.com/settings/tokens or https://gitlab.com/profile/personal_access_tokens and generate a new token)
 #  repository: repository address (https://github.com/gimke/cartdemo)
-#  version: branchName (e.g branch:master), latest release (e.g release:latest or tag:latest）
+#  version: branchName (e.g branch:master), latest release (e.g release:latest or tag:latest）,or (content:master:version.txt)
 #  payload: payload url when update success
 
 name: ping

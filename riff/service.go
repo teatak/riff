@@ -24,6 +24,7 @@ import (
 const branch = "branch"
 const release = "release"
 const tag = "tag"
+const content = "content"
 const latest = "latest"
 
 func getVersionType(version string) (t string, v string) {
@@ -32,12 +33,9 @@ func getVersionType(version string) (t string, v string) {
 		t = arr[0]
 		v = strings.Join(arr[1:], ":")
 	} else {
-		//old version
+		//old version todo remove next version
 		if version == "latest" {
 			t = latest
-		}
-		if strings.Contains(version, ":") {
-			t = release
 		}
 		t = branch
 	}
@@ -412,18 +410,18 @@ func (s *Service) processGit(client git.Client) {
 	case latest:
 		version, asset, err = client.GetRelease(config.Deploy.Version)
 		break
-		//case release:
-		//	arr := strings.Split(config.Deploy.Version, ":")
-		//	version, err = client.GetContentFile(arr[0], strings.Join(arr[1:], ":"))
-		//	version = strings.TrimSpace(version)
-		//	version = strings.Trim(version, "\n")
-		//	version = strings.Trim(version, "\r")
-		//
-		//	if err != nil {
-		//		server.Logger.Printf(errorServicePrefix+"%s get file error: %v", s.Name, err)
-		//	}
-		//	version, asset, err = client.GetRelease(version)
-		//	break
+	case content:
+		arr := strings.Split(v, ":")
+		version, err = client.GetContentFile(arr[0], strings.Join(arr[1:], ":"))
+		version = strings.TrimSpace(version)
+		version = strings.Trim(version, "\n")
+		version = strings.Trim(version, "\r")
+
+		if err != nil {
+			server.Logger.Printf(errorServicePrefix+"%s get file error: %v", s.Name, err)
+		}
+		version, asset, err = client.GetRelease(version)
+		break
 	}
 	if err != nil {
 		server.Logger.Printf(errorServicePrefix+"%s find version error: %v", s.Name, err)
