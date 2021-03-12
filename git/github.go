@@ -53,11 +53,7 @@ func (g *Github) Request(method, url string) (string, error) {
 		data, _ := ioutil.ReadAll(resp.Body)
 		if resp.StatusCode == 200 {
 			//success
-			if err == nil {
-				return string(data), nil
-			} else {
-				return "", err
-			}
+			return string(data), nil
 		} else {
 			return "", errors.New(string(data))
 		}

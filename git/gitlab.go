@@ -48,11 +48,7 @@ func (g *Gitlab) Request(method, url string) (string, error) {
 		data, _ := ioutil.ReadAll(resp.Body)
 		if resp.StatusCode == 200 {
 			//success
-			if err == nil {
-				return string(data), nil
-			} else {
-				return "", err
-			}
+			return string(data), nil
 		} else {
 			return "", errors.New(string(data))
 		}
@@ -114,7 +110,6 @@ func (g *Gitlab) GetTag(tag string) (string, string, error) {
 		version := jsonData["name"].(string)
 		sha := jsonData["commit"].(map[string]interface{})["id"].(string)
 		zipball := g.getUrl() + "/archive.zip?sha=" + sha
-
 		return version, zipball, nil
 	}
 }
