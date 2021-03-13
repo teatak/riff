@@ -2,7 +2,7 @@ package version
 
 import (
 	"fmt"
-	"github.com/gimke/riff/common"
+	"github.com/teatak/riff/common"
 )
 
 type cmd struct {

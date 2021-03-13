@@ -1,7 +1,7 @@
 package cli
 
 import (
-	"github.com/gimke/riff/common"
+	"github.com/teatak/riff/common"
 	"io/ioutil"
 	"os"
 	"strconv"

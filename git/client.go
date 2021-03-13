@@ -3,7 +3,7 @@ package git
 import (
 	"context"
 	"errors"
-	"github.com/gimke/riff/api"
+	"github.com/teatak/riff/api"
 	"io"
 	"io/ioutil"
 	"net/http"

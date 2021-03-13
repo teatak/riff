@@ -1,7 +1,7 @@
 package riff
 
 import (
-	"github.com/gimke/riff/common"
+	"github.com/teatak/riff/common"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"

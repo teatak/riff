@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/gimke/riff/api"
+	"github.com/teatak/riff/api"
 	"io/ioutil"
 	"net/http"
 	"net/url"

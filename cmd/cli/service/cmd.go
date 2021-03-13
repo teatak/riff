@@ -3,8 +3,8 @@ package service
 import (
 	"flag"
 	"fmt"
-	"github.com/gimke/riff/api"
-	"github.com/gimke/riff/common"
+	"github.com/teatak/riff/api"
+	"github.com/teatak/riff/common"
 	"net"
 	"strconv"
 	"strings"

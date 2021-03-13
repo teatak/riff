@@ -2,11 +2,11 @@ package riff
 
 import (
 	"fmt"
-	"github.com/gimke/cart"
-	"github.com/gimke/riff/api"
-	"github.com/gimke/riff/common"
-	"github.com/gimke/riff/schema"
 	"github.com/graph-gophers/graphql-go"
+	"github.com/teatak/cart"
+	"github.com/teatak/riff/api"
+	"github.com/teatak/riff/common"
+	"github.com/teatak/riff/schema"
 	"io"
 	"log"
 	"net"

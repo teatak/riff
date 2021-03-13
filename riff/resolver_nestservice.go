@@ -1,6 +1,6 @@
 package riff
 
-import "github.com/gimke/riff/api"
+import "github.com/teatak/riff/api"
 
 type NestServiceResover struct {
 	service api.NestService

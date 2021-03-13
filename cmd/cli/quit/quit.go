@@ -3,7 +3,7 @@ package quit
 import (
 	"flag"
 	"fmt"
-	"github.com/gimke/riff/cmd/cli"
+	"github.com/teatak/riff/cmd/cli"
 	"syscall"
 	"time"
 )

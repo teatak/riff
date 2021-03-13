@@ -2,17 +2,17 @@ package main
 
 import (
 	"fmt"
-	"github.com/gimke/riff/api"
-	"github.com/gimke/riff/cli"
-	"github.com/gimke/riff/cmd/cli/daem"
-	"github.com/gimke/riff/cmd/cli/query"
-	"github.com/gimke/riff/cmd/cli/quit"
-	"github.com/gimke/riff/cmd/cli/reload"
-	"github.com/gimke/riff/cmd/cli/run"
-	"github.com/gimke/riff/cmd/cli/service"
-	"github.com/gimke/riff/cmd/cli/update"
-	"github.com/gimke/riff/cmd/cli/version"
-	"github.com/gimke/riff/common"
+	"github.com/teatak/riff/api"
+	"github.com/teatak/riff/cli"
+	"github.com/teatak/riff/cmd/cli/daem"
+	"github.com/teatak/riff/cmd/cli/query"
+	"github.com/teatak/riff/cmd/cli/quit"
+	"github.com/teatak/riff/cmd/cli/reload"
+	"github.com/teatak/riff/cmd/cli/run"
+	"github.com/teatak/riff/cmd/cli/service"
+	"github.com/teatak/riff/cmd/cli/update"
+	"github.com/teatak/riff/cmd/cli/version"
+	"github.com/teatak/riff/common"
 	"os"
 )
 

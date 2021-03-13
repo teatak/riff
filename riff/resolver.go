@@ -2,7 +2,7 @@ package riff
 
 import (
 	"errors"
-	"github.com/gimke/riff/api"
+	"github.com/teatak/riff/api"
 	"net"
 	"strconv"
 )

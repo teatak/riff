@@ -1,6 +1,6 @@
 package riff
 
-import "github.com/gimke/riff/common"
+import "github.com/teatak/riff/common"
 
 type RiffResolver struct {
 }

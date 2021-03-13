@@ -3,9 +3,9 @@ package query
 import (
 	"flag"
 	"fmt"
-	"github.com/gimke/riff/api"
-	"github.com/gimke/riff/common"
 	"github.com/ryanuber/columnize"
+	"github.com/teatak/riff/api"
+	"github.com/teatak/riff/common"
 	"net"
 	"strconv"
 )

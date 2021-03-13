@@ -1,6 +1,6 @@
 package riff
 
-import "github.com/gimke/riff/api"
+import "github.com/teatak/riff/api"
 
 type ServiceResolver struct {
 	service *api.Service

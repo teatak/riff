@@ -1,7 +1,7 @@
 package riff
 
 import (
-	"github.com/gimke/riff/api"
+	"github.com/teatak/riff/api"
 )
 
 func mutationService(name, address string, cmd api.CmdType) error {

@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
-	"github.com/gimke/riff/api"
+	"github.com/teatak/riff/api"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -15,7 +15,7 @@ var _ Client = &Github{}
 //deployment:
 //  type: github (only support github gitlab)
 //  token: Personal access tokens (visit https://github.com/settings/tokens and generate a new token)
-//  repository: repository address (https://github.com/gimke/cartdemo)
+//  repository: repository address (https://github.com/teatak/cartdemo)
 //  version: latest,v1.0.3,master or other branch
 //  payload: payload url when update success
 

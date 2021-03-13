@@ -5,7 +5,7 @@
   "license": "MPL-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/gimke/riff.git"
+    "url": "https://github.com/teatak/riff.git"
   },
   "scripts": {
     "watch": "export NODE_ENV=development && webpack --config webpack.config.js --mode=development -w",

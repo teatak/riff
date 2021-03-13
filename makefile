@@ -24,7 +24,7 @@ fmt:
 
 test: tools dev
 	@echo "--> Running go test"
-	go list ./... | grep -v -E '^github.com/gimke/riff/(vendor|cmd/riff/vendor)' | xargs -n1 go test
+	go list ./... | grep -v -E '^github.com/teatak/riff/(vendor|cmd/riff/vendor)' | xargs -n1 go test
 
 webpack:
 	@echo "--> Running webpack"

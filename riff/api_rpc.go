@@ -2,8 +2,8 @@ package riff
 
 import (
 	"fmt"
-	"github.com/gimke/riff/api"
-	"github.com/gimke/riff/common"
+	"github.com/teatak/riff/api"
+	"github.com/teatak/riff/common"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"

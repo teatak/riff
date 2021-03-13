@@ -24,7 +24,7 @@ class Menu extends React.Component {
             </ul>
             <ul className="nav-menu ml-auto">
                 <li>
-                    <a className="nav-link nav-icon" href="https://github.com/gimke/riff" target="_blank">
+                    <a className="nav-link nav-icon" href="https://github.com/teatak/riff" target="_blank">
                         <svg className="nav-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 499.36"
                              focusable="false"><title>GitHub</title>
                             <path

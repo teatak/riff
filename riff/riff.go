@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"crypto/sha1"
 	"fmt"
-	"github.com/gimke/riff/api"
+	"github.com/teatak/riff/api"
 	"io"
 )
 

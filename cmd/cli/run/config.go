@@ -1,8 +1,8 @@
 package run
 
 import (
-	"github.com/gimke/riff/common"
-	"github.com/gimke/riff/riff"
+	"github.com/teatak/riff/common"
+	"github.com/teatak/riff/riff"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"net"

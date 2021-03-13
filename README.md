@@ -1,6 +1,6 @@
 # riff
 
-[![Build Status](https://travis-ci.org/gimke/riff.svg?branch=master)](https://travis-ci.org/gimke/riff) [![GoDoc](https://godoc.org/github.com/gimke/riff?status.svg)](https://godoc.org/github.com/gimke/riff) [![Join the chat at https://gitter.im/gimke/riff](https://badges.gitter.im/gimke/riff.svg)](https://gitter.im/gimke/riff?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Build Status](https://travis-ci.org/gimke/riff.svg?branch=master)](https://travis-ci.org/gimke/riff) [![GoDoc](https://godoc.org/github.com/teatak/riff?status.svg)](https://godoc.org/github.com/teatak/riff) [![Join the chat at https://gitter.im/gimke/riff](https://badges.gitter.im/gimke/riff.svg)](https://gitter.im/gimke/riff?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Riff is a tool for service discovery and configuration.
 
@@ -13,7 +13,7 @@ If you wish to work on Riff, you'll first need Go installed (version 1.9+ is req
 
 If you need Web Console, you'll need npm installed dependencies            
 
-Next clone this repository and build Riff or download from [release](https://github.com/gimke/riff/releases)
+Next clone this repository and build Riff or download from [release](https://github.com/teatak/riff/releases)
 ```bash
 make
 ./riff -v
@@ -134,7 +134,7 @@ ping.yml config file
 #  service_path: (service path e.g /home/riff)
 #  provider: github (only support github gitlab)
 #  token: Personal access tokens (visit https://github.com/settings/tokens or https://gitlab.com/profile/personal_access_tokens and generate a new token)
-#  repository: repository address (https://github.com/gimke/cartdemo)
+#  repository: repository address (https://github.com/teatak/cartdemo)
 #  version: branchName (e.g branch:master), latest release (e.g release:latest or tag:latest）,or (content:master:version.txt)
 #  payload: payload url when update success
 

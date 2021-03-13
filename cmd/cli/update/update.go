@@ -3,12 +3,12 @@ package update
 import (
 	"flag"
 	"fmt"
-	"github.com/gimke/riff/api"
-	"github.com/gimke/riff/cmd/cli"
-	"github.com/gimke/riff/cmd/cli/daem"
-	"github.com/gimke/riff/cmd/cli/quit"
-	"github.com/gimke/riff/common"
-	"github.com/gimke/riff/git"
+	"github.com/teatak/riff/api"
+	"github.com/teatak/riff/cmd/cli"
+	"github.com/teatak/riff/cmd/cli/daem"
+	"github.com/teatak/riff/cmd/cli/quit"
+	"github.com/teatak/riff/common"
+	"github.com/teatak/riff/git"
 	"math"
 	"runtime"
 	"strings"
@@ -47,7 +47,7 @@ func (c *cmd) Update() {
 	//get version from github
 	currentVersion := common.Version
 
-	client := git.GithubClient("", "https://github.com/gimke/riff")
+	client := git.GithubClient("", "https://github.com/teatak/riff")
 	version, _, err := client.GetRelease("latest")
 
 	if err != nil {
@@ -60,7 +60,7 @@ func (c *cmd) Update() {
 			if strings.ToLower(input) == "y" {
 				fmt.Print("downloading...")
 				zipFile := runtime.GOOS + "_" + runtime.GOARCH + ".zip"
-				downloadUrl := "https://github.com/gimke/riff/releases/download/" + version + "/" + zipFile
+				downloadUrl := "https://github.com/teatak/riff/releases/download/" + version + "/" + zipFile
 				file := common.BinDir + "/update/riff/" + version + "/" + zipFile
 				dir := common.BinDir
 				var progress api.Progress

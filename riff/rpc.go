@@ -2,7 +2,7 @@ package riff
 
 import (
 	"fmt"
-	"github.com/gimke/riff/api"
+	"github.com/teatak/riff/api"
 	"io"
 	"net"
 )

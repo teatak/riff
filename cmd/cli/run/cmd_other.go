@@ -4,7 +4,7 @@ package run
 
 import (
 	"fmt"
-	"github.com/gimke/riff/riff"
+	"github.com/teatak/riff/riff"
 	"os"
 	"os/signal"
 	"syscall"

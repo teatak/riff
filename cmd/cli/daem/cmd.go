@@ -3,8 +3,8 @@ package daem
 import (
 	"flag"
 	"fmt"
-	"github.com/gimke/riff/cmd/cli"
-	"github.com/gimke/riff/common"
+	"github.com/teatak/riff/cmd/cli"
+	"github.com/teatak/riff/common"
 	"os"
 	"os/exec"
 	"path/filepath"
