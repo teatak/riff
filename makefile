@@ -1,6 +1,6 @@
 GOTOOLS = \
 	github.com/elazarl/go-bindata-assetfs/... \
-	github.com/jteeuwen/go-bindata/...
+	github.com/go-bindata/go-bindata/...
 
 # Build the project
 default: tools webpack assets
