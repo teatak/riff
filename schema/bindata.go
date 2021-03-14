@@ -85,7 +85,7 @@ func schemaNodeGraphqls() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "schema/node.graphqls", size: 499, mode: os.FileMode(420), modTime: time.Unix(1613393096, 0)}
+	info := bindataFileInfo{name: "schema/node.graphqls", size: 499, mode: os.FileMode(420), modTime: time.Unix(1615649436, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -105,7 +105,7 @@ func schemaSchemaGraphqls() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "schema/schema.graphqls", size: 676, mode: os.FileMode(420), modTime: time.Unix(1613315642, 0)}
+	info := bindataFileInfo{name: "schema/schema.graphqls", size: 676, mode: os.FileMode(420), modTime: time.Unix(1615649436, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -125,7 +125,7 @@ func schemaServiceGraphqls() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "schema/service.graphqls", size: 600, mode: os.FileMode(420), modTime: time.Unix(1613393096, 0)}
+	info := bindataFileInfo{name: "schema/service.graphqls", size: 600, mode: os.FileMode(420), modTime: time.Unix(1615649436, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
