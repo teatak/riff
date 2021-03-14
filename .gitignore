@@ -6,3 +6,4 @@ static/dist/
 vendor/
 !vendor/vendor.json
 console/package-lock.json
+/go.sum
