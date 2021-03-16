@@ -118,13 +118,29 @@ func (s *Server) httpLogger() cart.Handler {
 	}
 }
 
+func (s *Server) auth(c *cart.Context, next cart.Next) {
+	if s.config.Auth != nil {
+		r := c.Request
+		user, pass, ok := r.BasicAuth()
+		if !ok || user != s.config.Auth.UserName || pass != s.config.Auth.Password {
+			c.Response.Header().Set("WWW-Authenticate", `Basic realm="Please enter your username and password"`)
+			c.Response.WriteHeader(401)
+			c.JSON(401, cart.H{
+				"error": "Unauthorized",
+			})
+			return
+		}
+	}
+	next()
+}
+
 func (s *Server) setupCart() error {
 	cart.SetMode(cart.ReleaseMode)
 	//http.Handle("/", http.FileServer(assetFS()))
 	//http.ListenAndServe(s.config.Addresses.Http + ":" + strconv.Itoa(s.config.Ports.Http),nil)
 
 	r := cart.New()
-	r.Use("/", s.httpLogger(), cart.RecoveryRender(cart.DefaultErrorWriter))
+	r.Use("/", s.auth, s.httpLogger(), cart.RecoveryRender(cart.DefaultErrorWriter))
 	if common.IsRelease() {
 		r.Use("/favicon.ico", func(c *cart.Context, next cart.Next) {
 			b, err := assetFS().Asset("static/images/favicon.ico")
