@@ -8,12 +8,14 @@ import (
 	"github.com/teatak/riff/common"
 	"github.com/teatak/riff/schema"
 	"io"
+	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
 	"net/rpc"
 	"os"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 )
@@ -118,19 +120,54 @@ func (s *Server) httpLogger() cart.Handler {
 	}
 }
 
+var checkHtpasswd = false
+var basicAuth = ""
+
 func (s *Server) auth(c *cart.Context, next cart.Next) {
-	if s.config.Auth != nil {
+	//get htpasswd
+
+	if !checkHtpasswd {
+		//check
+		file := common.BinDir + "/config/.htpasswd"
+		if common.IsExist(file) {
+			content, _ := ioutil.ReadFile(file)
+			basicAuth = string(content)
+		}
+		checkHtpasswd = true
+	}
+
+	if checkHtpasswd && basicAuth != "" {
+		//需要验证
 		r := c.Request
 		user, pass, ok := r.BasicAuth()
-		if !ok || user != s.config.Auth.UserName || pass != s.config.Auth.Password {
-			c.Response.Header().Set("WWW-Authenticate", `Basic realm="Please enter your username and password"`)
-			c.Response.WriteHeader(401)
-			c.JSON(401, cart.H{
-				"error": "Unauthorized",
-			})
-			return
+		if !ok {
+			//check user pass
+			arr := strings.Split(basicAuth, ":")
+			cuser := arr[0]
+			cpass := strings.ReplaceAll(arr[1], "{SHA}", "")
+			if user != cuser || common.ShaPass(pass) != cpass {
+				c.Response.Header().Set("WWW-Authenticate", `Basic realm="Please enter your username and password"`)
+				c.Response.WriteHeader(401)
+				c.JSON(401, cart.H{
+					"error": "Unauthorized",
+				})
+				return
+			}
 		}
 	}
+
+	//if s.config.Auth != nil {
+	//	r := c.Request
+	//	user, pass, ok := r.BasicAuth()
+	//	if !ok || user != s.config.Auth.UserName || pass != s.config.Auth.Password {
+	//		c.Response.Header().Set("WWW-Authenticate", `Basic realm="Please enter your username and password"`)
+	//		c.Response.WriteHeader(401)
+	//		c.JSON(401, cart.H{
+	//			"error": "Unauthorized",
+	//		})
+	//		return
+	//	}
+	//}
 	next()
 }
 

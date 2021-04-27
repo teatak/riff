@@ -2,6 +2,8 @@ package common
 
 import (
 	"archive/zip"
+	"crypto/sha1"
+	"encoding/base64"
 	"io"
 	"math/rand"
 	"os"
@@ -28,6 +30,13 @@ func init() {
 }
 
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+
+func ShaPass(pass string) string {
+	h := sha1.New()
+	h.Write([]byte(pass))
+	bytes := h.Sum(nil)
+	return base64.StdEncoding.EncodeToString(bytes)
+}
 
 func MakeFile(path string) *os.File {
 	dir := filepath.Dir(path)

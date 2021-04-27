@@ -16,12 +16,6 @@ type Config struct {
 	Addresses  *Addresses `yaml:"addresses"`
 	Ports      *Ports     `yaml:"ports"`
 	Fanout     int        `yaml:"fan_out"`
-	Auth       *Auth      `yaml:"auth"`
-}
-
-type Auth struct {
-	UserName string `yaml:"username"` //username
-	Password string `yaml:"password"` //password
 }
 
 type Addresses struct {
@@ -70,9 +64,6 @@ func mergeConfig(src, dest *Config) {
 		if src.Ports.Rpc != 0 {
 			dest.Ports.Rpc = src.Ports.Rpc
 		}
-	}
-	if src.Auth != nil {
-		dest.Auth = src.Auth
 	}
 }
 
