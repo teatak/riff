@@ -60,6 +60,7 @@ type ServiceConfig struct {
 	Ip         string   `yaml:"ip,omitempty"`
 	Port       int      `yaml:"port,omitempty"`
 	Env        []string `yaml:"env,omitempty"`
+	Dir        string   `yaml:"dir,omitempty"`
 	Command    []string `yaml:"command,omitempty"`
 	StatusPage string   `yaml:"status_page,omitempty"`
 	PidFile    string   `yaml:"pid_file,omitempty"`
@@ -547,11 +548,15 @@ func (s *Service) Start() error {
 		return fmt.Errorf(errorServicePrefix+"%s is already running", s.Name)
 	}
 	command := s.resoveCommand()
+
 	dir, _ := filepath.Abs(filepath.Dir(command))
 
 	cmd := exec.Command(command, s.Command[1:]...)
 	if len(s.Env) > 0 {
 		cmd.Env = append(os.Environ(), s.Env...)
+	}
+	if s.Dir != "" {
+		dir = s.Dir
 	}
 	cmd.Dir = dir
 
