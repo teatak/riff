@@ -4,9 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/teatak/riff/api"
-	"github.com/teatak/riff/common"
-	"github.com/teatak/riff/git"
 	"io/ioutil"
 	"net"
 	"net/http"
@@ -19,6 +16,10 @@ import (
 	"strings"
 	"syscall"
 	"time"
+
+	"github.com/teatak/riff/api"
+	"github.com/teatak/riff/common"
+	"github.com/teatak/riff/git"
 )
 
 const branch = "branch"
@@ -195,20 +196,20 @@ func (s *Service) checkState() {
 		}
 		if pid := s.GetPid(); pid == 0 {
 			if s.State != api.StateDead {
+				s.State = api.StateDead
 				server.watch.Dispatch(WatchParam{
 					Name:      s.Name,
 					WatchType: ServiceChanged,
 				})
 			}
-			s.State = api.StateDead
 		} else {
 			if s.State != api.StateAlive {
+				s.State = api.StateAlive
 				server.watch.Dispatch(WatchParam{
 					Name:      s.Name,
 					WatchType: ServiceChanged,
 				})
 			}
-			s.State = api.StateAlive
 		}
 	} else {
 		//only use statuspage to check status
@@ -476,6 +477,7 @@ func (s *Service) processGit(client git.Client) {
 	}
 
 	err = client.DownloadFile(file, asset, progress)
+	close(quitLoop)
 	s.Progress.InProgress = false
 
 	//update status
@@ -483,7 +485,6 @@ func (s *Service) processGit(client git.Client) {
 		Name:      s.Name,
 		WatchType: ServiceChanged,
 	})
-	close(quitLoop)
 
 	if err != nil {
 		server.Logger.Printf(errorServicePrefix+"update %s download error: %v", s.Name, err)
