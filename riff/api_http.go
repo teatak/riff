@@ -3,13 +3,14 @@ package riff
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/graph-gophers/graphql-go"
-	"github.com/teatak/cart"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
 	"sync"
+
+	"github.com/graph-gophers/graphql-go"
+	"github.com/teatak/cart"
 )
 
 const (
@@ -143,15 +144,14 @@ type httpLogHandler struct {
 }
 
 func (h *httpLogHandler) HandleLog(log string) {
-	// Do a non-blocking send
-	select {
-	case h.logCh <- log:
-	}
+	h.logCh <- log
 }
 
 func (h *Http) logs(c *cart.Context, next cart.Next) {
 	resp := c.Response
-	clientGone := resp.(http.CloseNotifier).CloseNotify()
+	ctx := c.Request.Context()
+
+	//clientGone := resp.(http.CloseNotifier).CloseNotify()
 
 	resp.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	resp.Header().Set("Connection", "Keep-Alive")
@@ -170,7 +170,7 @@ func (h *Http) logs(c *cart.Context, next cart.Next) {
 	}
 	for {
 		select {
-		case <-clientGone:
+		case <-ctx.Done():
 			return
 		case logs := <-handler.logCh:
 			fmt.Fprintln(resp, logs)
