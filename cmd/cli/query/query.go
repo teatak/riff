@@ -3,11 +3,12 @@ package query
 import (
 	"flag"
 	"fmt"
+	"net"
+	"strconv"
+
 	"github.com/ryanuber/columnize"
 	"github.com/teatak/riff/api"
 	"github.com/teatak/riff/common"
-	"net"
-	"strconv"
 )
 
 const help = `Usage: riff query <command> [options]
@@ -47,6 +48,10 @@ func (c *cmd) init() {
 	}
 }
 func (c *cmd) Run(args []string) int {
+	if len(args) == 0 {
+		c.flags.Usage()
+		return 0
+	}
 	command := args[0]
 	if len(args) > 1 {
 		if command == "node" || command == "service" {
