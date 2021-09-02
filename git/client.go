@@ -3,13 +3,15 @@ package git
 import (
 	"context"
 	"errors"
-	"github.com/teatak/riff/api"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
+
+	"github.com/teatak/riff/api"
 )
 
 type WriteCounter struct {
@@ -45,8 +47,9 @@ func (d *download) downloadFile(header, file, url string, progress api.Progress)
 	dir := filepath.Dir(file)
 	os.MkdirAll(dir, 0755)
 
-	// Get the data
-	d.cx, d.cancel = context.WithCancel(context.Background())
+	// Get the data 5 mins time out
+	d.cx, d.cancel = context.WithTimeout(context.Background(), 5*time.Minute)
+	defer d.cancel()
 	req, _ := http.NewRequest("GET", url, nil)
 	req = req.WithContext(d.cx)
 	if header != "" {
