@@ -12,7 +12,7 @@ GITBRANCH="$(git rev-parse --abbrev-ref HEAD)"
 
 # Determine the arch/os combos we're building for
 XC_OS=${XC_OS:-"linux darwin windows freebsd openbsd solaris"}
-XC_ARCH=${XC_ARCH:-"386 amd64 arm"}
+XC_ARCH=${XC_ARCH:-"386 amd64 arm arm64"}
 LDFLAGS="-X github.com/teatak/riff/common.Type=${TYPE} -X github.com/teatak/riff/common.GitSha=${GITSHA} -X github.com/teatak/riff/common.GitBranch=${GITBRANCH} -X github.com/teatak/riff/common.Version=${VERSION}"
 
 # Delete the old dir
@@ -32,6 +32,9 @@ for OS in ${XC_OS}; do
         if [ ${OS}/${ARCH} == "darwin/arm" ]; then
             continue
         fi
+        if [ ${OS}/${ARCH} == "darwin/386" ]; then
+            continue
+        fi
         if [ ${OS}/${ARCH} == "windows/arm" ]; then
             continue
         fi
@@ -39,6 +42,9 @@ for OS in ${XC_OS}; do
             continue
         fi
         if [ ${OS}/${ARCH} == "solaris/386" ]; then
+            continue
+        fi
+        if [ ${OS}/${ARCH} == "solaris/arm64" ]; then
             continue
         fi
         echo "Building ${OS}/${ARCH}"

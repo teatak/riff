@@ -2,11 +2,6 @@ package riff
 
 import (
 	"fmt"
-	"github.com/graph-gophers/graphql-go"
-	"github.com/teatak/cart"
-	"github.com/teatak/riff/api"
-	"github.com/teatak/riff/common"
-	"github.com/teatak/riff/schema"
 	"io"
 	"io/ioutil"
 	"log"
@@ -18,6 +13,12 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/graph-gophers/graphql-go"
+	"github.com/teatak/cart"
+	"github.com/teatak/riff/api"
+	"github.com/teatak/riff/common"
+	"github.com/teatak/riff/schema"
 )
 
 const errorServerPrefix = "[ERR]  riff.server: "
