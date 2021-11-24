@@ -7,6 +7,6 @@ config/
 vendor/
 !vendor/vendor.json
 console/package-lock.json
-/go.sum
-/schema/bindata.go
-/riff/bindata_assetfs.go
+go.sum
+schema/bindata.go
+riff/bindata_assetfs.go
