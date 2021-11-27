@@ -32,6 +32,7 @@ webpack:
 
 tools:
 	@echo "--> Running tools"
+	@go get -d $(GOTOOLS)
 	@go install $(GOTOOLS)
 	@cd console && npm install
 
