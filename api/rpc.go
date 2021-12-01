@@ -13,8 +13,8 @@ type RpcClient struct {
 	rpc string
 }
 
-func (this *RpcClient) Services(name string, state StateType) (service Service) {
-	client, err := NewClient(this.rpc)
+func (s *RpcClient) Services(name string, state StateType) (service Service) {
+	client, err := NewClient(s.rpc)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -54,9 +54,9 @@ url: http://serviceName or rpc://serviceName
 http url return http://ip:port
 rpc url only return ip:port
 */
-func (this *RpcClient) Robin(url string) (string, error) {
+func (s *RpcClient) Robin(url string) (string, error) {
 	prefix, serviceName := reserveAddress(url)
-	service := this.Services(serviceName, StateAlive)
+	service := s.Services(serviceName, StateAlive)
 	count := len(service.NestNodes)
 	if count > 0 {
 		r := generateNumber(0, count-1)
@@ -73,9 +73,9 @@ url: http://serviceName or rpc://serviceName
 http url return http://ip:port
 rpc url only return ip:port
 */
-func (this *RpcClient) Round(url string) (string, error) {
+func (s *RpcClient) Round(url string) (string, error) {
 	prefix, serviceName := reserveAddress(url)
-	service := this.Services(serviceName, StateAlive)
+	service := s.Services(serviceName, StateAlive)
 	count := len(service.NestNodes)
 	if count > 0 {
 		r := counter[serviceName]
@@ -100,9 +100,9 @@ url: http://serviceName or rpc://serviceName
 http url return http://ip:port
 rpc url only return ip:port
 */
-func (this *RpcClient) Hash(url, key string) (string, error) {
+func (s *RpcClient) Hash(url, key string) (string, error) {
 	prefix, serviceName := reserveAddress(url)
-	service := this.Services(serviceName, StateAlive)
+	service := s.Services(serviceName, StateAlive)
 	count := len(service.NestNodes)
 	if count > 0 {
 		r := hash(key) % count
@@ -117,9 +117,9 @@ url: http://serviceName or rpc://serviceName
 http url return http://ip:port
 rpc url only return ip:port
 */
-func (this *RpcClient) HashRing(url, key string) (string, error) {
+func (s *RpcClient) HashRing(url, key string) (string, error) {
 	prefix, serviceName := reserveAddress(url)
-	service := this.Services(serviceName, StateAlive)
+	service := s.Services(serviceName, StateAlive)
 	count := len(service.NestNodes)
 	//make hashring
 	if count > 0 {

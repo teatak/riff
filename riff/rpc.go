@@ -2,9 +2,10 @@ package riff
 
 import (
 	"fmt"
-	"github.com/teatak/riff/api"
 	"io"
 	"net"
+
+	"github.com/teatak/riff/api"
 )
 
 type factory func(s *Server) interface{}
@@ -57,7 +58,7 @@ func (s *Server) handleConn(conn net.Conn) {
 		conn.Close()
 		return
 	}
-	typ := api.RPCType(buf[0])
+	typ := buf[0]
 	switch typ {
 	case api.RPCGob:
 		s.handleGobRpc(conn)

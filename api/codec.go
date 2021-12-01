@@ -12,11 +12,9 @@ import (
 	"time"
 )
 
-type RPCType byte
-
 const (
-	RPCGob  RPCType = 0
-	RPCJson         = 1
+	RPCGob byte = iota
+	RPCJson
 )
 
 func NewClient(address string) (*rpc.Client, error) {
@@ -48,7 +46,7 @@ func TimeoutCoder(f func(interface{}) error, e interface{}, msg string) error {
 	case e := <-endChan:
 		return e
 	case <-time.After(time.Minute):
-		return fmt.Errorf("Timeout %s", msg)
+		return fmt.Errorf("timeout %s", msg)
 	}
 }
 
