@@ -1,6 +1,6 @@
 GOTOOLS = \
-	github.com/elazarl/go-bindata-assetfs/... \
-	github.com/go-bindata/go-bindata/...
+	github.com/elazarl/go-bindata-assetfs \
+	github.com/go-bindata/go-bindata
 
 # Build the project
 default: tools webpack assets
@@ -32,6 +32,7 @@ webpack:
 
 tools:
 	@echo "--> Running tools"
+	@go get $(GOTOOLS)
 	@go install $(GOTOOLS)
 	@cd console && npm install
 

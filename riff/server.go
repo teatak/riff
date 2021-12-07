@@ -84,9 +84,13 @@ func NewServer(config *Config) (*Server, error) {
 	return server, nil
 }
 func (s *Server) setupServer() error {
+	ip, _, err := net.ParseCIDR(s.config.IP)
+	if err != nil {
+		s.Logger.Printf(errorServicePrefix+" %v\n", err)
+	}
 	self := &Node{
 		Name:        s.config.Name,
-		IP:          s.config.Addresses.Rpc,
+		IP:          ip.String(),
 		RpcPort:     s.config.Ports.Rpc,
 		HttpPort:    s.config.Ports.Http,
 		DataCenter:  s.config.DataCenter,
@@ -208,10 +212,9 @@ func (s *Server) setupCart() error {
 			}
 		})
 	} else {
-		//debug
-		r.Use("/favicon.ico", cart.File("../static/images/favicon.ico"))
-		r.Use("/console/*file", cart.File("../static/dist/console.html"))
-		r.Use("/static/*file", cart.Static("../static", false))
+		r.Use("/favicon.ico", cart.File("./static/images/favicon.ico"))
+		r.Use("/console/*file", cart.File("./static/dist/console.html"))
+		r.Use("/static/*file", cart.Static("./static", false))
 	}
 	h := &Http{Schema: graphql.MustParseSchema(schema.String(), &Resolver{})}
 	r.Route("/", h.Index)
