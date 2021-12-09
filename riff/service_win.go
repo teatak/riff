@@ -58,6 +58,7 @@ func (s *Service) Start() error {
 		out := common.MakeFile(common.BinDir + "/logs/" + s.Name + "/stdout.log")
 		cmd.Stdout = out
 	}
+
 	if s.StdErrFile != "" {
 		err := common.MakeFile(s.resovePath(s.StdErrFile))
 		cmd.Stderr = err

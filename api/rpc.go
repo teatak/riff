@@ -49,12 +49,12 @@ func reserveAddress(url string) (string, string) {
 }
 
 /*
-robin
+random
 url: http://serviceName or rpc://serviceName
 http url return http://ip:port
 rpc url only return ip:port
 */
-func (s *RpcClient) Robin(url string) (string, error) {
+func (s *RpcClient) Random(url string) (string, error) {
 	prefix, serviceName := reserveAddress(url)
 	service := s.Services(serviceName, StateAlive)
 	count := len(service.NestNodes)
@@ -73,7 +73,7 @@ url: http://serviceName or rpc://serviceName
 http url return http://ip:port
 rpc url only return ip:port
 */
-func (s *RpcClient) Round(url string) (string, error) {
+func (s *RpcClient) RoundRobin(url string) (string, error) {
 	prefix, serviceName := reserveAddress(url)
 	service := s.Services(serviceName, StateAlive)
 	count := len(service.NestNodes)

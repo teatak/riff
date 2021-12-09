@@ -7,8 +7,8 @@ import (
 
 type Client interface {
 	Services(serviceName string, state StateType) Service
-	Robin(url string) (string, error)
-	Round(url string) (string, error)
+	Random(url string) (string, error)
+	RoundRobin(url string) (string, error)
 	Hash(url, key string) (string, error)
 	HashRing(url, key string) (string, error)
 }

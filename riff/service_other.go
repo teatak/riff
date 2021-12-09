@@ -97,10 +97,22 @@ func (s *Service) Stop() error {
 	if pid == 0 {
 		return fmt.Errorf(errorServicePrefix+"%s has already been stopped", s.Name)
 	} else {
-		if _, find := s.processExist(pid); find {
-			err := syscall.Kill(-pid, syscall.SIGKILL)
-			//err := p.Kill()
-			if err != nil {
+		if p, find := s.processExist(pid); find {
+			pgid, err := syscall.Getpgid(pid)
+			if err == nil {
+				if pgid == pid {
+					//if pid == pgid
+					err := syscall.Kill(-pgid, syscall.SIGKILL)
+					if err != nil {
+						return err
+					}
+				} else {
+					err := p.Kill()
+					if err != nil {
+						return err
+					}
+				}
+			} else {
 				return err
 			}
 			quitStop := make(chan bool)
