@@ -455,9 +455,8 @@ func (s *Service) processGit(client git.Client) {
 		}
 	}()
 
-	var progress api.Progress
 	now := time.Now()
-	progress = func(current, total int32) {
+	progress := func(current, total int32) {
 		s.Progress.Current = current
 		s.Progress.Total = total
 		s.Progress.InProgress = true

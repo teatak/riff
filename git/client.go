@@ -10,14 +10,12 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
-
-	"github.com/teatak/riff/api"
 )
 
 type WriteCounter struct {
 	Total    int32
 	Current  int32
-	Progress api.Progress
+	Progress func(int32, int32)
 }
 
 func (wc *WriteCounter) Write(p []byte) (int, error) {
@@ -33,7 +31,7 @@ type Client interface {
 	GetRelease(release string) (string, string, error)
 	GetTag(tag string) (string, string, error)
 	GetBranch(branch string) (string, string, error)
-	DownloadFile(file, url string, progress api.Progress) error
+	DownloadFile(file, url string, progress func(int32, int32)) error
 	Termination()
 }
 
@@ -42,7 +40,7 @@ type download struct {
 	cancel context.CancelFunc
 }
 
-func (d *download) downloadFile(header, file, url string, progress api.Progress) error {
+func (d *download) downloadFile(header, file, url string, progress func(int32, int32)) error {
 	// Create the file
 	dir := filepath.Dir(file)
 	os.MkdirAll(dir, 0755)

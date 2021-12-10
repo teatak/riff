@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
-	"github.com/teatak/riff/api"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -162,8 +161,11 @@ func (g *Github) GetBranch(branch string) (string, string, error) {
 
 }
 
-func (g *Github) DownloadFile(file, url string, progress api.Progress) error {
-	header := "Authorization: token " + g.Token
+func (g *Github) DownloadFile(file, url string, progress func(int32, int32)) error {
+	header := ""
+	if g.Token != "" {
+		header = "Authorization: token " + g.Token
+	}
 	g.d = &download{}
 	return g.d.downloadFile(header, file, url, progress)
 }

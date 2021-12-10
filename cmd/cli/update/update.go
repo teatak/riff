@@ -3,15 +3,15 @@ package update
 import (
 	"flag"
 	"fmt"
-	"github.com/teatak/riff/api"
+	"math"
+	"runtime"
+	"strings"
+
 	"github.com/teatak/riff/cmd/cli"
 	"github.com/teatak/riff/cmd/cli/daem"
 	"github.com/teatak/riff/cmd/cli/quit"
 	"github.com/teatak/riff/common"
 	"github.com/teatak/riff/git"
-	"math"
-	"runtime"
-	"strings"
 )
 
 const help = `Usage: update riff
@@ -63,8 +63,7 @@ func (c *cmd) Update() {
 				downloadUrl := "https://github.com/teatak/riff/releases/download/" + version + "/" + zipFile
 				file := common.BinDir + "/update/riff/" + version + "/" + zipFile
 				dir := common.BinDir
-				var progress api.Progress
-				progress = func(current, total int32) {
+				progress := func(current, total int32) {
 					fmt.Printf("\r%s", strings.Repeat(" ", 45))
 					// Return again and print current status of download
 					// We use the humanize package to print the bytes in a meaningful way (e.g. 10 MB)

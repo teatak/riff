@@ -9,8 +9,8 @@ type Client interface {
 	Services(serviceName string, state StateType) Service
 	Random(url string) (string, error)
 	RoundRobin(url string) (string, error)
-	Hash(url, key string) (string, error)
-	HashRing(url, key string) (string, error)
+	Hash(key, url string) (string, error)
+	ConsistentHash(key, url string) (string, error)
 }
 
 /*

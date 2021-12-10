@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/teatak/riff/api"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -176,8 +175,11 @@ func (g *Gitlab) GetBranch(branch string) (string, string, error) {
 	return version, asset, nil
 }
 
-func (g *Gitlab) DownloadFile(file, url string, progress api.Progress) error {
-	header := "PRIVATE-TOKEN: " + g.Token
+func (g *Gitlab) DownloadFile(file, url string, progress func(int32, int32)) error {
+	header := ""
+	if g.Token != "" {
+		header = "PRIVATE-TOKEN: " + g.Token
+	}
 	g.d = &download{}
 	return g.d.downloadFile(header, file, url, progress)
 }
