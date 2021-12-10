@@ -1,0 +1,59 @@
+backend:
+  - name: portal
+    mode: consistentHash #random 随机 roundRobin 轮训 hash 哈希 consistentHash 一致性哈希
+    riff: portal@riff://localhost:8630  #riff service
+  - name: api
+    mode: consistentHash
+    riff: api@riff://localhost:8630 
+  - name: console
+    mode: consistentHash
+    riff: console@riff://localhost:8630 
+  - name: short
+    mode: consistentHash
+    riff: short@riff://localhost:8630 
+  - name: riff
+    mode: hash
+    server:
+      - http://localhost:8610
+
+server:
+  - listen: "[::]:80"
+    domain:
+      - name: _
+        location:
+          - path: /
+            return: "redirect 301 https://$host$request_uri"
+            # redirect
+  - listen: "[::]:443"
+    ssl: true
+    domain:
+      - name: riff.teatak.com
+        certFile: "/data/cert/riff.teatak.com.pem"
+        keyFile: "/data/cert/riff.teatak.com.key"
+        location: 
+          - path: /
+            return: "backend riff"
+      - name: teatak.com www.teatak.com
+        certFile: "/data/cert/teatak.com.pem"
+        keyFile: "/data/cert/teatak.com.key"
+        location: 
+          - path: /
+            return: "backend portal"
+      - name: console.teatak.com
+        certFile: "/data/cert/console.teatak.com.pem"
+        keyFile: "/data/cert/console.teatak.com.key"
+        location: 
+          - path: /
+            return: "backend console"
+      - name: api.teatak.com
+        certFile: "/data/cert/api.teatak.com.pem"
+        keyFile: "/data/cert/api.teatak.com.key"
+        location: 
+          - path: /
+            return: "backend api"
+      - name: x-t.top www.x-t.top
+        certFile: "/data/cert/x-t.top.pem"
+        keyFile: "/data/cert/x-t.top.key"
+        location: 
+          - path: /
+            return: "backend short"
