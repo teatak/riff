@@ -322,7 +322,6 @@ func (s *Service) update() {
 		switch strings.ToLower(deploy.Provider) {
 		case "github":
 			client = git.GithubClient(deploy.Token, deploy.Repository)
-			break
 		case "gitlab":
 			client = git.GitlabClient(deploy.Token, deploy.Repository)
 		}
@@ -522,7 +521,7 @@ func (s *Service) Address() string {
 
 func (s *Services) Keys() []string {
 	var keys = make([]string, 0)
-	for key, _ := range *s {
+	for key := range *s {
 		keys = append(keys, key)
 	}
 	sort.Strings(keys)
