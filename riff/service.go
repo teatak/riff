@@ -402,10 +402,8 @@ func (s *Service) processGit(client git.Client) {
 		} else {
 			version, asset, err = client.GetBranch(config.Deploy.Version)
 		}
-		break
 	case latest:
 		version, asset, err = client.GetRelease(config.Deploy.Version)
-		break
 	case content:
 		arr := strings.Split(v, ":")
 		version, err = client.GetContentFile(arr[0], strings.Join(arr[1:], ":"))
@@ -417,7 +415,6 @@ func (s *Service) processGit(client git.Client) {
 			server.Logger.Printf(errorServicePrefix+"%s get file error: %v", s.Name, err)
 		}
 		version, asset, err = client.GetRelease(version)
-		break
 	}
 	if err != nil {
 		server.Logger.Printf(errorServicePrefix+"%s find version error: %v", s.Name, err)
@@ -465,7 +462,7 @@ func (s *Service) processGit(client git.Client) {
 
 		//dispatch every 1 sec
 		go func() {
-			if time.Now().Sub(now).Seconds() > 1 {
+			if time.Since(now).Seconds() > 1 {
 				now = time.Now()
 				server.watch.Dispatch(WatchParam{
 					Name:      s.Name,
@@ -524,7 +521,7 @@ func (s *Service) Address() string {
 }
 
 func (s *Services) Keys() []string {
-	var keys = make([]string, 0, 0)
+	var keys = make([]string, 0)
 	for key, _ := range *s {
 		keys = append(keys, key)
 	}
