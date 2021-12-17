@@ -113,6 +113,8 @@ func (s *Service) rewriteConfig() {
 	s.Env = replaceValues(s.Env)
 	s.Command = replaceValues(s.Command)
 	s.StatusPage = replaceValue(s.StatusPage)
+	s.PidFile = replaceValue(s.PidFile)
+
 	if s.Deploy != nil {
 		s.Deploy.ServicePath = replaceValue(s.Deploy.ServicePath)
 		s.Deploy.Repository = replaceValue(s.Deploy.Repository)
