@@ -2,9 +2,10 @@ package riff
 
 import (
 	"fmt"
-	"github.com/teatak/riff/api"
 	"strings"
 	"time"
+
+	"github.com/teatak/riff/api"
 )
 
 func (s *Server) fanoutNodes() {
@@ -116,7 +117,7 @@ func (s *Server) requestPeer(peer string) error {
 		diff := s.MakeDiffNodes(digests)
 		if len(diff) != 0 {
 			var reDiff []*Node
-			err = client.Call("Riff.PushDiff", diff, &reDiff)
+			_ = client.Call("Riff.PushDiff", diff, &reDiff)
 			if len(reDiff) != 0 {
 				s.MergeDiff(reDiff)
 			}

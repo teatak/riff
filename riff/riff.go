@@ -4,8 +4,9 @@ import (
 	"bytes"
 	"crypto/sha1"
 	"fmt"
-	"github.com/teatak/riff/api"
 	"io"
+
+	"github.com/teatak/riff/api"
 )
 
 func (s *Server) Shutter() {
@@ -109,10 +110,8 @@ func (s *Server) MergeDiff(diffs []*Node) (reDiffs []*Node) {
 			switch d.IsSelf {
 			case true:
 				merged, reDiff = s.trueNode(d, n)
-				break
 			case false:
 				merged, reDiff = s.gossipNode(d, n)
-				break
 			}
 			if reDiff != nil {
 				reDiffs = append(reDiffs, reDiff)
@@ -146,14 +145,12 @@ func (s *Server) trueNode(d, n *Node) (merged bool, reDiff *Node) {
 			s.ExchangeNode(n, d)
 		}
 		merged = true
-		break
 	case api.StateDead:
 		if n.State != api.StateDead {
 			s.ExchangeNode(n, d)
 			s.RemoveNodeDelay(n)
 			merged = true
 		}
-		break
 	}
 	return
 }
@@ -189,9 +186,9 @@ func (s *Server) ExchangeNode(n, d *Node) {
 	s.walkService(n, d)
 
 	if n.IsSelf {
-		*n = *d
+		n = d
 	} else {
-		*n = *d
+		n = d
 		n.IsSelf = false
 	}
 

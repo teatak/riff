@@ -2,20 +2,21 @@ package riff
 
 import (
 	"errors"
-	"github.com/teatak/riff/api"
 	"net"
 	"strconv"
+
+	"github.com/teatak/riff/api"
 )
 
 type Resolver struct {
 }
 
 //Query
-func (_ *Resolver) Riff() *RiffResolver {
+func (*Resolver) Riff() *RiffResolver {
 	return &RiffResolver{}
 }
 
-func (_ *Resolver) Nodes() *[]*NodeResolver {
+func (*Resolver) Nodes() *[]*NodeResolver {
 	var l []*NodeResolver
 	for _, node := range server.api.Nodes() {
 		l = append(l, &NodeResolver{node})
@@ -23,7 +24,7 @@ func (_ *Resolver) Nodes() *[]*NodeResolver {
 	return &l
 }
 
-func (_ *Resolver) Node(args struct{ Name string }) *NodeResolver {
+func (*Resolver) Node(args struct{ Name string }) *NodeResolver {
 	node := server.api.Node(args.Name)
 	if node == nil {
 		return nil
@@ -32,11 +33,11 @@ func (_ *Resolver) Node(args struct{ Name string }) *NodeResolver {
 	}
 }
 
-func (_ *Resolver) Server() *NodeResolver {
+func (*Resolver) Server() *NodeResolver {
 	return &NodeResolver{server.api.Node(server.Self.Name)}
 }
 
-func (_ *Resolver) Services() *[]*ServiceResolver {
+func (*Resolver) Services() *[]*ServiceResolver {
 	var l []*ServiceResolver
 	for _, service := range server.api.Services() {
 		l = append(l, &ServiceResolver{service})
@@ -44,7 +45,7 @@ func (_ *Resolver) Services() *[]*ServiceResolver {
 	return &l
 }
 
-func (_ *Resolver) Service(args struct {
+func (*Resolver) Service(args struct {
 	Name  string
 	State *string
 }) *ServiceResolver {
@@ -60,7 +61,7 @@ func (_ *Resolver) Service(args struct {
 	}
 }
 
-func (_ *Resolver) MutationService(args struct {
+func (*Resolver) MutationService(args struct {
 	Services *[]*MutationServiceInput
 }) *[]*MutationService {
 	var l []*MutationService
@@ -82,7 +83,7 @@ func (_ *Resolver) MutationService(args struct {
 	return &l
 }
 
-func (_ *Resolver) RegisteService(args struct {
+func (*Resolver) RegisteService(args struct {
 	Node struct {
 		Ip   string
 		Port int32
@@ -98,11 +99,11 @@ func (_ *Resolver) RegisteService(args struct {
 	if result {
 		return &result, nil
 	} else {
-		return &result, errors.New("Registe Service Fail")
+		return &result, errors.New("register service fail")
 	}
 }
 
-func (_ *Resolver) UnregisteService(args struct {
+func (*Resolver) UnregisteService(args struct {
 	Node struct {
 		Ip   string
 		Port int32

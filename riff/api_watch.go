@@ -3,8 +3,9 @@ package riff
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/teatak/cart"
 	"net/http"
+
+	"github.com/teatak/cart"
 )
 
 type httpWatchHandler struct {
@@ -15,9 +16,7 @@ type httpWatchHandler struct {
 
 func (h *httpWatchHandler) HandleWatch() {
 	// Do a non-blocking send
-	select {
-	case h.watchCh <- true:
-	}
+	h.watchCh <- true
 }
 
 func (h *httpWatchHandler) GetParam() *WatchParam {
@@ -26,7 +25,7 @@ func (h *httpWatchHandler) GetParam() *WatchParam {
 
 func (h *Http) watch(c *cart.Context, next cart.Next) {
 	resp := c.Response
-	clientGone := resp.(http.CloseNotifier).CloseNotify()
+	ctx := c.Request.Context()
 
 	resp.Header().Set("Content-Type", "application/json; charset=utf-8")
 	resp.Header().Set("Connection", "Keep-Alive")
@@ -43,10 +42,8 @@ func (h *Http) watch(c *cart.Context, next cart.Next) {
 	switch watch {
 	case "node":
 		watchType = NodeChanged
-		break
 	case "service":
 		watchType = ServiceChanged
-		break
 	}
 
 	watchHandler := &httpWatchHandler{
@@ -70,11 +67,11 @@ func (h *Http) watch(c *cart.Context, next cart.Next) {
 
 	flusher, ok := resp.(http.Flusher)
 	if !ok {
-		server.Logger.Println("Streaming not supported")
+		server.Logger.Println("streaming not supported")
 	}
 	for {
 		select {
-		case <-clientGone:
+		case <-ctx.Done():
 			return
 		case <-watchHandler.watchCh:
 

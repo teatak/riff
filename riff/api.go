@@ -39,7 +39,9 @@ func (a *API) makeNestNode(n *Node, s *Service, resolveState api.StateType) *api
 		StatusContent: s.StatusContent,
 		StartTime:     s.StartTime,
 		Progress: &api.NestProgress{
-			s.Progress.Current, s.Progress.Total, s.Progress.InProgress,
+			Current:    s.Progress.Current,
+			Total:      s.Progress.Total,
+			InProgress: s.Progress.InProgress,
 		},
 	}
 	return node
@@ -61,7 +63,9 @@ func (a *API) makeNestService(s *Service) *api.NestService {
 		StatusContent: s.StatusContent,
 		StartTime:     s.StartTime,
 		Progress: &api.NestProgress{
-			s.Progress.Current, s.Progress.Total, s.Progress.InProgress,
+			Current:    s.Progress.Current,
+			Total:      s.Progress.Total,
+			InProgress: s.Progress.InProgress,
 		},
 	}
 	return service

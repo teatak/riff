@@ -2,12 +2,13 @@ package riff
 
 import (
 	"fmt"
-	"github.com/teatak/riff/api"
-	"github.com/teatak/riff/common"
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
 	"strings"
+
+	"github.com/teatak/riff/api"
+	"github.com/teatak/riff/common"
+	"gopkg.in/yaml.v2"
 )
 
 type Query struct{}
@@ -110,14 +111,11 @@ func (m *Mutation) Service(p api.ParamServiceMutation, reply *bool) (err error) 
 	}
 	switch p.Cmd {
 	case api.CmdStart:
-		err = s.Start()
-		break
+		_ = s.Start()
 	case api.CmdStop:
-		err = s.Stop()
-		break
+		_ = s.Stop()
 	case api.CmdRestart:
-		err = s.Restart()
-		break
+		_ = s.Restart()
 	}
 	*reply = true
 	return nil

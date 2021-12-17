@@ -2,10 +2,11 @@ package riff
 
 import (
 	"context"
-	"github.com/gorilla/websocket"
-	"github.com/teatak/cart"
 	"math"
 	"time"
+
+	"github.com/gorilla/websocket"
+	"github.com/teatak/cart"
 )
 
 var upgrader = websocket.Upgrader{
@@ -129,10 +130,8 @@ func (h *Http) buildHttpWatchHandler(name string, watch string) *httpWatchHandle
 	switch watch {
 	case "node":
 		watchType = NodeChanged
-		break
 	case "service":
 		watchType = ServiceChanged
-		break
 	}
 	if watchType == NodeChanged && name == "" {
 		name = server.Self.Name

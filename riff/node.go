@@ -4,9 +4,6 @@ import (
 	"bytes"
 	"crypto/sha1"
 	"fmt"
-	"github.com/teatak/riff/api"
-	"github.com/teatak/riff/common"
-	"gopkg.in/yaml.v2"
 	"io"
 	"io/ioutil"
 	"net"
@@ -17,6 +14,10 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"github.com/teatak/riff/api"
+	"github.com/teatak/riff/common"
+	"gopkg.in/yaml.v2"
 )
 
 type Nodes struct {
@@ -29,7 +30,7 @@ type Digest struct {
 }
 
 func (s *Server) Keys() []string {
-	var keys = make([]string, 0, 0)
+	var keys = make([]string, 0)
 	s.nodes.Range(func(key, value interface{}) bool {
 		keys = append(keys, key.(string))
 		return true
@@ -71,7 +72,7 @@ func (s *Server) ServicesSlice() []string {
 	services := []string{}
 	for _, key := range keys {
 		if n := s.GetNode(key); n != nil {
-			for name, _ := range n.Services {
+			for name := range n.Services {
 				if _, ok := helper[name]; !ok {
 					helper[name] = name
 					services = append(services, name)
@@ -221,7 +222,6 @@ type Node struct {
 	SnapShot    string
 	Services
 	IsSelf    bool
-	nodeLock  sync.RWMutex
 	timer     *time.Timer
 	timeoutFn func()
 }
@@ -303,11 +303,6 @@ func (n *Node) LoadServices() {
 		}
 	}
 	n.Shutter()
-}
-
-func (n *Node) rewriteConfig(service *Service) {
-	//rewrite name port ip
-
 }
 
 func (n *Node) LoadService(name string) *Service {
