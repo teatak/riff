@@ -186,9 +186,9 @@ func (s *Server) ExchangeNode(n, d *Node) {
 	s.walkService(n, d)
 
 	if n.IsSelf {
-		n = d
+		*n = *d
 	} else {
-		n = d
+		*n = *d
 		n.IsSelf = false
 	}
 
