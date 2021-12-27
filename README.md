@@ -1,6 +1,6 @@
 # riff
 
-[![Build Status](https://travis-ci.org/gimke/riff.svg?branch=master)](https://travis-ci.org/gimke/riff) [![GoDoc](https://godoc.org/github.com/teatak/riff?status.svg)](https://godoc.org/github.com/teatak/riff) [![Join the chat at https://gitter.im/gimke/riff](https://badges.gitter.im/gimke/riff.svg)](https://gitter.im/gimke/riff?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+<!-- [![Build Status](https://travis-ci.org/gimke/riff.svg?branch=master)](https://travis-ci.org/gimke/riff) [![GoDoc](https://godoc.org/github.com/teatak/riff?status.svg)](https://godoc.org/github.com/teatak/riff) [![Join the chat at https://gitter.im/gimke/riff](https://badges.gitter.im/gimke/riff.svg)](https://gitter.im/gimke/riff?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) -->
 
 Riff is a tool for service discovery and configuration.
 

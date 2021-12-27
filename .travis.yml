@@ -1,17 +1,17 @@
-language: go
+# language: go
 
-go:
-  - 1.13
+# go:
+#   - 1.13
 
-branches:
-  only:
-    - master
+# branches:
+#   only:
+#     - master
 
-before_install:
-  - go get -u github.com/kardianos/govendor
-  - govendor sync
+# before_install:
+#   - go get -u github.com/kardianos/govendor
+#   - govendor sync
 
-script:
-  - make test
+# script:
+#   - make test
 
-sudo: false
+# sudo: false
