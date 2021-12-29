@@ -2,7 +2,6 @@ package api
 
 import (
 	"errors"
-	"fmt"
 	"hash/crc32"
 	"math/rand"
 	"strconv"
@@ -16,14 +15,12 @@ type RpcClient struct {
 func (s *RpcClient) Services(name string, state StateType) (service Service) {
 	client, err := NewClient(s.rpc)
 	if err != nil {
-		fmt.Println(err)
 		return
 	}
 	defer client.Close()
 
 	err = client.Call("Query.Service", ParamService{Name: name, State: state}, &service)
 	if err != nil {
-		fmt.Println(err)
 		return
 	}
 	return
