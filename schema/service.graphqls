@@ -1,42 +1,42 @@
 input MutationServiceInput {
-    cmd: Cmd!
-    name: String!
-    ip: String!
-    port: Int!
+  cmd: Cmd!
+  name: String!
+  ip: String!
+  port: Int!
 }
 
 input MutationNodeInput {
-    ip: String!
-    port: Int!
+  ip: String!
+  port: Int!
 }
 
 type NestService {
-    config: String!
-    statusContent: String!
-    name: String!
-    ip: String!
-    port: Int!
-    state: State!
-    startTime: Int!
-    progress: Progress!
+  config: String!
+  statusContent: String!
+  name: String!
+  ip: String!
+  port: Int!
+  state: State!
+  startTime: Int!
+  progress: Progress!
 }
 
 type Progress {
-    current: Int!
-    total: Int!
-    inProgress: Boolean!
+  current: Int!
+  total: Int!
+  inProgress: Boolean!
 }
 
 type Service {
-    name: String!
-    nodes: [NestNode!]
+  name: String!
+  nodes: [NestNode!]
 }
 
 type MutationService {
-    cmd: Cmd!
-    error: String!
-    ip: String!
-    name: String!
-    port: Int!
-    success: Boolean!
+  cmd: Cmd!
+  error: String!
+  ip: String!
+  name: String!
+  port: Int!
+  success: Boolean!
 }

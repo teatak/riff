@@ -1,44 +1,38 @@
 schema {
-    query: Query
-    mutation: Mutation
+  query: Query
+  mutation: Mutation
 }
 
 type Query {
-    node(name: String!): Node
-    nodes: [Node]
-    riff: Riff
-    server: Node
-    service(name: String!,state: State): Service
-    services: [Service]
+  node(name: String!): Node
+  nodes: [Node]
+  riff: Riff
+  server: Node
+  service(name: String!, state: State): Service
+  services: [Service]
 }
 
 type Mutation {
-    mutationService(services: [MutationServiceInput!]): [MutationService]
-    registeService(
-        node: MutationNodeInput!
-        config: String!
-    ): Boolean
-    unregisteService(
-        node: MutationNodeInput!
-        name: String!
-    ): Boolean
+  mutationService(services: [MutationServiceInput!]): [MutationService]
+  registeService(node: MutationNodeInput!, config: String!): Boolean
+  unregisteService(node: MutationNodeInput!, name: String!): Boolean
 }
 
 enum State {
-    ALIVE
-    SUSPECT
-    DEAD
-    ALL
+  ALIVE
+  SUSPECT
+  DEAD
+  ALL
 }
 
 enum Cmd {
-    START
-    STOP
-    RESTART
+  START
+  STOP
+  RESTART
 }
 
 type Riff {
-    gitBranch: String!
-    gitSha: String!
-    version: String!
+  gitBranch: String!
+  gitSha: String!
+  version: String!
 }

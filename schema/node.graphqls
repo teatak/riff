@@ -1,30 +1,28 @@
-
 type Node {
-    dataCenter: String!
-    ip: String!
-    isSelf: Boolean!
-    name: String!
-    httpPort: Int!
-    rpcPort: Int!
-    services: [NestService!]
-    snapShot: String!
-    state: State!
-    version: Int!
+  dataCenter: String!
+  ip: String!
+  isSelf: Boolean!
+  name: String!
+  httpPort: Int!
+  rpcPort: Int!
+  services: [NestService!]
+  snapShot: String!
+  state: State!
+  version: Int!
 }
 
 type NestNode {
-    config: String!
-    statusContent: String!
-    dataCenter: String!
-    isSelf: Boolean!
-    name: String!
-    ip: String!
-    port: Int!
-    rpcPort: Int!
-    snapShot: String!
-    state: State!
-    version: Int!
-    startTime: Int!
-    progress: Progress!
+  config: String!
+  statusContent: String!
+  dataCenter: String!
+  isSelf: Boolean!
+  name: String!
+  ip: String!
+  port: Int!
+  rpcPort: Int!
+  snapShot: String!
+  state: State!
+  version: Int!
+  startTime: Int!
+  progress: Progress!
 }
-
