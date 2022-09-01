@@ -9,6 +9,6 @@ require (
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
 	github.com/ryanuber/columnize v2.1.2+incompatible
 	github.com/stretchr/testify v1.7.0 // indirect
-	github.com/teatak/cart v1.0.11
+	github.com/teatak/cart v1.0.15
 	gopkg.in/yaml.v2 v2.4.0
 )
