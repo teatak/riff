@@ -34,6 +34,6 @@ tools:
 	@echo "--> Running tools"
 	@go get $(GOTOOLS)
 	@go install $(GOTOOLS)
-	@cd console && npm install
+	# @cd console && npm install
 
 .PHONY: default fmt
