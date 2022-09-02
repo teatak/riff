@@ -4,6 +4,7 @@ go 1.13
 
 require (
 	github.com/elazarl/go-bindata-assetfs v1.0.1
+	github.com/go-bindata/go-bindata v1.0.0 // indirect
 	github.com/gorilla/websocket v1.4.2
 	github.com/graph-gophers/graphql-go v1.2.0
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
