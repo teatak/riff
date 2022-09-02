@@ -77,7 +77,7 @@ module.exports = {
             allChunks: true
         }),
         new webpack.DefinePlugin({
-            "process.env": {NODE_ENV: JSON.stringify(env)}
+            "process.env": { NODE_ENV: JSON.stringify(env) }
         })
     ],
     module: {
@@ -111,7 +111,7 @@ module.exports = {
                     options: {
                         ident: 'postcss',
                         plugins: (loader) => [
-                            require('postcss-import')({root: loader.resourcePath}),
+                            require('postcss-import')({ root: loader.resourcePath }),
                             require('postcss-cssnext')()
                         ]
                     }
@@ -127,7 +127,7 @@ module.exports = {
                     options: {
                         ident: 'postcss',
                         plugins: (loader) => [
-                            require('postcss-import')({root: loader.resourcePath}),
+                            require('postcss-import')({ root: loader.resourcePath }),
                             require('postcss-cssnext')()
                         ]
                     }
