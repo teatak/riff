@@ -32,8 +32,8 @@ webpack:
 
 tools:
 	@echo "--> Running tools"
-	@go get $(GOTOOLS)
-	@go install $(GOTOOLS)
-	# @cd console && npm install
+	# @go get $(GOTOOLS)
+	# @go install $(GOTOOLS)
+	@cd console && npm install --legacy-peer-deps
 
 .PHONY: default fmt
