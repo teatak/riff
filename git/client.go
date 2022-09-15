@@ -45,8 +45,8 @@ func (d *download) downloadFile(header, file, url string, progress func(int32, i
 	dir := filepath.Dir(file)
 	os.MkdirAll(dir, 0755)
 
-	// Get the data 5 mins time out
-	d.cx, d.cancel = context.WithTimeout(context.Background(), 5*time.Minute)
+	// Get the data 30 mins time out
+	d.cx, d.cancel = context.WithTimeout(context.Background(), 30*time.Minute)
 	defer d.cancel()
 	req, _ := http.NewRequest("GET", url, nil)
 	req = req.WithContext(d.cx)
