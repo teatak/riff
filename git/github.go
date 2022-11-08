@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -54,7 +55,7 @@ func (g *Github) Request(method, url string) (string, error) {
 			//success
 			return string(data), nil
 		} else {
-			return "", errors.New(string(data))
+			return "", fmt.Errorf("error status %v content %s", resp.StatusCode, string(data))
 		}
 	}
 }

@@ -416,7 +416,7 @@ func (s *Service) processGit(client git.Client) {
 		version, asset, err = client.GetRelease(version)
 	}
 	if err != nil {
-		server.Logger.Printf(errorServicePrefix+"%s type:%s version:%s sha:%s asset:%s find version error: %v", s.Name, t, v, version, asset, err)
+		server.Logger.Printf(errorServicePrefix+"%s deploy version:%s find version error: %v", s.Name, config.Deploy.Version, err)
 		return
 	}
 	//check local version

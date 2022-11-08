@@ -49,7 +49,7 @@ func (g *Gitlab) Request(method, url string) (string, error) {
 			//success
 			return string(data), nil
 		} else {
-			return "", errors.New(string(data))
+			return "", fmt.Errorf("error status %v content %s", resp.StatusCode, string(data))
 		}
 	}
 }
