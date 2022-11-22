@@ -407,26 +407,28 @@ func (s *Service) processGit(client git.Client) {
 	case content:
 		arr := strings.Split(v, ":")
 		version, err = client.GetContentFile(arr[0], strings.Join(arr[1:], ":"))
-		version = strings.TrimSpace(version)
-		version = strings.Trim(version, "\n")
-		version = strings.Trim(version, "\r")
-
-		if err != nil {
-			server.Logger.Printf(errorServicePrefix+"%s get file error: %v", s.Name, err)
-		}
-		version, asset, err = client.GetRelease(version)
-	case "url":
-		_url := v
-		response, err := http.Get(_url)
-		if err == nil {
-			defer response.Body.Close()
-			responseData, err := ioutil.ReadAll(response.Body)
+		if strings.HasPrefix(version, "http") { //if version is http
+			_url := v
+			response, err := http.Get(_url)
 			if err == nil {
-				asset := string(responseData)
-				server.Logger.Printf(infoServicePrefix+"%s get file content: %v", s.Name, asset)
-				base := path.Base(asset)
-				version = base
+				defer response.Body.Close()
+				responseData, err := ioutil.ReadAll(response.Body)
+				if err == nil {
+					asset := string(responseData)
+					server.Logger.Printf(infoServicePrefix+"%s get file content: %v", s.Name, asset)
+					base := path.Base(asset)
+					version = base
+				}
 			}
+		} else {
+			version = strings.TrimSpace(version)
+			version = strings.Trim(version, "\n")
+			version = strings.Trim(version, "\r")
+
+			if err != nil {
+				server.Logger.Printf(errorServicePrefix+"%s get file error: %v", s.Name, err)
+			}
+			version, asset, err = client.GetRelease(version)
 		}
 	}
 	if err != nil {
