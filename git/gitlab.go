@@ -68,6 +68,9 @@ func (g *Gitlab) GetContentFile(branch, file string) (string, error) {
 		return "", err
 	}
 	decode, err := base64.StdEncoding.DecodeString(jsonData["content"].(string))
+	if err != nil {
+		return "", err
+	}
 	content := string(decode)
 	return content, nil
 }
