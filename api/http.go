@@ -1,6 +1,6 @@
 package api
 
-//todo
+// todo
 type HttpClient struct {
 	Url string
 }

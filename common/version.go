@@ -1,12 +1,12 @@
 package common
 
 /*
-	defined in ../scripts/build.sh
+defined in ../scripts/build.sh
 
-	TYPE="release"
-	VERSION="$(cat version)"
-	GITSHA="$(git rev-parse HEAD)"
-	GITBRANCH="$(git rev-parse --abbrev-ref HEAD)"
+TYPE="release"
+VERSION="$(cat version)"
+GITSHA="$(git rev-parse HEAD)"
+GITBRANCH="$(git rev-parse --abbrev-ref HEAD)"
 */
 var Type = "debug"
 var Version = "v0.0.1.dev"

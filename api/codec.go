@@ -50,7 +50,7 @@ func TimeoutCoder(f func(interface{}) error, e interface{}, msg string) error {
 	}
 }
 
-//server
+// server
 func NewGobServerCodec(conn io.ReadWriteCloser) rpc.ServerCodec {
 	buf := bufio.NewWriter(conn)
 	codec := &gobServerCodec{
@@ -105,7 +105,7 @@ func (c *gobServerCodec) Close() error {
 	return c.rwc.Close()
 }
 
-//client
+// client
 func NewGobClientCodec(conn io.ReadWriteCloser) rpc.ClientCodec {
 	buf := bufio.NewWriter(conn)
 	codec := &gobClientCodec{
@@ -146,7 +146,7 @@ func (c *gobClientCodec) Close() error {
 	return c.rwc.Close()
 }
 
-//json server
+// json server
 func NewJsonServerCodec(conn io.ReadWriteCloser) rpc.ServerCodec {
 	buf := bufio.NewWriter(conn)
 	codec := &jsonServerCodec{
@@ -201,7 +201,7 @@ func (c *jsonServerCodec) Close() error {
 	return c.rwc.Close()
 }
 
-//json client
+// json client
 func NewJsonClientCodec(conn io.ReadWriteCloser) rpc.ClientCodec {
 	buf := bufio.NewWriter(conn)
 	codec := &jsonClientCodec{

@@ -11,7 +11,7 @@ import (
 type Resolver struct {
 }
 
-//Query
+// Query
 func (*Resolver) Riff() *RiffResolver {
 	return &RiffResolver{}
 }

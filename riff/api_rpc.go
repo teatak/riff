@@ -134,7 +134,7 @@ func (r *Riff) Request(snap string, digests *[]*Digest) error {
 	return nil
 }
 
-//push changes
+// push changes
 func (r *Riff) PushDiff(diff []*Node, remoteDiff *[]*Node) error {
 	if len(diff) == 0 {
 		*remoteDiff = nil
