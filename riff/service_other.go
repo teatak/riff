@@ -99,20 +99,12 @@ func (s *Service) Stop() error {
 	} else {
 		if p, find := s.processExist(pid); find {
 			pgid, err := syscall.Getpgid(pid)
-			if err == nil {
-				if pgid == pid {
-					//if pid == pgid
-					err := syscall.Kill(-pgid, syscall.SIGKILL)
-					if err != nil {
-						return err
-					}
-				} else {
-					err := p.Kill()
-					if err != nil {
-						return err
-					}
-				}
-			} else {
+			if err != nil {
+				// Fall-back on error. Kill the main process only.
+				p.Kill()
+			}
+			err = syscall.Kill(-pgid, syscall.SIGTERM)
+			if err != nil {
 				return err
 			}
 			quitStop := make(chan bool)
