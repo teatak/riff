@@ -111,6 +111,7 @@ func (s *Service) rewriteConfig() {
 		return v
 	}
 
+	s.Dir = replaceValue(s.Dir)
 	s.Env = replaceValues(s.Env)
 	s.Command = replaceValues(s.Command)
 	s.StatusPage = replaceValue(s.StatusPage)
