@@ -8,9 +8,9 @@
     "url": "https://github.com/teatak/riff.git"
   },
   "scripts": {
-    "watch": "export NODE_ENV=development && webpack --config webpack.config.js --mode=development -w",
-    "watch-p": "export NODE_ENV=production && webpack --config webpack.config.js --mode=production -w",
-    "product": "export NODE_ENV=production && webpack --config webpack.config.js --mode=production --hide-modules --progress"
+    "watch": "export NODE_ENV=development NODE_OPTIONS=--openssl-legacy-provider && webpack --config webpack.config.js --mode=development -w",
+    "watch-p": "export NODE_ENV=production NODE_OPTIONS=--openssl-legacy-provider && webpack --config webpack.config.js --mode=production -w",
+    "product": "export NODE_ENV=production NODE_OPTIONS=--openssl-legacy-provider && webpack --config webpack.config.js --mode=production --hide-modules --progress"
   },
   "devDependencies": {
     "mini-css-extract-plugin": "^0.4.0",
