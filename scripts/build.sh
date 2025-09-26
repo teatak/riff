@@ -11,7 +11,7 @@ GITSHA="$(git rev-parse HEAD)"
 GITBRANCH="$(git rev-parse --abbrev-ref HEAD)"
 
 # Determine the arch/os combos we're building for
-XC_OS=${XC_OS:-"linux darwin windows freebsd openbsd solaris"}
+XC_OS=${XC_OS:-"linux darwin windows"}
 XC_ARCH=${XC_ARCH:-"386 amd64 arm arm64"}
 LDFLAGS="-X github.com/teatak/riff/common.Type=${TYPE} -X github.com/teatak/riff/common.GitSha=${GITSHA} -X github.com/teatak/riff/common.GitBranch=${GITBRANCH} -X github.com/teatak/riff/common.Version=${VERSION}"
 
